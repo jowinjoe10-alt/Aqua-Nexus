@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import '../shared/Auth.css'
-import './Register.css'
+
 
 function Register() {
   const navigate = useNavigate()
