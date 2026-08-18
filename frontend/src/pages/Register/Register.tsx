@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import '../shared/Auth.css'
 
 function Register() {
   const navigate = useNavigate()
