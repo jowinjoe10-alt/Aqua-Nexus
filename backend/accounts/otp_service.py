@@ -13,6 +13,7 @@ def generate_otp():
 
 
 def create_otp(gmail):
+    OTP.objects.filter(gmail=gmail).delete()
     code = generate_otp()
     now = timezone.now()
 
@@ -31,3 +32,20 @@ def create_otp(gmail):
     )
 
     return otp
+
+def verify_otp(gmail, entered_code):
+    try:
+        otp = OTP.objects.get(gmail=gmail)
+    except OTP.DoesNotExist:
+        return False, 'OTP not found'
+
+    if timezone.now() > otp.expires_at:
+        otp.delete()
+        return False, 'OTP expired'
+
+    if otp.code != entered_code:
+        return False, 'Invalid OTP'
+
+    otp.delete()
+
+    return True, 'OTP verified'

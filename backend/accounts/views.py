@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from .serializers import AccountSerializer
 from .models import Account
-
+from .otp_service import create_otp, verify_otp
 
 class RegisterView(APIView):
 
@@ -40,8 +40,50 @@ class LoginCheckView(APIView):
                 'message': 'Account not registered. Please register first.'
             }, status=404)
 
+        otp = create_otp(account.gmail)
+
         return Response({
-            'message': 'Account found',
+          'message': 'OTP sent successfully',
+          'account': {
+              'id': account.id,
+              'name': account.name,
+              'gmail': account.gmail,
+              'role': account.role,
+           }
+        }, status=200)
+
+class VerifyOTPView(APIView):
+
+    def post(self, request):
+        gmail = request.data.get('gmail')
+        entered_code = request.data.get('otp')
+
+        if not gmail:
+            return Response({
+                'message': 'Gmail is required'
+            }, status=400)
+
+        if not entered_code:
+            return Response({
+                'message': 'OTP is required'
+            }, status=400)
+
+        success, message = verify_otp(gmail, entered_code)
+
+        if not success:
+            return Response({
+                'message': message
+            }, status=400)
+
+        try:
+            account = Account.objects.get(gmail=gmail)
+        except Account.DoesNotExist:
+            return Response({
+                'message': 'Account not found'
+            }, status=404)
+
+        return Response({
+            'message': 'Login successful',
             'account': {
                 'id': account.id,
                 'name': account.name,
