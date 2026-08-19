@@ -1,10 +1,10 @@
-
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+load_dotenv(BASE_DIR / '.env')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
@@ -117,12 +117,23 @@ STATIC_URL = 'static/'
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
 ]
+
+MAILERS = {
+    'default': {
+        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
+        'OPTIONS': {
+            'host': 'smtp.gmail.com',
+            'port': 587,
+            'username': os.getenv('EMAIL_HOST_USER'),
+            'password': os.getenv('EMAIL_HOST_PASSWORD'),
+            'use_tls': True,
+        },
+    },
+}
+
+RESEND_API_KEY = os.getenv('RESEND_API_KEY')
