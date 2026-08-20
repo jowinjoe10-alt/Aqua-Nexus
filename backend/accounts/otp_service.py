@@ -33,6 +33,49 @@ def create_otp(gmail):
 
     return otp
 
+
+def resend_otp(gmail):
+    try:
+        otp = OTP.objects.get(gmail=gmail)
+    except OTP.DoesNotExist:
+        return False, 'OTP not found'
+
+    now = timezone.now()
+
+    if otp.resend_date != now.date():
+      otp.resend_count = 0
+      otp.resend_date = now.date()
+
+    if otp.resend_count >= 3:
+      return False, 'Daily OTP resend limit reached'
+
+    seconds_since_last_sent = (
+     now - otp.last_sent_at
+    ).total_seconds()
+
+    if seconds_since_last_sent < 30:
+        return False, 'Please wait 30 seconds before requesting another OTP'
+
+    code = generate_otp()
+
+    otp.code = code
+    otp.created_at = now
+    otp.expires_at = now + timedelta(minutes=5)
+    otp.last_sent_at = now
+
+    otp.save()
+
+    send_email(
+      gmail,
+      'Aqua Nexus OTP',
+      f'Your new Aqua Nexus OTP is {code}. It is valid for 5 minutes.'
+    )
+
+    otp.resend_count += 1
+    otp.save()
+
+    return True, 'OTP resent successfully'
+
 def verify_otp(gmail, entered_code):
     try:
         otp = OTP.objects.get(gmail=gmail)

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from .serializers import AccountSerializer
 from .models import Account
-from .otp_service import create_otp, verify_otp
+from .otp_service import create_otp, verify_otp, resend_otp
 
 class RegisterView(APIView):
 
@@ -90,4 +90,26 @@ class VerifyOTPView(APIView):
                 'gmail': account.gmail,
                 'role': account.role,
             }
+        }, status=200)
+
+
+class ResendOTPView(APIView):
+
+    def post(self, request):
+        gmail = request.data.get('gmail')
+
+        if not gmail:
+            return Response({
+                'message': 'Gmail is required'
+            }, status=400)
+
+        success, message = resend_otp(gmail)
+
+        if not success:
+            return Response({
+                'message': message
+            }, status=400)
+
+        return Response({
+            'message': message
         }, status=200)
