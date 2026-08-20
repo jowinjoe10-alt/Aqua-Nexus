@@ -18,7 +18,7 @@ def create_otp(gmail):
     now = timezone.now()
 
     otp = OTP.objects.create(
-        gmail=gmail,
+        gmail = gmail.strip().lower(),
         code=code,
         expires_at=now + timedelta(minutes=5),
         last_sent_at=now,
@@ -36,7 +36,7 @@ def create_otp(gmail):
 
 def resend_otp(gmail):
     try:
-        otp = OTP.objects.get(gmail=gmail)
+        otp = OTP.objects.get(gmail = gmail.strip().lower())
     except OTP.DoesNotExist:
         return False, 'OTP not found'
 
@@ -78,7 +78,7 @@ def resend_otp(gmail):
 
 def verify_otp(gmail, entered_code):
     try:
-        otp = OTP.objects.get(gmail=gmail)
+        otp = OTP.objects.get(gmail = gmail.strip().lower())
     except OTP.DoesNotExist:
         return False, 'OTP not found'
 

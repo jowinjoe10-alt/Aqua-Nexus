@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import '../shared/Auth.css'
 
@@ -8,7 +8,24 @@ function Login() {
 
   const [showOtp, setShowOtp] = useState(false)
   const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState('')
   const [emailError, setEmailError] = useState('')
+  const [otpError, setOtpError] = useState('')
+  const [resendCooldown, setResendCooldown] = useState(0)
+  const [resendsRemaining, setResendsRemaining] = useState(3)
+  const [resendError, setResendError] = useState('')
+
+  useEffect(() => {
+    if (resendCooldown <= 0) {
+      return
+    }
+
+    const timer = setInterval(() => {
+     setResendCooldown((current) => current - 1)
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [resendCooldown])
 
   const handleGetOtp = async () => {
    if (!email.includes('@') || !email.endsWith('@gmail.com')) {
@@ -27,7 +44,7 @@ function Login() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          gmail: email.trim(),
+          gmail: email.trim().toLowerCase(),
         }),
       }
     )
@@ -43,6 +60,81 @@ function Login() {
 
   } catch (error) {
     setEmailError('Unable to connect to server')
+    console.error(error)
+  }
+}
+
+const handleVerifyOtp = async () => {
+  if (!otp || otp.length !== 6) {
+    setOtpError('Enter valid OTP')
+    return
+  }
+
+  setOtpError('')
+
+  try {
+    const response = await fetch(
+      'http://127.0.0.1:8000/api/login/verify-otp/',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          gmail: email.trim().toLowerCase(),
+          otp: otp,
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      setOtpError(data.message)
+      return
+    }
+
+    console.log('Login successful:', data)
+
+  } catch (error) {
+    setOtpError('Unable to connect to server')
+    console.error(error)
+  }
+}
+
+const handleResendOtp = async () => {
+  if (resendCooldown > 0 || resendsRemaining === 0) {
+    return
+  }
+
+  setResendError('')
+
+  try {
+    const response = await fetch(
+      'http://127.0.0.1:8000/api/login/resend-otp/',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          gmail: email.trim().toLowerCase(),
+        }),
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      setResendError(data.message)
+      return
+    }
+
+    setResendsRemaining((current) => current - 1)
+    setResendCooldown(30)
+
+  } catch (error) {
+    setResendError('Unable to connect to server')
     console.error(error)
   }
 }
@@ -90,8 +182,34 @@ function Login() {
                 id="otp"
                 className="otp-input"
                 placeholder="Enter OTP"
+                value={otp}
+                onChange={(event) => setOtp(event.target.value)}
               />
+              {otpError && (
+                <p className="email-error">{otpError}</p>
+              )}
+              <div className="resend-row">
 
+               <button
+                 type="button"
+                 className="resend-link"
+                 onClick={handleResendOtp}
+                 disabled={resendCooldown > 0 || resendsRemaining === 0}
+               >
+                 {resendCooldown > 0
+                   ? `Resend OTP in ${resendCooldown}s`
+                   : 'Resend OTP'}
+               </button>
+
+               <span className="resend-count">
+                 {resendsRemaining}/3 resends remaining
+               </span>
+
+              </div>
+
+              {resendError && (
+                <p className="email-error">{resendError}</p>
+              )}
             </div>
           )}
 
@@ -102,7 +220,11 @@ function Login() {
               className="back-button"
               onClick={() => {
                 if (showOtp) {
-                  setShowOtp(false)
+                 setShowOtp(false)
+                 setOtp('')
+                 setOtpError('')
+                 setResendError('')
+                 setResendCooldown(0)
                 } else {
                   navigate('/', {
                     state: {
@@ -129,6 +251,7 @@ function Login() {
               <button
                 type="button"
                 className="otp-button"
+                onClick={handleVerifyOtp}
               >
                 SUBMIT
               </button>
@@ -137,20 +260,21 @@ function Login() {
           </div>
 
         </div>
+         {!showOtp && (
+          <div className="login-footer">
 
-        <div className="login-footer">
+            <p>
+              Don't have an account?{' '}
+              <span
+                className="register-link"
+                onClick={() => navigate('/register')}
+              >
+                Register
+              </span>
+            </p>
 
-          <p>
-            Don't have an account?{' '}
-            <span
-              className="register-link"
-              onClick={() => navigate('/register')}
-            >
-              Register
-            </span>
-          </p>
-
-        </div>
+          </div>
+         )}
 
       </div>
 
