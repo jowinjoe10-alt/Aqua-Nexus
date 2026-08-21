@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import './Landing.css'
 
 function Landing() {
   const introductionRef = useRef<HTMLElement | null>(null)
