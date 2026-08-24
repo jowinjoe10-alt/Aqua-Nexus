@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import './Farmer.css'
+import { useNavigate } from 'react-router-dom'
 
 type Fish = {
   name: string
@@ -191,6 +192,8 @@ function getWeatherDisplay(
 
 
 function Farmer() {
+
+  const navigate = useNavigate()
 
   const [activeSection, setActiveSection] = useState('Fish')
 
@@ -565,10 +568,6 @@ function Farmer() {
   }
 
 
-  /* ============================= */
-  /* Date Formatting               */
-  /* ============================= */
-
   const dayName =
     currentDate.toLocaleDateString(
       'en-IN',
@@ -600,9 +599,7 @@ function Farmer() {
     )
 
 
-  /* ============================= */
-  /* Weather Display               */
-  /* ============================= */
+
 
   const weatherDisplay =
     weather
@@ -873,6 +870,7 @@ function Farmer() {
               <button
                 type="button"
                 className="side-menu-item"
+                onClick={() => navigate('/profile')}
               >
                 Profile
               </button>
