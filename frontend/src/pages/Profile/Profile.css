@@ -221,6 +221,7 @@
   font-family: 'Space Grotesk', sans-serif;
 
   font-size: 11px;
+
   font-weight: 600;
 
   letter-spacing: 1.1px;
@@ -271,6 +272,150 @@
 
 
 /* ============================= */
+/* Mobile Number Label           */
+/* ============================= */
+
+.profile-mobile-label {
+  display: flex;
+
+  margin-bottom: 7px;
+}
+
+.mobile-number-label {
+  position: relative;
+
+  display: inline-block;
+
+  width: max-content;
+
+  margin: 0;
+
+  color: #1595a3;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 1.1px;
+
+  text-transform: uppercase;
+
+  cursor: default;
+}
+
+
+/* ============================= */
+/* Mobile Number Tooltip         */
+/* ============================= */
+
+.mobile-number-label::after {
+  content:
+    "Don't worry. Your mobile number is shared with the other party only after your order is confirmed.";
+
+  position: absolute;
+
+  left: 0;
+
+  bottom: calc(100% + 10px);
+
+  width: 285px;
+
+  box-sizing: border-box;
+
+  padding: 11px 13px;
+
+  border: 1px solid rgba(38, 166, 154, 0.16);
+
+  border-radius: 10px;
+
+  background: #263238;
+
+  color: #ffffff;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 400;
+
+  line-height: 1.5;
+
+  letter-spacing: 0;
+
+  text-transform: none;
+
+  text-align: left;
+
+  white-space: normal;
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transform: translateY(5px);
+
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease,
+    transform 0.18s ease;
+
+  z-index: 9999;
+}
+
+
+/* Tooltip pointer */
+
+.mobile-number-label::before {
+  content: '';
+
+  position: absolute;
+
+  left: 14px;
+
+  bottom: calc(100% + 6px);
+
+  width: 8px;
+
+  height: 8px;
+
+  background: #263238;
+
+  transform: rotate(45deg);
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease;
+
+  z-index: 9998;
+}
+
+
+/* Show tooltip */
+
+.mobile-number-label:hover::after {
+  opacity: 1;
+
+  visibility: visible;
+
+  transform: translateY(0);
+}
+
+.mobile-number-label:hover::before {
+  opacity: 1;
+
+  visibility: visible;
+}
+
+
+/* ============================= */
 /* Gmail                         */
 /* ============================= */
 
@@ -292,6 +437,25 @@
 
 .profile-readonly-value {
   color: #62777e !important;
+}
+
+
+/* ============================= */
+/* Error                         */
+/* ============================= */
+
+.profile-error {
+  margin: 22px 0 0;
+
+  color: #d9534f;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  line-height: 1.4;
+
+  text-align: center;
 }
 
 
@@ -318,6 +482,7 @@
   font-family: 'Space Grotesk', sans-serif;
 
   font-size: 13px;
+
   font-weight: 600;
 
   letter-spacing: 0.5px;
@@ -326,7 +491,8 @@
 
   transition:
     background-color 0.2s ease,
-    border-color 0.2s ease;
+    border-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .profile-cancel-button {
@@ -337,7 +503,7 @@
   color: #52676e;
 }
 
-.profile-cancel-button:hover {
+.profile-cancel-button:hover:not(:disabled) {
   background: #f3f7f8;
 
   border-color: #c4d5da;
@@ -351,10 +517,17 @@
   color: #ffffff;
 }
 
-.profile-save-button:hover {
+.profile-save-button:hover:not(:disabled) {
   background: #168898;
 
   border-color: #168898;
+}
+
+.profile-cancel-button:disabled,
+.profile-save-button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
 }
 
 
@@ -385,5 +558,15 @@
 
   .profile-action-buttons {
     grid-template-columns: 1fr;
+  }
+
+  .mobile-number-label::after {
+    left: 0;
+
+    width: 240px;
+  }
+
+  .mobile-number-label::before {
+    left: 10px;
   }
 }

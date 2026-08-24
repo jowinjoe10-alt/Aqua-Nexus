@@ -1,0 +1,96 @@
+.weather-widget {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  padding: 16px 18px;
+
+  border: 1px solid rgba(38, 166, 154, 0.16);
+
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.78);
+
+  box-shadow:
+    0 5px 16px rgba(38, 80, 90, 0.05);
+}
+
+.weather-widget .menu-widget-title {
+  display: block;
+
+  margin-bottom: 9px;
+
+  color: #1595a3;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 1.3px;
+
+  text-transform: uppercase;
+}
+
+.weather-widget-content {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+.weather-widget-icon {
+  width: 45px;
+  height: 45px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 13px;
+
+  background: rgba(120, 220, 230, 0.14);
+
+  font-size: 23px;
+}
+
+.weather-widget-temperature {
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 22px;
+
+  font-weight: 500;
+
+  line-height: 1.1;
+}
+
+.weather-widget-condition {
+  margin-top: 3px;
+
+  color: #60777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+
+  line-height: 1.2;
+}
+
+.weather-widget-location {
+  margin-top: 4px;
+
+  color: #84969c;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 10px;
+
+  line-height: 1.2;
+}

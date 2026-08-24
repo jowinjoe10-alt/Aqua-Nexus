@@ -1,0 +1,50 @@
+.date-widget .menu-widget-title {
+  margin-bottom: 10px;
+}
+
+
+.date-widget .menu-widget-value {
+  display: block;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 24px;
+
+  font-weight: 500;
+
+  line-height: 1.2;
+}
+
+
+.date-widget .menu-widget-time {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 24px;
+
+  font-weight: 500;
+
+  line-height: 1.15;
+}
+
+
+.date-widget .menu-widget-subtext {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #71858b;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+
+  line-height: 1.2;
+}

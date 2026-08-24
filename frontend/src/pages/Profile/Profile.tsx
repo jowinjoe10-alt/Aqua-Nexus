@@ -9,24 +9,44 @@ type Account = {
   role: string
   city: string
   state: string
+  mobile_number: string
 }
 
 function Profile() {
   const navigate = useNavigate()
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const fileInputRef =
+    useRef<HTMLInputElement | null>(null)
 
-  const [account, setAccount] = useState<Account | null>(null)
+  const [account, setAccount] =
+    useState<Account | null>(null)
 
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] =
+    useState(false)
 
-  const [name, setName] = useState('')
-  const [city, setCity] = useState('')
-  const [state, setState] = useState('')
+  const [name, setName] =
+    useState('')
 
-  const [profileImage, setProfileImage] = useState('')
+  const [mobileNumber, setMobileNumber] =
+    useState('')
 
-  const [selectedImage, setSelectedImage] = useState('')
+  const [city, setCity] =
+    useState('')
+
+  const [state, setState] =
+    useState('')
+
+  const [profileImage, setProfileImage] =
+    useState('')
+
+  const [selectedImage, setSelectedImage] =
+    useState('')
+
+  const [saving, setSaving] =
+    useState(false)
+
+  const [error, setError] =
+    useState('')
 
 
   /* ============================= */
@@ -34,8 +54,11 @@ function Profile() {
   /* ============================= */
 
   useEffect(() => {
+
     const storedAccount =
-      localStorage.getItem('aquaNexusAccount')
+      localStorage.getItem(
+        'aquaNexusAccount'
+      )
 
     if (!storedAccount) {
       navigate('/login')
@@ -43,14 +66,27 @@ function Profile() {
     }
 
     try {
+
       const parsedAccount: Account =
         JSON.parse(storedAccount)
 
       setAccount(parsedAccount)
 
-      setName(parsedAccount.name || '')
-      setCity(parsedAccount.city || '')
-      setState(parsedAccount.state || '')
+      setName(
+        parsedAccount.name || ''
+      )
+
+      setMobileNumber(
+        parsedAccount.mobile_number || ''
+      )
+
+      setCity(
+        parsedAccount.city || ''
+      )
+
+      setState(
+        parsedAccount.state || ''
+      )
 
       const storedImage =
         localStorage.getItem(
@@ -62,6 +98,7 @@ function Profile() {
       }
 
     } catch (error) {
+
       console.error(
         'Unable to load profile:',
         error
@@ -69,6 +106,7 @@ function Profile() {
 
       navigate('/login')
     }
+
   }, [navigate])
 
 
@@ -77,15 +115,30 @@ function Profile() {
   /* ============================= */
 
   const handleEdit = () => {
+
     if (!account) {
       return
     }
 
-    setName(account.name || '')
-    setCity(account.city || '')
-    setState(account.state || '')
+    setName(
+      account.name || ''
+    )
+
+    setMobileNumber(
+      account.mobile_number || ''
+    )
+
+    setCity(
+      account.city || ''
+    )
+
+    setState(
+      account.state || ''
+    )
 
     setSelectedImage('')
+
+    setError('')
 
     setEditing(true)
   }
@@ -96,15 +149,30 @@ function Profile() {
   /* ============================= */
 
   const handleCancel = () => {
+
     if (!account) {
       return
     }
 
-    setName(account.name || '')
-    setCity(account.city || '')
-    setState(account.state || '')
+    setName(
+      account.name || ''
+    )
+
+    setMobileNumber(
+      account.mobile_number || ''
+    )
+
+    setCity(
+      account.city || ''
+    )
+
+    setState(
+      account.state || ''
+    )
 
     setSelectedImage('')
+
+    setError('')
 
     setEditing(false)
   }
@@ -129,7 +197,8 @@ function Profile() {
       return
     }
 
-    const reader = new FileReader()
+    const reader =
+      new FileReader()
 
     reader.onload = () => {
 
@@ -150,39 +219,156 @@ function Profile() {
   /* Save                          */
   /* ============================= */
 
-  const handleSave = () => {
+  const handleSave = async () => {
 
     if (!account) {
       return
     }
 
-    const updatedAccount: Account = {
-      ...account,
-      name: name.trim(),
-      city: city.trim(),
-      state: state.trim(),
-    }
+    const trimmedName =
+      name.trim()
 
-    localStorage.setItem(
-      'aquaNexusAccount',
-      JSON.stringify(updatedAccount)
-    )
+    const trimmedMobileNumber =
+      mobileNumber.trim()
 
-    setAccount(updatedAccount)
+    const trimmedCity =
+      city.trim()
 
-    if (selectedImage) {
+    const trimmedState =
+      state.trim()
 
-      localStorage.setItem(
-        'aquaNexusProfileImage',
-        selectedImage
+    if (!trimmedName) {
+
+      setError(
+        'Name is required'
       )
 
-      setProfileImage(selectedImage)
+      return
     }
 
-    setSelectedImage('')
+    if (!trimmedCity) {
 
-    setEditing(false)
+      setError(
+        'City is required'
+      )
+
+      return
+    }
+
+    if (!trimmedState) {
+
+      setError(
+        'State is required'
+      )
+
+      return
+    }
+
+    setError('')
+    setSaving(true)
+
+    try {
+
+      const response =
+        await fetch(
+          'http://127.0.0.1:8000/api/account/profile/',
+          {
+            method: 'POST',
+
+            headers: {
+              'Content-Type':
+                'application/json',
+            },
+
+            body: JSON.stringify({
+              account_id: account.id,
+
+              name: trimmedName,
+
+              mobile_number:
+                trimmedMobileNumber,
+
+              city: trimmedCity,
+
+              state: trimmedState,
+            }),
+          }
+        )
+
+      const data =
+        await response.json()
+
+      if (!response.ok) {
+
+        setError(
+          data.message ||
+          'Unable to update profile'
+        )
+
+        return
+      }
+
+      const updatedAccount: Account =
+        data.account
+
+      localStorage.setItem(
+        'aquaNexusAccount',
+        JSON.stringify(
+          updatedAccount
+        )
+      )
+
+      setAccount(
+        updatedAccount
+      )
+
+      setName(
+        updatedAccount.name
+      )
+
+      setMobileNumber(
+        updatedAccount.mobile_number || ''
+      )
+
+      setCity(
+        updatedAccount.city
+      )
+
+      setState(
+        updatedAccount.state
+      )
+
+      if (selectedImage) {
+
+        localStorage.setItem(
+          'aquaNexusProfileImage',
+          selectedImage
+        )
+
+        setProfileImage(
+          selectedImage
+        )
+      }
+
+      setSelectedImage('')
+
+      setEditing(false)
+
+    } catch (error) {
+
+      console.error(
+        'Profile update error:',
+        error
+      )
+
+      setError(
+        'Unable to connect to server'
+      )
+
+    } finally {
+
+      setSaving(false)
+    }
   }
 
 
@@ -203,7 +389,6 @@ function Profile() {
   return (
     <div className="profile-page">
 
-
       {/* ============================= */}
       {/* Profile Card                  */}
       {/* ============================= */}
@@ -220,7 +405,9 @@ function Profile() {
           <button
             type="button"
             className="profile-back-button"
-            onClick={() => navigate('/farmer')}
+            onClick={() =>
+              navigate('/farmer')
+            }
           >
             ←
           </button>
@@ -232,6 +419,7 @@ function Profile() {
           </h1>
 
           {!editing && (
+
             <button
               type="button"
               className="profile-edit-button"
@@ -240,10 +428,14 @@ function Profile() {
             >
               ✎
             </button>
+
           )}
 
           {editing && (
-            <div className="profile-header-spacer"></div>
+
+            <div className="profile-header-spacer">
+            </div>
+
           )}
 
         </header>
@@ -282,6 +474,7 @@ function Profile() {
           {editing && (
 
             <>
+
               <button
                 type="button"
                 className="change-photo-button"
@@ -297,8 +490,11 @@ function Profile() {
                 type="file"
                 accept="image/*"
                 className="profile-file-input"
-                onChange={handleImageChange}
+                onChange={
+                  handleImageChange
+                }
               />
+
             </>
 
           )}
@@ -328,7 +524,9 @@ function Profile() {
                 type="text"
                 value={name}
                 onChange={(event) =>
-                  setName(event.target.value)
+                  setName(
+                    event.target.value
+                  )
                 }
               />
 
@@ -358,9 +556,11 @@ function Profile() {
               </p>
 
               {editing && (
+
                 <span className="locked-label">
                   🔒 Cannot be changed
                 </span>
+
               )}
 
             </div>
@@ -368,7 +568,58 @@ function Profile() {
           </div>
 
 
-          {/* Role */}
+          {/* Mobile Number */}
+
+          <div className="profile-field">
+
+            <div className="profile-mobile-label">
+
+              <label
+                htmlFor="profile-mobile"
+                className="mobile-number-label"
+              >
+                Mobile Number
+              </label>
+
+            </div>
+
+            {editing ? (
+
+              <input
+                id="profile-mobile"
+                type="tel"
+                inputMode="numeric"
+                placeholder="Optional"
+                value={mobileNumber}
+                onChange={(event) => {
+
+                  const value =
+                    event.target.value
+
+                  if (
+                    /^[0-9+\-\s()]*$/.test(
+                      value
+                    )
+                  ) {
+                    setMobileNumber(value)
+                  }
+
+                }}
+              />
+
+            ) : (
+
+              <p>
+                {account.mobile_number ||
+                  'Not provided'}
+              </p>
+
+            )}
+
+          </div>
+
+
+          {/* Account Type */}
 
           <div className="profile-field">
 
@@ -400,14 +651,17 @@ function Profile() {
                 type="text"
                 value={city}
                 onChange={(event) =>
-                  setCity(event.target.value)
+                  setCity(
+                    event.target.value
+                  )
                 }
               />
 
             ) : (
 
               <p>
-                {account.city || 'Not provided'}
+                {account.city ||
+                  'Not provided'}
               </p>
 
             )}
@@ -430,14 +684,17 @@ function Profile() {
                 type="text"
                 value={state}
                 onChange={(event) =>
-                  setState(event.target.value)
+                  setState(
+                    event.target.value
+                  )
                 }
               />
 
             ) : (
 
               <p>
-                {account.state || 'Not provided'}
+                {account.state ||
+                  'Not provided'}
               </p>
 
             )}
@@ -445,6 +702,19 @@ function Profile() {
           </div>
 
         </div>
+
+
+        {/* ============================= */}
+        {/* Error                         */}
+        {/* ============================= */}
+
+        {error && (
+
+          <p className="profile-error">
+            {error}
+          </p>
+
+        )}
 
 
         {/* ============================= */}
@@ -459,6 +729,7 @@ function Profile() {
               type="button"
               className="profile-cancel-button"
               onClick={handleCancel}
+              disabled={saving}
             >
               CANCEL
             </button>
@@ -467,14 +738,16 @@ function Profile() {
               type="button"
               className="profile-save-button"
               onClick={handleSave}
+              disabled={saving}
             >
-              SAVE
+              {saving
+                ? 'SAVING...'
+                : 'SAVE'}
             </button>
 
           </div>
 
         )}
-
 
       </div>
 
