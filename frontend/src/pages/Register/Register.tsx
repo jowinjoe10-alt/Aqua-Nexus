@@ -8,9 +8,11 @@ function Register() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [accountType, setAccountType] = useState('')
+  const [city, setCity] = useState('')
+  const [state, setState] = useState('')
   const [error, setError] = useState('')
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (name.trim() === '') {
       setError('Enter your name')
       return
@@ -26,7 +28,57 @@ function Register() {
       return
     }
 
+    if (city.trim() === '') {
+      setError('Enter your city')
+      return
+    }
+
+    if (state.trim() === '') {
+      setError('Enter your state')
+      return
+    }
+
     setError('')
+
+    try {
+      const response = await fetch('http://localhost:8000/api/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          gmail: email.trim().toLowerCase(),
+          role: accountType,
+          city: city.trim(),
+          state: state.trim(),
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        if (data.errors) {
+          const firstError = Object.values(data.errors)[0]
+
+          if (Array.isArray(firstError)) {
+            setError(String(firstError[0]))
+          } else {
+            setError(String(firstError))
+          }
+        } else {
+          setError(data.message || 'Registration failed')
+        }
+
+        return
+      }
+
+      console.log('Registration successful:', data)
+
+    } catch (error) {
+      console.error('Registration error:', error)
+      setError('Unable to connect to the server')
+    }
   }
 
   return (
@@ -105,6 +157,33 @@ function Register() {
               </label>
 
             </div>
+
+            <label htmlFor="city" className="field-label-tooltip">
+              City
+
+              <span className="field-tooltip">
+                Your location helps Aqua Nexus provide local weather information,
+                nearby vendor/customer availability, and location-based recommendations.
+              </span>
+            </label>
+
+            <input
+              type="text"
+              id="city"
+              placeholder="Enter your city"
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+            />
+
+            <label htmlFor="state">State</label>
+
+            <input
+              type="text"
+              id="state"
+              placeholder="Enter your state"
+              value={state}
+              onChange={(event) => setState(event.target.value)}
+            />
 
             {error && (
               <p className="form-error">{error}</p>

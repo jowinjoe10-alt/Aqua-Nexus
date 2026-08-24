@@ -1,0 +1,64 @@
+.login-footer {
+  text-align: center;
+  margin-top: 12px;
+}
+
+.login-footer p {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  color: #27373d;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+}
+
+.register-link {
+  color: #1c9aaa;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.resend-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.resend-link {
+  border: none;
+  background: none;
+  padding: 0;
+
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+
+  color: #1c9aaa;
+  text-decoration: underline;
+
+  cursor: pointer;
+}
+
+.resend-link:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.resend-link:disabled {
+  color: #1c9aaa;
+  cursor: default;
+  opacity: 0.6;
+}
+
+.resend-count {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.email-error {
+  margin-top: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: #d9534f;
+}

@@ -94,7 +94,12 @@ const handleVerifyOtp = async () => {
       return
     }
 
-    console.log('Login successful:', data)
+    localStorage.setItem(
+     'aquaNexusAccount',
+     JSON.stringify(data.account)
+    )
+
+    navigate('/farmer')
 
   } catch (error) {
     setOtpError('Unable to connect to server')

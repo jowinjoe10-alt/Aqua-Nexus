@@ -445,3 +445,38 @@
     height: 120px;
   }
 }
+
+.field-label-tooltip {
+  position: relative;
+  width: fit-content;
+  cursor: help;
+}
+
+.field-tooltip {
+  display: none;
+
+  position: absolute;
+  left: 0;
+  bottom: 28px;
+
+  width: 280px;
+  padding: 10px 12px;
+
+  background: rgba(255, 255, 255, 0.95);
+  color: #263238;
+
+  border: 1px solid rgba(38, 166, 154, 0.25);
+  border-radius: 8px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 400;
+
+  z-index: 20;
+}
+
+.field-label-tooltip:hover .field-tooltip {
+  display: block;
+}

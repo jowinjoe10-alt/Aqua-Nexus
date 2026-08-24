@@ -1,0 +1,65 @@
+.account-type {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 40px;
+  margin-top: 10px;
+  margin-bottom: 28px;
+}
+
+.account-type label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px;
+  color: #27373d;
+  cursor: pointer;
+}
+
+.account-type input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: #1c9aaa;
+  cursor: pointer;
+}
+
+.form-error {
+  color: #d9534f;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.role-option {
+  position: relative;
+  cursor: pointer;
+}
+
+.role-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 260px;
+  padding: 10px 12px;
+
+  background: rgba(255, 255, 255, 0.85);
+  color: #263238;
+  border: 1px solid rgba(38, 166, 154, 0.25);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.role-option:hover .role-tooltip {
+  display: block;
+}

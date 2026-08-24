@@ -11,6 +11,8 @@ class Account(models.Model):
     name = models.CharField(max_length=100)
     gmail = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
