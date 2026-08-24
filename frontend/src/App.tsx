@@ -4,6 +4,7 @@ import Landing from './pages/Landing/Landing'
 import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import Farmer from './pages/Farmer/Farmer'
+import Vendor from './pages/Vendor/Vendor'
 import Profile from './pages/Profile/Profile'
 
 function App() {
@@ -33,6 +34,11 @@ function App() {
       <Route
         path="/profile"
         element={<Profile />}
+      />
+
+      <Route
+        path="/vendor"
+        element={<Vendor />}
       />
 
     </Routes>
