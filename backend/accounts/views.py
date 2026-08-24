@@ -98,6 +98,7 @@ class VerifyOTPView(APIView):
                'role': account.role,
                'city': account.city,
                'state': account.state,
+               'mobile_number': account.mobile_number,
             },
         }, status=200)
 
@@ -143,9 +144,83 @@ class UpdateLocationView(APIView):
                 'role': account.role,
                 'city': account.city,
                 'state': account.state,
+                'mobile_number': account.mobile_number,
             }
         }, status=200)
-    
+
+class UpdateProfileView(APIView):
+
+    def post(self, request):
+        account_id = request.data.get('account_id')
+
+        if not account_id:
+            return Response({
+                'message': 'Account ID is required'
+            }, status=400)
+
+        try:
+            account = Account.objects.get(id=account_id)
+        except Account.DoesNotExist:
+            return Response({
+                'message': 'Account not found'
+            }, status=404)
+
+        name = request.data.get('name')
+        mobile_number = request.data.get('mobile_number')
+        city = request.data.get('city')
+        state = request.data.get('state')
+
+        if name is not None:
+            name = name.strip()
+
+            if not name:
+                return Response({
+                    'message': 'Name is required'
+                }, status=400)
+
+            account.name = name
+
+        if mobile_number is not None:
+            mobile_number = mobile_number.strip()
+
+            account.mobile_number = mobile_number
+
+        if city is not None:
+            city = city.strip()
+
+            if not city:
+                return Response({
+                    'message': 'City is required'
+                }, status=400)
+
+            account.city = city
+
+        if state is not None:
+            state = state.strip()
+
+            if not state:
+                return Response({
+                    'message': 'State is required'
+                }, status=400)
+
+            account.state = state
+
+        account.save()
+
+        return Response({
+            'message': 'Profile updated successfully',
+            'account': {
+                'id': account.id,
+                'name': account.name,
+                'gmail': account.gmail,
+                'role': account.role,
+                'city': account.city,
+                'state': account.state,
+                'mobile_number': account.mobile_number,
+            }
+        }, status=200)
+
+          
 class ResendOTPView(APIView):
 
     def post(self, request):

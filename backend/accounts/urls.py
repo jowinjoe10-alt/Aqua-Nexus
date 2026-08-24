@@ -5,6 +5,7 @@ from .views import (
     VerifyOTPView,
     ResendOTPView,
     UpdateLocationView,
+    UpdateProfileView,
 )
 
 urlpatterns = [
@@ -18,4 +19,6 @@ urlpatterns = [
     path('login/resend-otp/', ResendOTPView.as_view()),
 
     path('account/location/', UpdateLocationView.as_view()),
+
+    path('account/profile/', UpdateProfileView.as_view()),
 ]

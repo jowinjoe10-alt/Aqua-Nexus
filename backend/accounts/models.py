@@ -13,8 +13,11 @@ class Account(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
+    mobile_number = models.CharField(
+        max_length=15,
+        blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
-
 
 
 class OTP(models.Model):

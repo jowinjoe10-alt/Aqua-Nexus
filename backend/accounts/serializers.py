@@ -7,13 +7,14 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = [
-          'id',
-          'name',
-          'gmail',
-          'role',
-          'city',
-          'state',
-          'created_at'
+            'id',
+            'name',
+            'gmail',
+            'role',
+            'city',
+            'state',
+            'mobile_number',
+            'created_at'
         ]
         extra_kwargs = {
             'gmail': {
