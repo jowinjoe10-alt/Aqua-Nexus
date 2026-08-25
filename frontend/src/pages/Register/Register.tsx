@@ -11,6 +11,8 @@ function Register() {
   const [city, setCity] = useState('')
   const [state, setState] = useState('')
   const [error, setError] = useState('')
+  const [registrationSuccessful, setRegistrationSuccessful] =
+    useState(false)
 
   const handleRegister = async () => {
     if (name.trim() === '') {
@@ -41,25 +43,31 @@ function Register() {
     setError('')
 
     try {
-      const response = await fetch('http://localhost:8000/api/register/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: name.trim(),
-          gmail: email.trim().toLowerCase(),
-          role: accountType,
-          city: city.trim(),
-          state: state.trim(),
-        }),
-      })
+      const response = await fetch(
+        'http://localhost:8000/api/register/',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+            name: name.trim(),
+            gmail: email.trim().toLowerCase(),
+            role: accountType,
+            city: city.trim(),
+            state: state.trim(),
+          }),
+        }
+      )
 
       const data = await response.json()
 
       if (!response.ok) {
         if (data.errors) {
-          const firstError = Object.values(data.errors)[0]
+          const firstError =
+            Object.values(data.errors)[0]
 
           if (Array.isArray(firstError)) {
             setError(String(firstError[0]))
@@ -67,17 +75,35 @@ function Register() {
             setError(String(firstError))
           }
         } else {
-          setError(data.message || 'Registration failed')
+          setError(
+            data.message ||
+            'Registration failed'
+          )
         }
 
         return
       }
 
-      console.log('Registration successful:', data)
+      console.log(
+        'Registration successful:',
+        data
+      )
+
+      setRegistrationSuccessful(true)
+
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000)
 
     } catch (error) {
-      console.error('Registration error:', error)
-      setError('Unable to connect to the server')
+      console.error(
+        'Registration error:',
+        error
+      )
+
+      setError(
+        'Unable to connect to the server'
+      )
     }
   }
 
@@ -96,27 +122,37 @@ function Register() {
 
           <div className="login-form">
 
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name">
+              Name
+            </label>
 
             <input
               type="text"
               id="name"
               placeholder="Enter your name"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) =>
+                setName(event.target.value)
+              }
             />
 
-            <label htmlFor="register-email">Gmail</label>
+            <label htmlFor="register-email">
+              Gmail
+            </label>
 
             <input
               type="email"
               id="register-email"
               placeholder="Enter your Gmail"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
             />
 
-            <label>Account Type</label>
+            <label>
+              Account Type
+            </label>
 
             <div className="account-type">
 
@@ -126,14 +162,24 @@ function Register() {
                   type="radio"
                   name="accountType"
                   value="farmer"
-                  checked={accountType === 'farmer'}
-                  onChange={(event) => setAccountType(event.target.value)}
+                  checked={
+                    accountType === 'farmer'
+                  }
+                  onChange={(event) =>
+                    setAccountType(
+                      event.target.value
+                    )
+                  }
                 />
 
-                <span>Farmer</span>
+                <span>
+                  Farmer
+                </span>
 
                 <span className="role-tooltip">
-                  Manages fish entries and purchases feed from Vendors after going through recommendations.
+                  Manages fish entries and purchases
+                  feed from Vendors after going through
+                  recommendations.
                 </span>
 
               </label>
@@ -144,11 +190,19 @@ function Register() {
                   type="radio"
                   name="accountType"
                   value="vendor"
-                  checked={accountType === 'vendor'}
-                  onChange={(event) => setAccountType(event.target.value)}
+                  checked={
+                    accountType === 'vendor'
+                  }
+                  onChange={(event) =>
+                    setAccountType(
+                      event.target.value
+                    )
+                  }
                 />
 
-                <span>Vendor</span>
+                <span>
+                  Vendor
+                </span>
 
                 <span className="role-tooltip">
                   Sells feed to Farmers and earns returns.
@@ -158,12 +212,17 @@ function Register() {
 
             </div>
 
-            <label htmlFor="city" className="field-label-tooltip">
+            <label
+              htmlFor="city"
+              className="field-label-tooltip"
+            >
               City
 
               <span className="field-tooltip">
-                Your location helps Aqua Nexus provide local weather information,
-                nearby vendor/customer availability, and location-based recommendations.
+                Your location helps Aqua Nexus provide
+                local weather information, nearby
+                vendor/customer availability, and
+                location-based recommendations.
               </span>
             </label>
 
@@ -172,21 +231,29 @@ function Register() {
               id="city"
               placeholder="Enter your city"
               value={city}
-              onChange={(event) => setCity(event.target.value)}
+              onChange={(event) =>
+                setCity(event.target.value)
+              }
             />
 
-            <label htmlFor="state">State</label>
+            <label htmlFor="state">
+              State
+            </label>
 
             <input
               type="text"
               id="state"
               placeholder="Enter your state"
               value={state}
-              onChange={(event) => setState(event.target.value)}
+              onChange={(event) =>
+                setState(event.target.value)
+              }
             />
 
             {error && (
-              <p className="form-error">{error}</p>
+              <p className="form-error">
+                {error}
+              </p>
             )}
 
           </div>
@@ -196,7 +263,9 @@ function Register() {
             <button
               type="button"
               className="back-button"
-              onClick={() => navigate('/login')}
+              onClick={() =>
+                navigate('/login')
+              }
             >
               BACK
             </button>
@@ -214,6 +283,33 @@ function Register() {
         </div>
 
       </div>
+
+      {/* ============================= */}
+      {/* Registration Success Popup    */}
+      {/* ============================= */}
+
+      {registrationSuccessful && (
+        <div className="success-overlay">
+
+          <div className="success-popup">
+
+            <div className="success-icon">
+              ✓
+            </div>
+
+            <h3>
+              Registration Successful
+            </h3>
+
+            <p>
+              Your Aqua Nexus account has
+              been created successfully.
+            </p>
+
+          </div>
+
+        </div>
+      )}
 
     </div>
   )

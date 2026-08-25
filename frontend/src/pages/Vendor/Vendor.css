@@ -456,3 +456,173 @@
     margin-left: auto;
   }
 }
+
+/* ============================= */
+/* Availability Switch           */
+/* ============================= */
+
+.availability-header {
+  display: flex;
+
+  justify-content: flex-end;
+
+  min-height: 42px;
+}
+
+.availability-switch-wrapper {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  position: relative;
+}
+
+.availability-label {
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
+}
+
+.availability-switch {
+  position: relative;
+
+  width: 48px;
+  height: 26px;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 20px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease;
+}
+
+.availability-switch.on {
+  background: #1c9aaa;
+}
+
+.availability-switch.off {
+  background: #aebcc0;
+}
+
+.availability-switch-knob {
+  position: absolute;
+
+  top: 3px;
+  left: 3px;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.15);
+
+  transition:
+    transform 0.2s ease;
+}
+
+.availability-switch.on
+.availability-switch-knob {
+  transform: translateX(22px);
+}
+
+
+/* ============================= */
+/* Availability Tooltip           */
+/* ============================= */
+
+.availability-switch-wrapper::after {
+  content:
+    'This will affect receiving orders and subscriptions.';
+
+  position: absolute;
+
+  right: 0;
+  top: 36px;
+
+  width: 230px;
+
+  padding: 10px 12px;
+
+  box-sizing: border-box;
+
+  border-radius: 8px;
+
+  background: #263238;
+
+  color: white;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 11px;
+
+  line-height: 1.4;
+
+  text-align: center;
+
+  opacity: 0;
+
+  visibility: hidden;
+
+  pointer-events: none;
+
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+
+  z-index: 10;
+}
+
+.availability-switch-wrapper:hover::after {
+  opacity: 1;
+
+  visibility: visible;
+}
+
+
+/* ============================= */
+/* Section Content               */
+/* ============================= */
+
+.section-content {
+  padding-top: 14px;
+}
+
+.section-content h2 {
+  margin: 0 0 12px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 26px;
+
+  font-weight: 600;
+}
+
+.section-content p {
+  margin: 0;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}

@@ -406,7 +406,11 @@ function Profile() {
             type="button"
             className="profile-back-button"
             onClick={() =>
-              navigate('/farmer')
+              navigate(
+                account.role === 'vendor'
+                 ? '/vendor'
+                 : '/farmer'
+              )
             }
           >
             ←

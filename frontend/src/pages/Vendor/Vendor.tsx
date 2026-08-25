@@ -40,6 +40,10 @@ const productList: Product[] = [
 ]
 
 function Vendor() {
+
+  const [receivingOrders, setReceivingOrders] =
+    useState(true)
+
   const [activeSection, setActiveSection] =
     useState('Products')
 
@@ -517,13 +521,51 @@ function Vendor() {
 
           <section className="vendor-section-placeholder">
 
-            <h2>
-              Orders
-            </h2>
+             <div className="availability-header">
 
-            <p>
-              Your customer orders will appear here.
-            </p>
+               <div
+                 className="availability-switch-wrapper"
+                 title="This will affect receiving orders and subscriptions."
+               >
+
+                 <span className="availability-label">
+                   {receivingOrders
+                     ? 'ON'
+                     : 'OFF'}
+                 </span>
+
+                 <button
+                   type="button"
+                   className={`availability-switch ${
+                   receivingOrders
+                    ? 'on'
+                    : 'off'
+                   }`}
+                   onClick={() =>
+                     setReceivingOrders(
+                       !receivingOrders
+                     )
+                   }
+                   aria-label="Toggle receiving orders and subscriptions"
+                 >
+                   <span className="availability-switch-knob" />
+                 </button>
+
+               </div>
+
+             </div>
+
+             <div className="section-content">
+
+               <h2>
+                 Orders
+               </h2>
+
+               <p>
+                 Your customer orders will appear here.
+               </p>
+
+             </div>
 
           </section>
 
@@ -537,14 +579,52 @@ function Vendor() {
 
           <section className="vendor-section-placeholder">
 
-            <h2>
-              Subscriptions
-            </h2>
+           <div className="availability-header">
 
-            <p>
-              Your active feed subscriptions
-              will appear here.
-            </p>
+             <div
+                 className="availability-switch-wrapper"
+                 title="This will affect receiving orders and subscriptions."
+             >
+
+                 <span className="availability-label">
+                   {receivingOrders
+                     ? 'ON'
+                     : 'OFF'}
+                 </span>
+
+                 <button
+                   type="button"
+                   className={`availability-switch ${
+                   receivingOrders
+                    ? 'on'
+                    : 'off'
+                   }`}
+                   onClick={() =>
+                     setReceivingOrders(
+                       !receivingOrders
+                     )
+                   }
+                   aria-label="Toggle receiving orders and subscriptions"
+                 >
+                   <span className="availability-switch-knob" />
+                 </button>
+
+             </div>
+
+           </div>
+
+           <div className="section-content">
+
+             <h2>
+               Subscriptions
+             </h2>
+
+             <p>
+               Your active feed subscriptions
+               will appear here.
+             </p>
+
+           </div>
 
           </section>
 

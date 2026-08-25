@@ -21,7 +21,13 @@ function MenuItems({ role }: MenuItemsProps) {
       <button
         type="button"
         className="side-menu-item"
-        onClick={() => navigate('/profile')}
+        onClick={() =>
+          navigate(
+            role === 'vendor'
+              ? '/profile?role=vendor'
+              : '/profile?role=farmer'
+          )
+        }
       >
         Profile
       </button>

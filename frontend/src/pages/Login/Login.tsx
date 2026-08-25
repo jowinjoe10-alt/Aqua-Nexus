@@ -95,11 +95,15 @@ const handleVerifyOtp = async () => {
     }
 
     localStorage.setItem(
-     'aquaNexusAccount',
-     JSON.stringify(data.account)
+      'aquaNexusAccount',
+      JSON.stringify(data.account)
     )
 
-    navigate('/farmer')
+    if (data.account.role === 'vendor') {
+      navigate('/vendor')
+    } else {
+      navigate('/farmer')
+    }
 
   } catch (error) {
     setOtpError('Unable to connect to server')

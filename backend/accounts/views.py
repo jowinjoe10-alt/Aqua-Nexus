@@ -30,6 +30,41 @@ class LoginCheckView(APIView):
         gmail = request.data.get('gmail')
 
         if gmail:
+            gmail = gmail.strip().lower()
+
+        if not gmail:
+            return Response({
+                'message': 'Gmail is required'
+            }, status=400)
+
+        try:
+            account = Account.objects.get(gmail=gmail)
+        except Account.DoesNotExist:
+            return Response({
+                'message': 'Account not registered. Please register first.'
+            }, status=404)
+
+        otp, error = create_otp(account.gmail)
+
+        if error:
+            return Response({
+                'message': error
+            }, status=500)
+
+        return Response({
+            'message': 'OTP sent successfully',
+            'account': {
+                'id': account.id,
+                'name': account.name,
+                'gmail': account.gmail,
+                'role': account.role,
+            }
+        }, status=200)
+
+    def post(self, request):
+        gmail = request.data.get('gmail')
+
+        if gmail:
            gmail = gmail.strip().lower()
 
         if not gmail:

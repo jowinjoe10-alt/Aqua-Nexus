@@ -25,13 +25,18 @@ def create_otp(gmail):
         resend_count=0,
         resend_date=now.date()
     )
-    email_response = send_email(
+    email_success, email_response = send_email(
        gmail,
        'Aqua Nexus OTP',
        f'Your Aqua Nexus OTP is {code}. It is valid for 5 minutes.'
     )
 
-    return otp
+    if not email_success:
+       otp.delete()
+
+       return None, 'Unable to send OTP email'
+
+    return otp, None
 
 
 def resend_otp(gmail):
@@ -65,11 +70,14 @@ def resend_otp(gmail):
 
     otp.save()
 
-    send_email(
-      gmail,
-      'Aqua Nexus OTP',
-      f'Your new Aqua Nexus OTP is {code}. It is valid for 5 minutes.'
+    email_success, email_response = send_email(
+       gmail,
+       'Aqua Nexus OTP',
+       f'Your new Aqua Nexus OTP is {code}. It is valid for 5 minutes.'
     )
+
+    if not email_success:
+        return False, 'Unable to send OTP email'
 
     otp.resend_count += 1
     otp.save()
