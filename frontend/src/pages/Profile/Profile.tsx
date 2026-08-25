@@ -10,6 +10,7 @@ type Account = {
   city: string
   state: string
   mobile_number: string
+  profile_picture: string
 }
 
 function Profile() {
@@ -41,6 +42,9 @@ function Profile() {
 
   const [selectedImage, setSelectedImage] =
     useState('')
+
+  const [selectedImageFile, setSelectedImageFile] =
+    useState<File | null>(null)
 
   const [saving, setSaving] =
     useState(false)
@@ -88,13 +92,12 @@ function Profile() {
         parsedAccount.state || ''
       )
 
-      const storedImage =
-        localStorage.getItem(
-          'aquaNexusProfileImage'
+      if (parsedAccount.profile_picture) {
+
+        setProfileImage(
+          parsedAccount.profile_picture
         )
 
-      if (storedImage) {
-        setProfileImage(storedImage)
       }
 
     } catch (error) {
@@ -137,6 +140,11 @@ function Profile() {
     )
 
     setSelectedImage('')
+    setSelectedImageFile(null)
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
 
     setError('')
 
@@ -171,6 +179,11 @@ function Profile() {
     )
 
     setSelectedImage('')
+    setSelectedImageFile(null)
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
 
     setError('')
 
@@ -194,8 +207,54 @@ function Profile() {
     }
 
     if (!file.type.startsWith('image/')) {
+
+      setError(
+        'Please select a valid image file'
+      )
+
       return
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+
+      setError(
+        'Profile picture must be smaller than 5 MB'
+      )
+
+      return
+    }
+
+    /*
+     * Store the actual File object.
+     * This is what Django receives.
+     */
+
+    setSelectedImageFile(file)
+
+    console.log(
+      'SELECTED FILE:',
+      file
+    )
+
+    console.log(
+      'FILE NAME:',
+      file.name
+    )
+
+    console.log(
+      'FILE TYPE:',
+      file.type
+    )
+
+    console.log(
+      'FILE SIZE:',
+      file.size
+    )
+
+
+    /* ============================= */
+    /* Create Preview                */
+    /* ============================= */
 
     const reader =
       new FileReader()
@@ -206,17 +265,23 @@ function Profile() {
         reader.result
 
       if (typeof result === 'string') {
-        setSelectedImage(result)
+
+        setSelectedImage(
+          result
+        )
+
       }
 
     }
 
     reader.readAsDataURL(file)
+
+    setError('')
   }
 
 
   /* ============================= */
-  /* Save                          */
+  /* Save Profile                  */
   /* ============================= */
 
   const handleSave = async () => {
@@ -224,6 +289,11 @@ function Profile() {
     if (!account) {
       return
     }
+
+
+    /* ============================= */
+    /* Trim Values                  */
+    /* ============================= */
 
     const trimmedName =
       name.trim()
@@ -236,6 +306,11 @@ function Profile() {
 
     const trimmedState =
       state.trim()
+
+
+    /* ============================= */
+    /* Validation                   */
+    /* ============================= */
 
     if (!trimmedName) {
 
@@ -264,10 +339,115 @@ function Profile() {
       return
     }
 
+
     setError('')
     setSaving(true)
 
+
     try {
+
+      /* ============================= */
+      /* Create FormData              */
+      /* ============================= */
+
+      const formData =
+        new FormData()
+
+
+      formData.append(
+        'account_id',
+        String(account.id)
+      )
+
+      formData.append(
+        'name',
+        trimmedName
+      )
+
+      formData.append(
+        'mobile_number',
+        trimmedMobileNumber
+      )
+
+      formData.append(
+        'city',
+        trimmedCity
+      )
+
+      formData.append(
+        'state',
+        trimmedState
+      )
+
+
+      /* ============================= */
+      /* Profile Picture              */
+      /* ============================= */
+
+      console.log(
+        '================================'
+      )
+
+      console.log(
+        'FILE BEFORE UPLOAD:',
+        selectedImageFile
+      )
+
+      console.log(
+        '================================'
+      )
+
+
+      if (selectedImageFile) {
+
+        formData.append(
+          'profile_picture',
+          selectedImageFile,
+          selectedImageFile.name
+        )
+
+      }
+
+
+      /* ============================= */
+      /* Inspect FormData             */
+      /* ============================= */
+
+      console.log(
+        'FORM DATA CONTENTS:'
+      )
+
+      for (
+        const [
+          key,
+          value
+        ] of formData.entries()
+      ) {
+
+        if (value instanceof File) {
+
+          console.log(
+            key,
+            `FILE: ${value.name}`,
+            `TYPE: ${value.type}`,
+            `SIZE: ${value.size}`
+          )
+
+        } else {
+
+          console.log(
+            key,
+            value
+          )
+
+        }
+
+      }
+
+
+      /* ============================= */
+      /* Send Request                 */
+      /* ============================= */
 
       const response =
         await fetch(
@@ -275,28 +455,37 @@ function Profile() {
           {
             method: 'POST',
 
-            headers: {
-              'Content-Type':
-                'application/json',
-            },
+            /*
+             * Do NOT set Content-Type here.
+             *
+             * The browser automatically sets:
+             *
+             * multipart/form-data;
+             * boundary=...
+             */
 
-            body: JSON.stringify({
-              account_id: account.id,
-
-              name: trimmedName,
-
-              mobile_number:
-                trimmedMobileNumber,
-
-              city: trimmedCity,
-
-              state: trimmedState,
-            }),
+            body: formData,
           }
         )
 
+
+      /* ============================= */
+      /* Read Response                */
+      /* ============================= */
+
       const data =
         await response.json()
+
+
+      console.log(
+        'PROFILE API RESPONSE:',
+        data
+      )
+
+
+      /* ============================= */
+      /* Handle Error                 */
+      /* ============================= */
 
       if (!response.ok) {
 
@@ -308,8 +497,24 @@ function Profile() {
         return
       }
 
+
+      /* ============================= */
+      /* Updated Account              */
+      /* ============================= */
+
       const updatedAccount: Account =
         data.account
+
+
+      console.log(
+        'UPDATED ACCOUNT:',
+        updatedAccount
+      )
+
+
+      /* ============================= */
+      /* Save Account                 */
+      /* ============================= */
 
       localStorage.setItem(
         'aquaNexusAccount',
@@ -318,9 +523,11 @@ function Profile() {
         )
       )
 
+
       setAccount(
         updatedAccount
       )
+
 
       setName(
         updatedAccount.name
@@ -338,19 +545,40 @@ function Profile() {
         updatedAccount.state
       )
 
-      if (selectedImage) {
 
-        localStorage.setItem(
-          'aquaNexusProfileImage',
-          selectedImage
-        )
+      /* ============================= */
+      /* Profile Picture URL          */
+      /* ============================= */
+
+      if (
+        updatedAccount.profile_picture
+      ) {
 
         setProfileImage(
-          selectedImage
+          updatedAccount.profile_picture
         )
+
+        console.log(
+          'PROFILE PICTURE URL:',
+          updatedAccount.profile_picture
+        )
+
       }
 
+
+      /* ============================= */
+      /* Clear Selected Image         */
+      /* ============================= */
+
       setSelectedImage('')
+      setSelectedImageFile(null)
+
+      if (fileInputRef.current) {
+
+        fileInputRef.current.value = ''
+
+      }
+
 
       setEditing(false)
 
@@ -369,17 +597,22 @@ function Profile() {
 
       setSaving(false)
     }
+
   }
 
 
   /* ============================= */
-  /* Current Image                 */
+  /* Displayed Image              */
   /* ============================= */
 
   const displayedImage =
     selectedImage ||
     profileImage
 
+
+  /* ============================= */
+  /* Account Loading              */
+  /* ============================= */
 
   if (!account) {
     return null
@@ -408,19 +641,21 @@ function Profile() {
             onClick={() =>
               navigate(
                 account.role === 'vendor'
-                 ? '/vendor'
-                 : '/farmer'
+                  ? '/vendor'
+                  : '/farmer'
               )
             }
           >
             ←
           </button>
 
+
           <h1>
             {editing
               ? 'EDIT PROFILE'
               : 'PROFILE'}
           </h1>
+
 
           {!editing && (
 
@@ -434,6 +669,7 @@ function Profile() {
             </button>
 
           )}
+
 
           {editing && (
 
@@ -463,11 +699,13 @@ function Profile() {
             ) : (
 
               <span className="profile-picture-placeholder">
+
                 {account.name
                   ? account.name
                       .charAt(0)
                       .toUpperCase()
                   : '?'}
+
               </span>
 
             )}
@@ -488,6 +726,7 @@ function Profile() {
               >
                 Change Photo
               </button>
+
 
               <input
                 ref={fileInputRef}
@@ -605,7 +844,11 @@ function Profile() {
                       value
                     )
                   ) {
-                    setMobileNumber(value)
+
+                    setMobileNumber(
+                      value
+                    )
+
                   }
 
                 }}
@@ -632,9 +875,11 @@ function Profile() {
             </label>
 
             <p className="profile-readonly-value">
+
               {account.role === 'farmer'
                 ? 'Farmer'
                 : account.role}
+
             </p>
 
           </div>
@@ -737,6 +982,7 @@ function Profile() {
             >
               CANCEL
             </button>
+
 
             <button
               type="button"

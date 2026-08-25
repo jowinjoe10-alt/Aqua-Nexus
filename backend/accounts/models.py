@@ -13,10 +13,18 @@ class Account(models.Model):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
+
     mobile_number = models.CharField(
         max_length=15,
         blank=True
     )
+
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        blank=True,
+        null=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
 
