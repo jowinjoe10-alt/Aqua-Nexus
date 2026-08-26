@@ -1,7 +1,11 @@
+from datetime import timedelta
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django.contrib.auth.hashers import check_password
+from django.utils import timezone
+from django.db.models import Q
 
 from .serializers import AccountSerializer
 from .models import Account
@@ -638,5 +642,374 @@ class AdminPasswordView(APIView):
                     account.role,
 
             }
+
+        }, status=200)
+
+
+class FarmerStatsView(APIView):
+
+    def get(self, request):
+
+        period = request.GET.get(
+            'period',
+            'total'
+        )
+
+        farmers = Account.objects.filter(
+            role='farmer'
+        )
+
+
+        # =============================
+        # Daily
+        # =============================
+
+        if period == 'daily':
+
+            today = timezone.localdate()
+
+            farmers = farmers.filter(
+                created_at__date=today
+            )
+
+
+        # =============================
+        # Weekly
+        # =============================
+
+        elif period == 'weekly':
+
+            today = timezone.localdate()
+
+            start_of_week = (
+                today -
+                timedelta(
+                    days=today.weekday()
+                )
+            )
+
+            farmers = farmers.filter(
+                created_at__date__gte=start_of_week
+            )
+
+
+        # =============================
+        # Monthly
+        # =============================
+
+        elif period == 'monthly':
+
+            today = timezone.localdate()
+
+            farmers = farmers.filter(
+                created_at__year=today.year,
+                created_at__month=today.month
+            )
+
+
+        # =============================
+        # Farmer Count
+        # =============================
+
+        farmer_count = farmers.count()
+
+
+        return Response({
+
+            'farmers':
+                farmer_count,
+
+            'orders':
+                0,
+
+            'subscriptions':
+                0,
+
+        })
+
+
+class VendorStatsView(APIView):
+
+    def get(self, request):
+
+        period = request.GET.get(
+            'period',
+            'total'
+        )
+
+        vendors = Account.objects.filter(
+            role='vendor'
+        )
+
+
+        # =============================
+        # Daily
+        # =============================
+
+        if period == 'daily':
+
+            today = timezone.localdate()
+
+            vendors = vendors.filter(
+                created_at__date=today
+            )
+
+
+        # =============================
+        # Weekly
+        # =============================
+
+        elif period == 'weekly':
+
+            today = timezone.localdate()
+
+            start_of_week = (
+                today -
+                timedelta(
+                    days=today.weekday()
+                )
+            )
+
+            vendors = vendors.filter(
+                created_at__date__gte=start_of_week
+            )
+
+
+        # =============================
+        # Monthly
+        # =============================
+
+        elif period == 'monthly':
+
+            today = timezone.localdate()
+
+            vendors = vendors.filter(
+                created_at__year=today.year,
+                created_at__month=today.month
+            )
+
+
+        # =============================
+        # Vendor Count
+        # =============================
+
+        vendor_count = vendors.count()
+
+
+        return Response({
+
+            'vendors':
+                vendor_count,
+
+            'orders':
+                0,
+
+            'subscriptions':
+                0,
+
+        })
+
+
+class FarmerAccountsView(APIView):
+
+    def get(self, request):
+
+        search = request.GET.get(
+            'search',
+            ''
+        ).strip()
+
+        sort = request.GET.get(
+            'sort',
+            'id_asc'
+        )
+
+        from_date = request.GET.get(
+            'from_date'
+        )
+
+        to_date = request.GET.get(
+            'to_date'
+        )
+
+
+        # =============================
+        # Get Farmer Accounts
+        # =============================
+
+        farmers = Account.objects.filter(
+            role='farmer'
+        )
+
+
+        # =============================
+        # Search
+        # =============================
+
+        if search:
+
+            search_query = Q(
+                name__icontains=search
+            ) | Q(
+                city__icontains=search
+            ) | Q(
+                state__icontains=search
+            )
+
+            if search.isdigit():
+
+                search_query |= Q(
+                    id=int(search)
+                )
+
+            farmers = farmers.filter(
+                search_query
+            )
+
+
+        # =============================
+        # Created Date Range
+        # =============================
+
+        if from_date:
+
+            farmers = farmers.filter(
+                created_at__date__gte=from_date
+            )
+
+        if to_date:
+
+            farmers = farmers.filter(
+                created_at__date__lte=to_date
+            )
+
+
+        # =============================
+        # Sorting
+        # =============================
+
+        if sort == 'id_desc':
+
+            farmers = farmers.order_by(
+                '-id'
+            )
+
+        elif sort == 'name_asc':
+
+            farmers = farmers.order_by(
+                'name',
+                'id'
+            )
+
+        elif sort == 'name_desc':
+
+            farmers = farmers.order_by(
+                '-name',
+                'id'
+            )
+
+        elif sort == 'location_asc':
+
+            farmers = farmers.order_by(
+                'city',
+                'state',
+                'id'
+            )
+
+        elif sort == 'created_latest':
+
+            farmers = farmers.order_by(
+                '-created_at',
+                'id'
+            )
+
+        elif sort == 'created_earliest':
+
+            farmers = farmers.order_by(
+                'created_at',
+                'id'
+            )
+
+        else:
+
+            farmers = farmers.order_by(
+                'id'
+            )
+
+
+        # =============================
+        # Farmer Data
+        # =============================
+
+        farmer_list = []
+
+        for farmer in farmers:
+
+            farmer_list.append({
+
+                'id':
+                    farmer.id,
+
+                'name':
+                    farmer.name,
+
+                'gmail':
+                    farmer.gmail,
+
+                'city':
+                    farmer.city,
+
+                'state':
+                    farmer.state,
+
+                'created_at':
+                    farmer.created_at,
+
+            })
+
+
+        return Response({
+
+            'farmers':
+                farmer_list,
+
+            'count':
+                len(farmer_list),
+
+        })
+
+
+    def delete(self, request, farmer_id=None):
+
+        if not farmer_id:
+
+            return Response({
+                'message':
+                    'Farmer ID is required'
+            }, status=400)
+
+
+        try:
+
+            farmer = Account.objects.get(
+                id=farmer_id,
+                role='farmer'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response({
+                'message':
+                    'Farmer account not found'
+            }, status=404)
+
+
+        farmer.delete()
+
+
+        return Response({
+
+            'message':
+                'Farmer account deleted successfully'
 
         }, status=200)

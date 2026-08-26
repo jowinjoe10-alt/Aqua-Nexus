@@ -1,0 +1,569 @@
+/* ============================= */
+/* Account Management             */
+/* ============================= */
+
+.account-management {
+  width: 100%;
+}
+
+
+/* ============================= */
+/* Header                        */
+/* ============================= */
+
+.account-management-header {
+  margin-bottom: 26px;
+}
+
+.account-management-header h2 {
+  margin: 0 0 10px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 26px;
+
+  font-weight: 600;
+}
+
+.account-management-header p {
+  margin: 0;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* ============================= */
+/* Back Button                   */
+/* ============================= */
+
+.account-management-back {
+  margin-bottom: 14px;
+
+  padding: 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #1595a3;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.account-management-back:hover {
+  color: #0f7f8c;
+
+  transform: translateX(-2px);
+}
+
+
+/* ============================= */
+/* Controls                      */
+/* ============================= */
+
+.account-management-controls {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  margin-bottom: 20px;
+}
+
+
+/* ============================= */
+/* Search                        */
+/* ============================= */
+
+.account-management-search {
+  flex: 1;
+
+  max-width: 620px;
+}
+
+.account-management-search input {
+  width: 100%;
+
+  height: 42px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(20, 156, 168, 0.16);
+
+  border-radius: 10px;
+
+  outline: none;
+
+  background: rgba(255, 255, 255, 0.78);
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.account-management-search input::placeholder {
+  color: #8a9ca1;
+}
+
+.account-management-search input:hover {
+  background: rgba(255, 255, 255, 0.92);
+
+  border-color: rgba(20, 156, 168, 0.28);
+}
+
+.account-management-search input:focus {
+  background: rgba(255, 255, 255, 0.96);
+
+  border-color: rgba(20, 156, 168, 0.42);
+
+  box-shadow:
+    0 0 0 3px rgba(20, 156, 168, 0.08);
+}
+
+
+/* ============================= */
+/* Sort                          */
+/* ============================= */
+
+.account-management-sort {
+  position: relative;
+
+  flex-shrink: 0;
+}
+
+.account-management-sort-select {
+  min-width: 120px;
+
+  height: 42px;
+
+  padding: 0 13px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(20, 156, 168, 0.16);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.78);
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.account-management-sort-select:hover {
+  background: rgba(255, 255, 255, 0.92);
+
+  border-color: rgba(20, 156, 168, 0.3);
+}
+
+.account-management-sort-select:focus {
+  outline: none;
+
+  border-color: rgba(20, 156, 168, 0.42);
+
+  box-shadow:
+    0 0 0 3px rgba(20, 156, 168, 0.08);
+}
+
+
+/* ============================= */
+/* Sort Options                  */
+/* ============================= */
+
+.account-management-sort-options {
+  position: absolute;
+
+  top: calc(100% + 6px);
+
+  right: 0;
+
+  min-width: 190px;
+
+  padding: 6px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(20, 156, 168, 0.15);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.98);
+
+  box-shadow:
+    0 12px 28px rgba(30, 120, 130, 0.12);
+
+  z-index: 40;
+}
+
+.account-management-sort-options button {
+  display: block;
+
+  width: 100%;
+
+  padding: 9px 11px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #526970;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.account-management-sort-options button:hover {
+  background: rgba(20, 156, 168, 0.08);
+
+  color: #1595a3;
+}
+
+
+/* ============================= */
+/* Account List                  */
+/* ============================= */
+
+.account-management-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+
+  width: 100%;
+}
+
+
+/* ============================= */
+/* Account Card                  */
+/* ============================= */
+
+.account-management-card {
+  position: relative;
+
+  min-height: 68px;
+
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 16px;
+
+  border: 1px solid rgba(20, 156, 168, 0.1);
+
+  border-radius: 12px;
+
+  background: rgba(255, 255, 255, 0.7);
+
+  box-shadow:
+    0 5px 16px rgba(30, 120, 130, 0.035);
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.account-management-card:hover {
+  transform: translateY(-1px);
+
+  border-color:
+    rgba(20, 156, 168, 0.2);
+
+  background: rgba(255, 255, 255, 0.88);
+
+  box-shadow:
+    0 8px 20px rgba(30, 120, 130, 0.07);
+}
+
+
+/* ============================= */
+/* Account ID                    */
+/* ============================= */
+
+.account-management-id {
+  width: 58px;
+
+  flex-shrink: 0;
+
+  color: #1595a3;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  text-align: center;
+}
+
+
+/* ============================= */
+/* Account Main                  */
+/* ============================= */
+
+.account-management-main {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+}
+
+
+/* ============================= */
+/* Account Name                  */
+/* ============================= */
+
+.account-management-name {
+  min-width: 160px;
+
+  overflow: hidden;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ============================= */
+/* Account Location              */
+/* ============================= */
+
+.account-management-location {
+  overflow: hidden;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 400;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ============================= */
+/* Delete                        */
+/* ============================= */
+
+.account-management-delete {
+  flex-shrink: 0;
+
+  padding: 7px 11px;
+
+  border: 1px solid rgba(180, 70, 70, 0.14);
+
+  border-radius: 8px;
+
+  background: rgba(180, 70, 70, 0.045);
+
+  color: #a95757;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.account-management-delete:hover {
+  border-color: rgba(180, 70, 70, 0.25);
+
+  background: rgba(180, 70, 70, 0.09);
+
+  color: #963f3f;
+}
+
+
+/* ============================= */
+/* No Results                    */
+/* ============================= */
+
+.account-management-no-results {
+  padding: 42px 20px;
+
+  border: 1px dashed rgba(20, 156, 168, 0.18);
+
+  border-radius: 12px;
+
+  color: #71858b;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.45);
+}
+
+
+/* ============================= */
+/* Responsive                    */
+/* ============================= */
+
+@media (max-width: 700px) {
+
+  .account-management-controls {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+
+  .account-management-search {
+    max-width: none;
+  }
+
+
+  .account-management-sort {
+    align-self: flex-start;
+  }
+
+
+  .account-management-main {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 3px;
+  }
+
+
+  .account-management-name {
+    min-width: 0;
+
+    max-width: 100%;
+  }
+
+
+  .account-management-card {
+    gap: 10px;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .account-management-account-card {
+    min-height: 64px;
+  }
+
+
+  .account-management-id {
+    width: 45px;
+
+    font-size: 11px;
+  }
+
+
+  .account-management-name {
+    font-size: 13px;
+  }
+
+
+  .account-management-location {
+    font-size: 11px;
+  }
+
+
+  .account-management-delete {
+    padding: 6px 8px;
+
+    font-size: 10px;
+  }
+
+}

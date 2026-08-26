@@ -239,7 +239,374 @@
 
 
 /* ============================= */
-/* Dropdown Animation            */
+/* Vendor Header                 */
+/* ============================= */
+
+.admin-vendor-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 28px;
+}
+
+
+/* ============================= */
+/* Period Dropdown               */
+/* ============================= */
+
+.admin-vendor-period {
+  position: relative;
+}
+
+.admin-vendor-period-select {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 28px;
+
+  min-width: 125px;
+
+  padding: 10px 14px;
+
+  border: 1px solid rgba(20, 156, 168, 0.18);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin-vendor-period-select:hover {
+  border-color:
+    rgba(20, 156, 168, 0.4);
+
+  background:
+    rgba(255, 255, 255, 0.9);
+
+  box-shadow:
+    0 4px 12px
+    rgba(30, 120, 130, 0.06);
+}
+
+.admin-vendor-period-select:focus {
+  outline: none;
+
+  border-color:
+    rgba(20, 156, 168, 0.45);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(20, 156, 168, 0.1);
+}
+
+
+/* ============================= */
+/* Period Options                */
+/* ============================= */
+
+.admin-vendor-period-options {
+  position: absolute;
+
+  top: calc(100% + 6px);
+
+  right: 0;
+
+  min-width: 125px;
+
+  padding: 6px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(20, 156, 168, 0.15);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.97);
+
+  box-shadow:
+    0 10px 25px
+    rgba(30, 120, 130, 0.12);
+
+  z-index: 20;
+
+  animation:
+    admin-vendor-dropdown-appear
+    0.16s ease;
+}
+
+.admin-vendor-period-options button {
+  display: block;
+
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #526970;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.admin-vendor-period-options button:hover {
+  background:
+    rgba(20, 156, 168, 0.08);
+
+  color: #1595a3;
+}
+
+
+/* ============================= */
+/* Statistics                    */
+/* ============================= */
+
+.admin-vendor-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 18px;
+}
+
+
+/* ============================= */
+/* Statistic Card                */
+/* ============================= */
+
+.admin-vendor-stat-card {
+  position: relative;
+
+  min-height: 150px;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  border: 1px solid rgba(20, 156, 168, 0.1);
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  box-shadow:
+    0 8px 24px
+    rgba(30, 120, 130, 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  cursor: default;
+}
+
+.admin-vendor-stat-card:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    rgba(20, 156, 168, 0.2);
+
+  box-shadow:
+    0 12px 28px
+    rgba(30, 120, 130, 0.09);
+}
+
+
+/* ============================= */
+/* Vendor Card Cursor            */
+/* ============================= */
+
+.admin-vendor-stats
+.admin-vendor-stat-card:first-child {
+  cursor: pointer;
+}
+
+
+/* ============================= */
+/* Statistic Icon                */
+/* ============================= */
+
+.admin-vendor-stat-icon {
+  width: 34px;
+
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    rgba(20, 156, 168, 0.09);
+
+  color: #1595a3;
+
+  font-size: 17px;
+}
+
+
+/* ============================= */
+/* Statistic Title               */
+/* ============================= */
+
+.admin-vendor-stat-title {
+  margin-top: 12px;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 500;
+}
+
+
+/* ============================= */
+/* Statistic Number              */
+/* ============================= */
+
+.admin-vendor-stat-card strong {
+  margin-top: 4px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 30px;
+
+  font-weight: 600;
+
+  line-height: 1;
+}
+
+
+/* ============================= */
+/* Vendor Hover Message          */
+/* ============================= */
+
+.admin-vendor-hover-message {
+  position: absolute;
+
+  left: 50%;
+
+  bottom: calc(100% + 10px);
+
+  transform: translateX(-50%);
+
+  z-index: 50;
+
+  padding: 9px 14px;
+
+  border:
+    1px solid
+    rgba(20, 156, 168, 0.16);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.96);
+
+  box-shadow:
+    0 8px 20px
+    rgba(30, 120, 130, 0.12);
+
+  color: #1595a3;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+
+  animation:
+    admin-vendor-message-appear
+    0.18s ease;
+}
+
+
+/* ============================= */
+/* Hover Message Animation       */
+/* ============================= */
+
+@keyframes admin-vendor-message-appear {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateX(-50%)
+      translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateX(-50%)
+      translateY(0);
+  }
+
+}
+
+
+/* ============================= */
+/* Dropdown Animation             */
 /* ============================= */
 
 @keyframes admin-vendor-dropdown-appear {
@@ -265,7 +632,7 @@
 /* Responsive                    */
 /* ============================= */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
   .admin-vendor-card {
     width:
@@ -276,6 +643,29 @@
     border-radius: 18px;
   }
 
+
+  .admin-vendor-header {
+    flex-direction: column;
+
+    gap: 16px;
+  }
+
+
+  .admin-vendor-period {
+    align-self: flex-start;
+  }
+
+
+  .admin-vendor-stats {
+    grid-template-columns:
+      1fr;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
   .admin-vendor-select {
     min-width: 140px;
 
@@ -284,11 +674,34 @@
     font-size: 13px;
   }
 
+
   .admin-vendor-options {
     min-width: 140px;
   }
 
+
   .admin-vendor-options button {
+    padding: 9px 11px;
+
+    font-size: 13px;
+  }
+
+
+  .admin-vendor-period-select {
+    min-width: 120px;
+
+    padding: 9px 12px;
+
+    font-size: 13px;
+  }
+
+
+  .admin-vendor-period-options {
+    min-width: 120px;
+  }
+
+
+  .admin-vendor-period-options button {
     padding: 9px 11px;
 
     font-size: 13px;

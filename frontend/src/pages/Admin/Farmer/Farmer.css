@@ -23,7 +23,7 @@
 
 
 /* ============================= */
-/* Management Switcher            */
+/* Management Switcher           */
 /* ============================= */
 
 .admin-farmer-switcher {
@@ -36,7 +36,7 @@
 
 
 /* ============================= */
-/* Select Button                  */
+/* Management Select              */
 /* ============================= */
 
 .admin-farmer-select {
@@ -94,7 +94,7 @@
 
 
 /* ============================= */
-/* Dropdown Arrow                */
+/* Management Arrow              */
 /* ============================= */
 
 .admin-farmer-arrow {
@@ -107,7 +107,7 @@
 
 
 /* ============================= */
-/* Dropdown Options              */
+/* Management Options             */
 /* ============================= */
 
 .admin-farmer-options {
@@ -141,7 +141,7 @@
 
 
 /* ============================= */
-/* Dropdown Option                */
+/* Management Option              */
 /* ============================= */
 
 .admin-farmer-options button {
@@ -182,7 +182,7 @@
 
 
 /* ============================= */
-/* Selected Option               */
+/* Selected Management Option     */
 /* ============================= */
 
 .admin-farmer-options button.selected {
@@ -195,7 +195,7 @@
 
 
 /* ============================= */
-/* Content                       */
+/* Farmer Content                */
 /* ============================= */
 
 .admin-farmer-content {
@@ -228,7 +228,358 @@
 
 
 /* ============================= */
-/* Dropdown Animation            */
+/* Farmer Header                 */
+/* ============================= */
+
+.admin-farmer-header {
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 28px;
+}
+
+
+/* ============================= */
+/* Period Dropdown               */
+/* ============================= */
+
+.admin-farmer-period {
+  position: relative;
+}
+
+.admin-farmer-period-select {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 28px;
+
+  min-width: 125px;
+
+  padding: 10px 14px;
+
+  border: 1px solid rgba(20, 156, 168, 0.18);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin-farmer-period-select:hover {
+  border-color: rgba(20, 156, 168, 0.4);
+
+  background: rgba(255, 255, 255, 0.9);
+
+  box-shadow:
+    0 4px 12px rgba(30, 120, 130, 0.06);
+}
+
+.admin-farmer-period-select:focus {
+  outline: none;
+
+  border-color: rgba(20, 156, 168, 0.45);
+
+  box-shadow:
+    0 0 0 3px rgba(20, 156, 168, 0.1);
+}
+
+
+/* ============================= */
+/* Period Options                */
+/* ============================= */
+
+.admin-farmer-period-options {
+  position: absolute;
+
+  top: calc(100% + 6px);
+
+  right: 0;
+
+  min-width: 125px;
+
+  padding: 6px;
+
+  box-sizing: border-box;
+
+  border: 1px solid rgba(20, 156, 168, 0.15);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.97);
+
+  box-shadow:
+    0 10px 25px rgba(30, 120, 130, 0.12);
+
+  z-index: 20;
+
+  animation:
+    admin-farmer-dropdown-appear
+    0.16s ease;
+}
+
+.admin-farmer-period-options button {
+  display: block;
+
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #526970;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.admin-farmer-period-options button:hover {
+  background: rgba(20, 156, 168, 0.08);
+
+  color: #1595a3;
+}
+
+
+/* ============================= */
+/* Statistics                    */
+/* ============================= */
+
+.admin-farmer-stats {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 18px;
+}
+
+
+/* ============================= */
+/* Statistic Card                */
+/* ============================= */
+
+.admin-farmer-stat-card {
+  position: relative;
+
+  min-height: 150px;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  border: 1px solid rgba(20, 156, 168, 0.1);
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  box-shadow:
+    0 8px 24px rgba(30, 120, 130, 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  cursor: default;
+}
+
+.admin-farmer-stat-card:hover {
+  transform: translateY(-3px);
+
+  border-color:
+    rgba(20, 156, 168, 0.2);
+
+  box-shadow:
+    0 12px 28px rgba(30, 120, 130, 0.09);
+}
+
+
+/* ============================= */
+/* Farmer Card Cursor            */
+/* ============================= */
+
+.admin-farmer-stats
+.admin-farmer-stat-card:first-child {
+  cursor: pointer;
+}
+
+
+/* ============================= */
+/* Statistic Icon                */
+/* ============================= */
+
+.admin-farmer-stat-icon {
+  width: 34px;
+
+  height: 34px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background:
+    rgba(20, 156, 168, 0.09);
+
+  color: #1595a3;
+
+  font-size: 17px;
+}
+
+
+/* ============================= */
+/* Statistic Title               */
+/* ============================= */
+
+.admin-farmer-stat-title {
+  margin-top: 12px;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
+
+  font-weight: 500;
+}
+
+
+/* ============================= */
+/* Statistic Number              */
+/* ============================= */
+
+.admin-farmer-stat-card strong {
+  margin-top: 4px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 30px;
+
+  font-weight: 600;
+
+  line-height: 1;
+}
+
+
+/* ============================= */
+/* Farmer Hover Message          */
+/* ============================= */
+
+.admin-farmer-hover-message {
+  position: absolute;
+
+  left: 50%;
+
+  bottom: calc(100% + 10px);
+
+  transform: translateX(-50%);
+
+  z-index: 50;
+
+  padding: 9px 14px;
+
+  border: 1px solid rgba(20, 156, 168, 0.16);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  box-shadow:
+    0 8px 20px rgba(30, 120, 130, 0.12);
+
+  color: #1595a3;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  pointer-events: none;
+
+  animation:
+    admin-farmer-message-appear
+    0.18s ease;
+}
+
+
+/* ============================= */
+/* Hover Message Animation       */
+/* ============================= */
+
+@keyframes admin-farmer-message-appear {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateX(-50%)
+      translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateX(-50%)
+      translateY(0);
+  }
+
+}
+
+
+/* ============================= */
+/* Dropdown Animation             */
 /* ============================= */
 
 @keyframes admin-farmer-dropdown-appear {
@@ -252,7 +603,7 @@
 /* Responsive                    */
 /* ============================= */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
 
   .admin-farmer-card {
     width: calc(100% - 24px);
@@ -262,6 +613,29 @@
     border-radius: 18px;
   }
 
+
+  .admin-farmer-header {
+    flex-direction: column;
+
+    gap: 16px;
+  }
+
+
+  .admin-farmer-period {
+    align-self: flex-start;
+  }
+
+
+  .admin-farmer-stats {
+    grid-template-columns:
+      1fr;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
   .admin-farmer-select {
     min-width: 140px;
 
@@ -270,11 +644,34 @@
     font-size: 13px;
   }
 
+
   .admin-farmer-options {
     min-width: 140px;
   }
 
+
   .admin-farmer-options button {
+    padding: 9px 11px;
+
+    font-size: 13px;
+  }
+
+
+  .admin-farmer-period-select {
+    min-width: 120px;
+
+    padding: 9px 12px;
+
+    font-size: 13px;
+  }
+
+
+  .admin-farmer-period-options {
+    min-width: 120px;
+  }
+
+
+  .admin-farmer-period-options button {
     padding: 9px 11px;
 
     font-size: 13px;
