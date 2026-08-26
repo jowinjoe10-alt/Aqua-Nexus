@@ -6,6 +6,7 @@ import Login from './pages/Login/Login'
 import Register from './pages/Register/Register'
 import Farmer from './pages/Farmer/Farmer'
 import Vendor from './pages/Vendor/Vendor'
+import Admin from './pages/Admin/Admin'
 import Profile from './pages/Profile/Profile'
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
@@ -13,10 +14,6 @@ import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 function App() {
   return (
     <Routes>
-
-      {/* ============================= */}
-      {/* Public Routes                 */}
-      {/* ============================= */}
 
       <Route
         path="/"
@@ -33,11 +30,6 @@ function App() {
         element={<Register />}
       />
 
-
-      {/* ============================= */}
-      {/* Farmer                        */}
-      {/* ============================= */}
-
       <Route
         path="/farmer"
         element={
@@ -46,11 +38,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-
-
-      {/* ============================= */}
-      {/* Vendor                        */}
-      {/* ============================= */}
 
       <Route
         path="/vendor"
@@ -61,11 +48,6 @@ function App() {
         }
       />
 
-
-      {/* ============================= */}
-      {/* Profile                       */}
-      {/* ============================= */}
-
       <Route
         path="/profile"
         element={
@@ -74,6 +56,16 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute role="admin">
+            <Admin />
+          </ProtectedRoute>
+        }
+      />
+
 
     </Routes>
   )

@@ -7,13 +7,27 @@ function Login() {
   const location = useLocation()
 
   const [showOtp, setShowOtp] = useState(false)
+  const [showAdminPassword, setShowAdminPassword] =
+    useState(false)
+
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
+  const [adminPassword, setAdminPassword] =
+    useState('')
+
   const [emailError, setEmailError] = useState('')
   const [otpError, setOtpError] = useState('')
-  const [resendCooldown, setResendCooldown] = useState(0)
-  const [resendsRemaining, setResendsRemaining] = useState(3)
-  const [resendError, setResendError] = useState('')
+  const [adminPasswordError, setAdminPasswordError] =
+    useState('')
+
+  const [resendCooldown, setResendCooldown] =
+    useState(0)
+
+  const [resendsRemaining, setResendsRemaining] =
+    useState(3)
+
+  const [resendError, setResendError] =
+    useState('')
 
   useEffect(() => {
     if (resendCooldown <= 0) {
@@ -21,139 +35,266 @@ function Login() {
     }
 
     const timer = setInterval(() => {
-     setResendCooldown((current) => current - 1)
+      setResendCooldown(
+        (current) => current - 1
+      )
     }, 1000)
 
     return () => clearInterval(timer)
   }, [resendCooldown])
 
   const handleGetOtp = async () => {
-   if (!email.includes('@') || !email.endsWith('@gmail.com')) {
-     setEmailError('Enter valid Gmail')
-     return
-   }
-
-   setEmailError('')
-
-   try {
-    const response = await fetch(
-      'http://127.0.0.1:8000/api/login/check/',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          gmail: email.trim().toLowerCase(),
-        }),
-      }
-    )
-
-    const data = await response.json()
-
-    if (!response.ok) {
-      setEmailError(data.message)
+    if (
+      !email.includes('@') ||
+      !email.endsWith('@gmail.com')
+    ) {
+      setEmailError('Enter valid Gmail')
       return
     }
 
-    setShowOtp(true)
+    setEmailError('')
 
-  } catch (error) {
-    setEmailError('Unable to connect to server')
-    console.error(error)
-  }
-}
+    try {
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/login/check/',
+        {
+          method: 'POST',
 
-const handleVerifyOtp = async () => {
-  if (!otp || otp.length !== 6) {
-    setOtpError('Enter valid OTP')
-    return
-  }
+          headers: {
+            'Content-Type': 'application/json',
+          },
 
-  setOtpError('')
+          body: JSON.stringify({
+            gmail: email.trim().toLowerCase(),
+          }),
+        }
+      )
 
-  try {
-    const response = await fetch(
-      'http://127.0.0.1:8000/api/login/verify-otp/',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          gmail: email.trim().toLowerCase(),
-          otp: otp,
-        }),
+      const data = await response.json()
+
+      if (!response.ok) {
+        setEmailError(data.message)
+        return
       }
-    )
 
-    const data = await response.json()
+      setShowOtp(true)
 
-    if (!response.ok) {
-      setOtpError(data.message)
+    } catch (error) {
+      setEmailError(
+        'Unable to connect to server'
+      )
+
+      console.error(error)
+    }
+  }
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      setOtpError('Enter valid OTP')
       return
     }
 
-    localStorage.setItem(
-      'aquaNexusAccount',
-      JSON.stringify(data.account)
-    )
+    setOtpError('')
 
-    if (data.account.role === 'vendor') {
-      navigate('/vendor')
-    } else {
-      navigate('/farmer')
-    }
+    try {
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/login/verify-otp/',
+        {
+          method: 'POST',
 
-  } catch (error) {
-    setOtpError('Unable to connect to server')
-    console.error(error)
-  }
-}
+          headers: {
+            'Content-Type': 'application/json',
+          },
 
-const handleResendOtp = async () => {
-  if (resendCooldown > 0 || resendsRemaining === 0) {
-    return
-  }
+          body: JSON.stringify({
+            gmail: email.trim().toLowerCase(),
+            otp: otp,
+          }),
+        }
+      )
 
-  setResendError('')
+      const data = await response.json()
 
-  try {
-    const response = await fetch(
-      'http://127.0.0.1:8000/api/login/resend-otp/',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          gmail: email.trim().toLowerCase(),
-        }),
+      if (!response.ok) {
+        setOtpError(data.message)
+        return
       }
-    )
 
-    const data = await response.json()
+      /*
+       * Admin accounts must complete
+       * the second authentication step.
+       */
 
-    if (!response.ok) {
-      setResendError(data.message)
+      if (data.account.role === 'admin') {
+        setShowOtp(false)
+        setShowAdminPassword(true)
+        setAdminPassword('')
+        setAdminPasswordError('')
+
+        return
+      }
+
+      localStorage.setItem(
+        'aquaNexusAccount',
+        JSON.stringify(data.account)
+      )
+
+      if (data.account.role === 'vendor') {
+        navigate('/vendor')
+      } else {
+        navigate('/farmer')
+      }
+
+    } catch (error) {
+      setOtpError(
+        'Unable to connect to server'
+      )
+
+      console.error(error)
+    }
+  }
+
+  const handleAdminPasswordSubmit = async () => {
+     if (!adminPassword) {
+        setAdminPasswordError(
+          'Enter Admin password'
+        )
+
+        return
+     }
+
+     setAdminPasswordError('')
+
+     try {
+       const response = await fetch(
+         'http://127.0.0.1:8000/api/admin/verify-password/',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+             gmail: email.trim().toLowerCase(),
+             password: adminPassword,
+          }),
+        }
+       )
+
+       const data = await response.json()
+
+       if (!response.ok) {
+          setAdminPasswordError(
+            data.message
+          )
+
+           return
+       }
+
+       localStorage.setItem(
+         'aquaNexusAccount',
+         JSON.stringify(data.account)
+       )
+
+       navigate('/admin')
+
+     } catch (error) {
+        setAdminPasswordError(
+          'Unable to connect to server'
+        )
+
+        console.error(error)
+     }
+  }
+
+  const handleResendOtp = async () => {
+    if (
+      resendCooldown > 0 ||
+      resendsRemaining === 0
+    ) {
       return
     }
 
-    setResendsRemaining((current) => current - 1)
-    setResendCooldown(30)
+    setResendError('')
 
-  } catch (error) {
-    setResendError('Unable to connect to server')
-    console.error(error)
+    try {
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/login/resend-otp/',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+            gmail: email.trim().toLowerCase(),
+          }),
+        }
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setResendError(data.message)
+        return
+      }
+
+      setResendsRemaining(
+        (current) => current - 1
+      )
+
+      setResendCooldown(30)
+
+    } catch (error) {
+      setResendError(
+        'Unable to connect to server'
+      )
+
+      console.error(error)
+    }
   }
-}
+
+  const handleBack = () => {
+
+    if (showAdminPassword) {
+      setShowAdminPassword(false)
+      setShowOtp(true)
+
+      setAdminPassword('')
+      setAdminPasswordError('')
+
+      return
+    }
+
+    if (showOtp) {
+      setShowOtp(false)
+
+      setOtp('')
+      setOtpError('')
+      setResendError('')
+      setResendCooldown(0)
+
+      return
+    }
+
+    navigate('/', {
+      state: {
+        scrollY: location.state?.scrollY,
+      },
+    })
+  }
 
   return (
     <div className="login-page">
 
       <div className="ambient-shape shape-one"></div>
+
       <div className="ambient-shape shape-two"></div>
+
       <div className="ambient-shape shape-three"></div>
+
 
       <div className="login-box">
 
@@ -161,30 +302,53 @@ const handleResendOtp = async () => {
 
           <h2>LOGIN</h2>
 
-          {!showOtp && (
-            <div className="login-form">
-              
-              <label htmlFor="email">Gmail</label>
 
-              <input
-                type="email"
-                id="email"
-                placeholder="Enter your Gmail"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-              />
+          {/* ============================= */}
+          {/* Gmail                         */}
+          {/* ============================= */}
 
-              {emailError && (
-                <p className="email-error">{emailError}</p>
-              )}
+          {!showOtp &&
+            !showAdminPassword && (
 
-            </div>
-          )}
+              <div className="login-form">
+
+                <label htmlFor="email">
+                  Gmail
+                </label>
+
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Enter your Gmail"
+                  value={email}
+                  onChange={(event) =>
+                    setEmail(
+                      event.target.value
+                    )
+                  }
+                />
+
+                {emailError && (
+                  <p className="email-error">
+                    {emailError}
+                  </p>
+                )}
+
+              </div>
+            )}
+
+
+          {/* ============================= */}
+          {/* OTP                           */}
+          {/* ============================= */}
 
           {showOtp && (
+
             <div className="login-form">
 
-              <label htmlFor="otp">OTP</label>
+              <label htmlFor="otp">
+                OTP
+              </label>
 
               <input
                 type="text"
@@ -192,71 +356,123 @@ const handleResendOtp = async () => {
                 className="otp-input"
                 placeholder="Enter OTP"
                 value={otp}
-                onChange={(event) => setOtp(event.target.value)}
+                onChange={(event) =>
+                  setOtp(
+                    event.target.value
+                  )
+                }
               />
+
               {otpError && (
-                <p className="email-error">{otpError}</p>
+                <p className="email-error">
+                  {otpError}
+                </p>
               )}
+
+
               <div className="resend-row">
 
-               <button
-                 type="button"
-                 className="resend-link"
-                 onClick={handleResendOtp}
-                 disabled={resendCooldown > 0 || resendsRemaining === 0}
-               >
-                 {resendCooldown > 0
-                   ? `Resend OTP in ${resendCooldown}s`
-                   : 'Resend OTP'}
-               </button>
+                <button
+                  type="button"
+                  className="resend-link"
+                  onClick={
+                    handleResendOtp
+                  }
+                  disabled={
+                    resendCooldown > 0 ||
+                    resendsRemaining === 0
+                  }
+                >
+                  {resendCooldown > 0
+                    ? `Resend OTP in ${resendCooldown}s`
+                    : 'Resend OTP'}
+                </button>
 
-               <span className="resend-count">
-                 {resendsRemaining}/3 resends remaining
-               </span>
+                <span className="resend-count">
+                  {resendsRemaining}/3
+                  {' '}
+                  resends remaining
+                </span>
 
               </div>
 
+
               {resendError && (
-                <p className="email-error">{resendError}</p>
+                <p className="email-error">
+                  {resendError}
+                </p>
               )}
+
             </div>
           )}
+
+
+          {/* ============================= */}
+          {/* Admin Password                */}
+          {/* ============================= */}
+
+          {showAdminPassword && (
+
+            <div className="login-form">
+
+              <label htmlFor="admin-password">
+                Admin Password
+              </label>
+
+              <input
+                type="password"
+                id="admin-password"
+                placeholder="Enter Admin password"
+                value={adminPassword}
+                onChange={(event) => {
+                  setAdminPassword(
+                    event.target.value
+                  )
+
+                  setAdminPasswordError('')
+                }}
+              />
+
+              {adminPasswordError && (
+                <p className="email-error">
+                  {adminPasswordError}
+                </p>
+              )}
+
+            </div>
+          )}
+
+
+          {/* ============================= */}
+          {/* Buttons                       */}
+          {/* ============================= */}
 
           <div className="login-buttons">
 
             <button
               type="button"
               className="back-button"
-              onClick={() => {
-                if (showOtp) {
-                 setShowOtp(false)
-                 setOtp('')
-                 setOtpError('')
-                 setResendError('')
-                 setResendCooldown(0)
-                } else {
-                  navigate('/', {
-                    state: {
-                      scrollY: location.state?.scrollY,
-                    },
-                  })
-                }
-              }}
+              onClick={handleBack}
             >
               BACK
             </button>
 
-            {!showOtp && (
-              <button
-                type="button"
-                onClick={handleGetOtp}
-                className="otp-button"
-              >
-                GET OTP
-              </button>
-            )}
+
+            {!showOtp &&
+              !showAdminPassword && (
+
+                <button
+                  type="button"
+                  onClick={handleGetOtp}
+                  className="otp-button"
+                >
+                  GET OTP
+                </button>
+              )}
+
 
             {showOtp && (
+
               <button
                 type="button"
                 className="otp-button"
@@ -266,24 +482,50 @@ const handleResendOtp = async () => {
               </button>
             )}
 
+
+            {showAdminPassword && (
+
+              <button
+                type="button"
+                className="otp-button"
+                onClick={
+                  handleAdminPasswordSubmit
+                }
+              >
+                SUBMIT
+              </button>
+            )}
+
           </div>
 
         </div>
-         {!showOtp && (
-          <div className="login-footer">
 
-            <p>
-              Don't have an account?{' '}
-              <span
-                className="register-link"
-                onClick={() => navigate('/register')}
-              >
-                Register
-              </span>
-            </p>
 
-          </div>
-         )}
+        {/* ============================= */}
+        {/* Registration Footer            */}
+        {/* ============================= */}
+
+        {!showOtp &&
+          !showAdminPassword && (
+
+            <div className="login-footer">
+
+              <p>
+                Don't have an account?{' '}
+
+                <span
+                  className="register-link"
+                  onClick={() =>
+                    navigate('/register')
+                  }
+                >
+                  Register
+                </span>
+
+              </p>
+
+            </div>
+          )}
 
       </div>
 

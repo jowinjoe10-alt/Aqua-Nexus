@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom'
 
 type ProtectedRouteProps = {
   children: React.ReactNode
-  role?: 'farmer' | 'vendor'
+  role?: 'farmer' | 'vendor' | 'admin'
 }
 
 function ProtectedRoute({
@@ -14,10 +14,16 @@ function ProtectedRoute({
     localStorage.getItem('aquaNexusAccount')
 
   if (!storedAccount) {
-    return <Navigate to="/login" replace />
+    return (
+      <Navigate
+        to="/login"
+        replace
+      />
+    )
   }
 
   try {
+
     const account = JSON.parse(
       storedAccount
     )
@@ -37,6 +43,15 @@ function ProtectedRoute({
         return (
           <Navigate
             to="/vendor"
+            replace
+          />
+        )
+      }
+
+      if (account.role === 'admin') {
+        return (
+          <Navigate
+            to="/admin"
             replace
           />
         )

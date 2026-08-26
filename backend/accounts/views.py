@@ -1,6 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
+from django.contrib.auth.hashers import check_password
+
 from .serializers import AccountSerializer
 from .models import Account
 from .otp_service import (
@@ -553,5 +555,88 @@ class ResendOTPView(APIView):
 
             'message':
                 message
+
+        }, status=200)
+
+
+class AdminPasswordView(APIView):
+
+    def post(self, request):
+
+        gmail = request.data.get(
+            'gmail'
+        )
+
+        password = request.data.get(
+            'password'
+        )
+
+        if gmail:
+            gmail = gmail.strip().lower()
+
+        if not gmail:
+
+            return Response({
+                'message':
+                    'Gmail is required'
+            }, status=400)
+
+        if not password:
+
+            return Response({
+                'message':
+                    'Password is required'
+            }, status=400)
+
+        try:
+
+            account = Account.objects.get(
+                gmail=gmail
+            )
+
+        except Account.DoesNotExist:
+
+            return Response({
+                'message':
+                    'Account not found'
+            }, status=404)
+
+        if account.role != 'admin':
+
+            return Response({
+                'message':
+                    'Admin account required'
+            }, status=403)
+
+        if not check_password(
+            password,
+            account.password
+        ):
+
+            return Response({
+                'message':
+                    'Incorrect Admin password'
+            }, status=401)
+
+        return Response({
+
+            'message':
+                'Admin password verified',
+
+            'account': {
+
+                'id':
+                    account.id,
+
+                'name':
+                    account.name,
+
+                'gmail':
+                    account.gmail,
+
+                'role':
+                    account.role,
+
+            }
 
         }, status=200)

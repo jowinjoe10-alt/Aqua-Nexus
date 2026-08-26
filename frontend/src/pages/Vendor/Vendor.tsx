@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react'
 import '../Farmer/Farmer.css'
 import './Vendor.css'
+import Product from './Product/Product'
 import HamburgerMenu from '../../components/HamburgerMenu/HamburgerMenu'
-
-type Product = {
-  name: string
-  description: string
-  organic: boolean
-}
 
 type Account = {
   id: number
@@ -18,27 +13,6 @@ type Account = {
   state: string
 }
 
-const productList: Product[] = [
-  {
-    name: 'Organic Tilapia Feed',
-    description:
-      'Feed suitable for Tilapia farming.',
-    organic: true,
-  },
-  {
-    name: 'Floating Fish Feed',
-    description:
-      'General floating feed for freshwater fish.',
-    organic: false,
-  },
-  {
-    name: 'Premium Growth Feed',
-    description:
-      'Feed designed to support fish growth.',
-    organic: false,
-  },
-]
-
 function Vendor() {
 
   const [receivingOrders, setReceivingOrders] =
@@ -46,12 +20,6 @@ function Vendor() {
 
   const [activeSection, setActiveSection] =
     useState('Products')
-
-  const [searchText, setSearchText] =
-    useState('')
-
-  const [selectedProduct, setSelectedProduct] =
-    useState<Product | null>(null)
 
   const [locationPopupOpen, setLocationPopupOpen] =
     useState(false)
@@ -68,18 +36,13 @@ function Vendor() {
   const [locationSaving, setLocationSaving] =
     useState(false)
 
-  const searchResults = productList.filter(
-    (product) =>
-      product.name
-        .toLowerCase()
-        .includes(searchText.toLowerCase())
-  )
 
   /* ============================= */
   /* Load Account                   */
   /* ============================= */
 
   useEffect(() => {
+
     const storedAccount =
       localStorage.getItem('aquaNexusAccount')
 
@@ -88,6 +51,7 @@ function Vendor() {
     }
 
     try {
+
       const parsedAccount: Account =
         JSON.parse(storedAccount)
 
@@ -102,20 +66,27 @@ function Vendor() {
       ) {
         setLocationPopupOpen(true)
       }
+
     } catch (error) {
+
       console.error(
         'Unable to read account information:',
         error
       )
+
     }
+
   }, [])
+
 
   /* ============================= */
   /* Save Location                  */
   /* ============================= */
 
   const handleSaveLocation = async () => {
+
     if (city.trim() === '') {
+
       setLocationError(
         'Enter your city'
       )
@@ -124,6 +95,7 @@ function Vendor() {
     }
 
     if (state.trim() === '') {
+
       setLocationError(
         'Enter your state'
       )
@@ -132,6 +104,7 @@ function Vendor() {
     }
 
     if (!account) {
+
       setLocationError(
         'Account information is unavailable'
       )
@@ -143,6 +116,7 @@ function Vendor() {
     setLocationSaving(true)
 
     try {
+
       const response = await fetch(
         'http://127.0.0.1:8000/api/account/location/',
         {
@@ -163,6 +137,7 @@ function Vendor() {
       const data = await response.json()
 
       if (!response.ok) {
+
         setLocationError(
           data.message ||
           'Unable to save your location'
@@ -187,6 +162,7 @@ function Vendor() {
       setLocationPopupOpen(false)
 
     } catch (error) {
+
       console.error(
         'Location update error:',
         error
@@ -197,18 +173,24 @@ function Vendor() {
       )
 
     } finally {
+
       setLocationSaving(false)
+
     }
+
   }
+
 
   return (
     <div className="vendor-page">
+
 
       {/* ============================= */}
       {/* Location Popup                */}
       {/* ============================= */}
 
       {locationPopupOpen && (
+
         <div className="location-overlay">
 
           <div className="location-modal">
@@ -235,10 +217,13 @@ function Vendor() {
                 placeholder="Enter your city"
                 value={city}
                 onChange={(event) => {
+
                   setCity(event.target.value)
                   setLocationError('')
+
                 }}
               />
+
 
               <label htmlFor="vendor-state">
                 State
@@ -250,16 +235,22 @@ function Vendor() {
                 placeholder="Enter your state"
                 value={state}
                 onChange={(event) => {
+
                   setState(event.target.value)
                   setLocationError('')
+
                 }}
               />
 
+
               {locationError && (
+
                 <p className="location-error">
                   {locationError}
                 </p>
+
               )}
+
 
               <button
                 type="button"
@@ -277,7 +268,9 @@ function Vendor() {
           </div>
 
         </div>
+
       )}
+
 
       {/* ============================= */}
       {/* Vendor Header                 */}
@@ -305,6 +298,7 @@ function Vendor() {
 
       </header>
 
+
       {/* ============================= */}
       {/* Main Navigation               */}
       {/* ============================= */}
@@ -325,6 +319,7 @@ function Vendor() {
           Products
         </button>
 
+
         <button
           type="button"
           className={`nav-button ${
@@ -338,6 +333,7 @@ function Vendor() {
         >
           Orders
         </button>
+
 
         <button
           type="button"
@@ -355,11 +351,13 @@ function Vendor() {
 
       </nav>
 
+
       {/* ============================= */}
       {/* Main Content                  */}
       {/* ============================= */}
 
       <main className="vendor-content">
+
 
         {/* ============================= */}
         {/* Products Section              */}
@@ -367,151 +365,10 @@ function Vendor() {
 
         {activeSection === 'Products' && (
 
-          <section className="vendor-products-card">
-
-            <h2>
-              Products
-            </h2>
-
-            {/* Product Search */}
-
-            <div className="vendor-search">
-
-              <span className="search-icon">
-                ⌕
-              </span>
-
-              <input
-                type="text"
-                placeholder="Search for products..."
-                value={searchText}
-                onChange={(event) => {
-                  setSearchText(
-                    event.target.value
-                  )
-
-                  setSelectedProduct(null)
-                }}
-              />
-
-            </div>
-
-            {/* Search Results */}
-
-            {searchText &&
-              !selectedProduct && (
-
-                <div className="product-results">
-
-                  {searchResults.length > 0 ? (
-
-                    searchResults.map(
-                      (product) => (
-
-                        <button
-                          type="button"
-                          key={product.name}
-                          className="product-result"
-                          onClick={() => {
-
-                            setSelectedProduct(
-                              product
-                            )
-
-                            setSearchText(
-                              product.name
-                            )
-
-                          }}
-                        >
-                          {product.name}
-                        </button>
-
-                      )
-                    )
-
-                  ) : (
-
-                    <p className="product-no-result">
-                      No products found.
-                    </p>
-
-                  )}
-
-                </div>
-
-              )}
-
-            {/* Selected Product */}
-
-            {selectedProduct && (
-
-              <div className="product-details">
-
-                <h3>
-                  {selectedProduct.name}
-                </h3>
-
-                <p>
-                  {selectedProduct.description}
-                </p>
-
-                <p>
-                  <strong>
-                    Organic:
-                  </strong>{' '}
-
-                  {selectedProduct.organic
-                    ? 'Yes'
-                    : 'No'}
-                </p>
-
-                <button
-                  type="button"
-                  className="manage-product-button"
-                >
-                  Manage Product
-                </button>
-
-              </div>
-
-            )}
-
-            {/* Empty State */}
-
-            {!selectedProduct && !searchText && (
-
-              <>
-
-                <p className="vendor-empty-message">
-                  Search for products to manage
-                  your feed inventory
-                </p>
-
-                <div className="vendor-empty-visual">
-
-                  <div className="product-visual">
-                    📦
-                  </div>
-
-                </div>
-
-              </>
-
-            )}
-
-            {/* Add Product */}
-
-            <button
-              type="button"
-              className="add-product-button"
-            >
-              + Add Product
-            </button>
-
-          </section>
+          <Product />
 
         )}
+
 
         {/* ============================= */}
         {/* Orders Section                */}
@@ -521,55 +378,62 @@ function Vendor() {
 
           <section className="vendor-section-placeholder">
 
-             <div className="availability-header">
+            <div className="availability-header">
 
-               <div
-                 className="availability-switch-wrapper"
-                 title="This will affect receiving orders and subscriptions."
-               >
+              <div
+                className="availability-switch-wrapper"
+                title="This will affect receiving orders and subscriptions."
+              >
 
-                 <span className="availability-label">
-                   {receivingOrders
-                     ? 'ON'
-                     : 'OFF'}
-                 </span>
+                <span className="availability-label">
 
-                 <button
-                   type="button"
-                   className={`availability-switch ${
-                   receivingOrders
-                    ? 'on'
-                    : 'off'
-                   }`}
-                   onClick={() =>
-                     setReceivingOrders(
-                       !receivingOrders
-                     )
-                   }
-                   aria-label="Toggle receiving orders and subscriptions"
-                 >
-                   <span className="availability-switch-knob" />
-                 </button>
+                  {receivingOrders
+                    ? 'ON'
+                    : 'OFF'}
 
-               </div>
+                </span>
 
-             </div>
 
-             <div className="section-content">
+                <button
+                  type="button"
+                  className={`availability-switch ${
+                    receivingOrders
+                      ? 'on'
+                      : 'off'
+                  }`}
+                  onClick={() =>
+                    setReceivingOrders(
+                      !receivingOrders
+                    )
+                  }
+                  aria-label="Toggle receiving orders and subscriptions"
+                >
 
-               <h2>
-                 Orders
-               </h2>
+                  <span className="availability-switch-knob" />
 
-               <p>
-                 Your customer orders will appear here.
-               </p>
+                </button>
 
-             </div>
+              </div>
+
+            </div>
+
+
+            <div className="section-content">
+
+              <h2>
+                Orders
+              </h2>
+
+              <p>
+                Your customer orders will appear here.
+              </p>
+
+            </div>
 
           </section>
 
         )}
+
 
         {/* ============================= */}
         {/* Subscriptions Section         */}
@@ -579,52 +443,58 @@ function Vendor() {
 
           <section className="vendor-section-placeholder">
 
-           <div className="availability-header">
+            <div className="availability-header">
 
-             <div
-                 className="availability-switch-wrapper"
-                 title="This will affect receiving orders and subscriptions."
-             >
+              <div
+                className="availability-switch-wrapper"
+                title="This will affect receiving orders and subscriptions."
+              >
 
-                 <span className="availability-label">
-                   {receivingOrders
-                     ? 'ON'
-                     : 'OFF'}
-                 </span>
+                <span className="availability-label">
 
-                 <button
-                   type="button"
-                   className={`availability-switch ${
-                   receivingOrders
-                    ? 'on'
-                    : 'off'
-                   }`}
-                   onClick={() =>
-                     setReceivingOrders(
-                       !receivingOrders
-                     )
-                   }
-                   aria-label="Toggle receiving orders and subscriptions"
-                 >
-                   <span className="availability-switch-knob" />
-                 </button>
+                  {receivingOrders
+                    ? 'ON'
+                    : 'OFF'}
 
-             </div>
+                </span>
 
-           </div>
 
-           <div className="section-content">
+                <button
+                  type="button"
+                  className={`availability-switch ${
+                    receivingOrders
+                      ? 'on'
+                      : 'off'
+                  }`}
+                  onClick={() =>
+                    setReceivingOrders(
+                      !receivingOrders
+                    )
+                  }
+                  aria-label="Toggle receiving orders and subscriptions"
+                >
 
-             <h2>
-               Subscriptions
-             </h2>
+                  <span className="availability-switch-knob" />
 
-             <p>
-               Your active feed subscriptions
-               will appear here.
-             </p>
+                </button>
 
-           </div>
+              </div>
+
+            </div>
+
+
+            <div className="section-content">
+
+              <h2>
+                Subscriptions
+              </h2>
+
+              <p>
+                Your active feed subscriptions
+                will appear here.
+              </p>
+
+            </div>
 
           </section>
 

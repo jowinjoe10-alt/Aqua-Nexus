@@ -1,0 +1,297 @@
+/* ============================= */
+/* Admin Vendor Card             */
+/* ============================= */
+
+.admin-vendor-card {
+  width: min(1100px, calc(100% - 48px));
+
+  margin: 28px auto 60px;
+
+  padding: 40px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.84);
+
+  border: 1px solid rgba(20, 156, 168, 0.12);
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 12px 35px rgba(30, 120, 130, 0.08);
+}
+
+
+/* ============================= */
+/* Vendor / Products Switcher    */
+/* ============================= */
+
+.admin-vendor-switcher {
+  position: relative;
+
+  display: inline-block;
+
+  margin-bottom: 24px;
+}
+
+
+/* ============================= */
+/* Switcher Button               */
+/* ============================= */
+
+.admin-vendor-select {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 28px;
+
+  min-width: 150px;
+
+  padding: 10px 14px;
+
+  border: 1px solid rgba(20, 156, 168, 0.18);
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.admin-vendor-select:hover {
+  border-color:
+    rgba(20, 156, 168, 0.4);
+
+  background:
+    rgba(255, 255, 255, 0.9);
+
+  box-shadow:
+    0 4px 12px
+    rgba(30, 120, 130, 0.06);
+}
+
+.admin-vendor-select:focus {
+  outline: none;
+
+  border-color:
+    rgba(20, 156, 168, 0.45);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(20, 156, 168, 0.1);
+}
+
+
+/* ============================= */
+/* Arrow                         */
+/* ============================= */
+
+.admin-vendor-arrow {
+  color: #1595a3;
+
+  font-size: 14px;
+
+  line-height: 1;
+}
+
+
+/* ============================= */
+/* Dropdown                      */
+/* ============================= */
+
+.admin-vendor-options {
+  position: absolute;
+
+  top: calc(100% + 6px);
+
+  left: 0;
+
+  min-width: 150px;
+
+  padding: 6px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(20, 156, 168, 0.15);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.97);
+
+  box-shadow:
+    0 10px 25px
+    rgba(30, 120, 130, 0.12);
+
+  z-index: 20;
+
+  animation:
+    admin-vendor-dropdown-appear
+    0.16s ease;
+}
+
+
+/* ============================= */
+/* Dropdown Buttons              */
+/* ============================= */
+
+.admin-vendor-options button {
+  display: block;
+
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: #526970;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.admin-vendor-options button:hover {
+  background:
+    rgba(20, 156, 168, 0.08);
+
+  color: #1595a3;
+}
+
+
+/* ============================= */
+/* Selected Option               */
+/* ============================= */
+
+.admin-vendor-options button.selected {
+  background:
+    rgba(20, 156, 168, 0.1);
+
+  color: #1595a3;
+
+  font-weight: 600;
+}
+
+
+/* ============================= */
+/* Content                       */
+/* ============================= */
+
+.admin-vendor-content {
+  padding-top: 0;
+}
+
+.admin-vendor-content h2 {
+  margin: 0 0 12px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 26px;
+
+  font-weight: 600;
+}
+
+.admin-vendor-content p {
+  margin: 0;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* ============================= */
+/* Dropdown Animation            */
+/* ============================= */
+
+@keyframes admin-vendor-dropdown-appear {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
+}
+
+
+/* ============================= */
+/* Responsive                    */
+/* ============================= */
+
+@media (max-width: 600px) {
+
+  .admin-vendor-card {
+    width:
+      calc(100% - 24px);
+
+    padding: 24px;
+
+    border-radius: 18px;
+  }
+
+  .admin-vendor-select {
+    min-width: 140px;
+
+    padding: 9px 12px;
+
+    font-size: 13px;
+  }
+
+  .admin-vendor-options {
+    min-width: 140px;
+  }
+
+  .admin-vendor-options button {
+    padding: 9px 11px;
+
+    font-size: 13px;
+  }
+
+}

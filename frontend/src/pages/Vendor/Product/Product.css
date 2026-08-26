@@ -1,0 +1,311 @@
+/* ============================= */
+/* Products Card                 */
+/* ============================= */
+
+.vendor-products-card {
+  width: min(1100px, calc(100% - 48px));
+
+  margin: 28px auto 60px;
+
+  padding: 40px;
+
+  box-sizing: border-box;
+
+  background: rgba(255, 255, 255, 0.84);
+
+  border: 1px solid rgba(20, 156, 168, 0.12);
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 12px 35px rgba(30, 120, 130, 0.08);
+}
+
+.vendor-products-card h2 {
+  margin: 0 0 24px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 26px;
+  font-weight: 600;
+}
+
+
+/* ============================= */
+/* Vendor Search                 */
+/* ============================= */
+
+.vendor-search {
+  display: flex;
+
+  align-items: center;
+
+  height: 46px;
+
+  border: 1px solid #d7e2e5;
+
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.75);
+
+  padding: 0 14px;
+}
+
+.vendor-search .search-icon {
+  margin-right: 10px;
+
+  color: #7b9299;
+
+  font-size: 22px;
+}
+
+.vendor-search input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 15px;
+}
+
+.vendor-search input::placeholder {
+  color: #83969c;
+}
+
+
+/* ============================= */
+/* Product Results               */
+/* ============================= */
+
+.product-results {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  margin-top: 10px;
+}
+
+.product-result {
+  padding: 12px 14px;
+
+  border: 1px solid #d7e2e5;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 15px;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.product-result:hover {
+  border-color: #149ca8;
+
+  color: #149ca8;
+}
+
+.product-no-result {
+  margin: 12px 0;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+}
+
+
+/* ============================= */
+/* Product Details               */
+/* ============================= */
+
+.product-details {
+  margin-top: 24px;
+
+  padding: 24px;
+
+  border: 1px solid rgba(20, 156, 168, 0.12);
+
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.product-details h3 {
+  margin: 0 0 14px;
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 22px;
+}
+
+.product-details p {
+  margin: 8px 0;
+
+  color: #607d8b;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+
+  line-height: 1.5;
+}
+
+
+/* ============================= */
+/* Manage Product Button         */
+/* ============================= */
+
+.manage-product-button {
+  margin-top: 16px;
+
+  padding: 11px 18px;
+
+  border: 1px solid #1c9aaa;
+
+  border-radius: 10px;
+
+  background: transparent;
+
+  color: #1c9aaa;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.manage-product-button:hover {
+  background: #1c9aaa;
+
+  color: white;
+}
+
+
+/* ============================= */
+/* Vendor Empty State            */
+/* ============================= */
+
+.vendor-empty-message {
+  margin: 14px 0 0;
+
+  color: #62777e;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+}
+
+.vendor-empty-visual {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  height: 180px;
+
+  margin-top: 20px;
+}
+
+.product-visual {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  width: 110px;
+  height: 110px;
+
+  border-radius: 50%;
+
+  background: rgba(20, 156, 168, 0.08);
+
+  font-size: 54px;
+}
+
+
+/* ============================= */
+/* Add Product Button            */
+/* ============================= */
+
+.add-product-button {
+  display: block;
+
+  margin-top: 10px;
+
+  margin-left: auto;
+
+  padding: 12px 20px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #1c9aaa;
+
+  color: white;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.add-product-button:hover {
+  background: #168898;
+
+  transform: translateY(-1px);
+}
+
+
+/* ============================= */
+/* Responsive                    */
+/* ============================= */
+
+@media (max-width: 600px) {
+
+  .vendor-products-card {
+    width: calc(100% - 24px);
+
+    padding: 24px;
+
+    border-radius: 18px;
+  }
+
+  .add-product-button {
+    margin-left: auto;
+  }
+}

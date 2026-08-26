@@ -5,18 +5,34 @@ import MenuItems from './MenuItems/MenuItems'
 import './HamburgerMenu.css'
 
 type HamburgerMenuProps = {
-  role: 'farmer' | 'vendor'
+  role: 'farmer' | 'vendor' | 'admin'
   city: string
   state: string
+  onAdminSectionChange?: (
+    section: 'Farmer' | 'Vendor' | 'Admin'
+  ) => void
 }
 
 function HamburgerMenu({
   role,
   city,
   state,
+  onAdminSectionChange,
 }: HamburgerMenuProps) {
 
-  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuOpen, setMenuOpen] =
+    useState(false)
+
+  const handleAdminSectionChange = (
+    section: 'Farmer' | 'Vendor' | 'Admin'
+  ) => {
+
+    if (onAdminSectionChange) {
+      onAdminSectionChange(section)
+    }
+
+    setMenuOpen(false)
+  }
 
   return (
     <>
@@ -61,6 +77,9 @@ function HamburgerMenu({
 
           <MenuItems
             role={role}
+            onAdminSectionChange={
+              handleAdminSectionChange
+            }
           />
 
         </aside>
