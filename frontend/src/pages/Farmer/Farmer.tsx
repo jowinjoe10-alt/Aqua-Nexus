@@ -3,10 +3,16 @@ import './Farmer.css'
 import HamburgerMenu from '../../components/HamburgerMenu/HamburgerMenu'
 
 type Fish = {
+  id: number
   name: string
-  scientificName: string
-  description: string
-  habitat: string
+  image: string | null
+  water_type: string
+  feeding_habit: string
+  temperature_min: string
+  temperature_max: string
+  ph_min: string
+  ph_max: string
+  culture_period_days: number
 }
 
 type Account = {
@@ -18,34 +24,18 @@ type Account = {
   state: string
 }
 
-const fishList: Fish[] = [
-  {
-    name: 'Tilapia',
-    scientificName: 'Oreochromis niloticus',
-    description:
-      'A freshwater fish commonly cultivated in aquaculture.',
-    habitat: 'Freshwater',
-  },
-  {
-    name: 'Rohu',
-    scientificName: 'Labeo rohita',
-    description:
-      'A freshwater carp widely cultivated in South Asia.',
-    habitat: 'Freshwater',
-  },
-  {
-    name: 'Catla',
-    scientificName: 'Catla catla',
-    description:
-      'A major freshwater carp commonly cultivated in South Asia.',
-    habitat: 'Freshwater',
-  },
-]
-
 function Farmer() {
   const [activeSection, setActiveSection] = useState('Fish')
 
   const [searchText, setSearchText] = useState('')
+
+  const [fishList, setFishList] = useState<Fish[]>([])
+
+  const [fishLoading, setFishLoading] =
+    useState(false)
+
+  const [fishError, setFishError] =
+    useState('')
 
   const [selectedFish, setSelectedFish] =
     useState<Fish | null>(null)
@@ -66,11 +56,6 @@ function Farmer() {
   const [locationSaving, setLocationSaving] =
     useState(false)
 
-  const searchResults = fishList.filter((fish) =>
-    fish.name
-      .toLowerCase()
-      .includes(searchText.toLowerCase())
-  )
 
   /* ============================= */
   /* Load Account                   */
@@ -107,7 +92,47 @@ function Farmer() {
       )
     }
   }, [])
+  
 
+  useEffect(() => {
+  if (!searchText.trim() || selectedFish) {
+    setFishList([])
+    return
+  }
+
+  const searchFish = async () => {
+    setFishLoading(true)
+    setFishError('')
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/fish/?search=${encodeURIComponent(
+          searchText
+        )}`
+      )
+
+      if (!response.ok) {
+        throw new Error('Unable to load fishes')
+      }
+
+      const data = await response.json()
+
+      setFishList(data)
+    } catch (error) {
+      console.error('Fish search error:', error)
+
+      setFishError(
+        'Unable to load fishes'
+      )
+
+      setFishList([])
+    } finally {
+      setFishLoading(false)
+    }
+  }
+
+  searchFish()
+  }, [searchText, selectedFish])
   /* ============================= */
   /* Save Location                  */
   /* ============================= */
@@ -399,7 +424,15 @@ function Farmer() {
 
                 <div className="fish-results">
 
-                  {searchResults.map(
+                  {fishLoading && (
+                    <p>Searching...</p>
+                  )}
+
+                  {fishError && (
+                    <p>{fishError}</p>
+                  )}
+
+                  {fishList.map(
                     (fish) => (
 
                       <button
@@ -429,35 +462,106 @@ function Farmer() {
             {/* Selected Fish */}
 
             {selectedFish && (
-
               <div className="fish-details">
 
-                <h3>
-                  {selectedFish.name}
-                </h3>
+               <button
+                  className="fish-back-button"
+                  onClick={() => setSelectedFish(null)}
+               >
+                ← Back to Fish
+               </button>
 
-                <p>
-                  <strong>
-                    Scientific Name:
-                  </strong>{' '}
+               <div className="fish-profile">
 
-                  {selectedFish.scientificName}
-                </p>
+                 <div className="fish-profile-image">
+                   {selectedFish.image && (
+                     <img
+                       src={selectedFish.image}
+                       alt={selectedFish.name}
+                     />
+                   )}
+                 </div>
 
-                <p>
-                  <strong>
-                    Habitat:
-                  </strong>{' '}
+                 <div className="fish-profile-info">
 
-                  {selectedFish.habitat}
-                </p>
+                  <p className="fish-profile-label">
+                    General Information
+                  </p>
 
-                <p>
-                  {selectedFish.description}
-                </p>
+                  <h2>
+                    {selectedFish.name}
+                  </h2>
+
+                  <p className="fish-profile-subtitle">
+                    Fish species information and general
+                    farming requirements.
+                  </p>
+
+                 </div>
+
+               </div>
+
+               <div className="fish-section-title">
+                  <h3>General Details</h3>
+               </div>
+
+               <div className="fish-info-grid">
+
+                 <div className="fish-info-card">
+                   <span>Water Type</span>
+
+                   <strong>
+                     {selectedFish.water_type}
+                   </strong>
+                 </div>
+
+                 <div className="fish-info-card">
+                   <span>Feeding Habit</span>
+
+                   <strong>
+                      {selectedFish.feeding_habit}
+                   </strong>
+                 </div>
+
+                 <div className="fish-info-card">
+                   <span>Temperature</span>
+
+                   <strong>
+                      {selectedFish.temperature_min}°C
+                      {' – '}
+                      {selectedFish.temperature_max}°C
+                   </strong>
+                 </div>
+
+                 <div className="fish-info-card">
+                   <span>pH Range</span>
+
+                   <strong>
+                     {selectedFish.ph_min}
+                     {' – '}
+                     {selectedFish.ph_max}
+                   </strong>
+                 </div>
+
+                 <div className="fish-info-card fish-info-card-wide">
+                   <span>Culture Period</span>
+
+                   <strong>
+                     {selectedFish.culture_period_days} days
+                   </strong>
+                 </div>
+
+               </div>
+
+               <div className="fish-continue-wrapper">
+                 <button
+                   className="fish-continue-button"
+                 >
+                   Continue →
+                 </button>
+               </div>
 
               </div>
-
             )}
 
             {/* Empty State */}
