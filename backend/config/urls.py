@@ -21,6 +21,11 @@ urlpatterns = [
         include('accounts.urls')
     ),
 
+    path(
+        'api/fish/',
+        include('fish.urls')
+    ),
+
 ]
 
 
