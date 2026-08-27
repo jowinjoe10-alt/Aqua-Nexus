@@ -23,8 +23,7 @@ type SortType =
   'name_asc' |
   'name_desc' |
   'location_asc' |
-  'created_latest' |
-  'created_earliest'
+  'created_range'
 
 
 type AccountManagementProps = {
@@ -50,6 +49,18 @@ function AccountManagement({
 
   const [sortDropdownOpen, setSortDropdownOpen] =
     useState(false)
+
+  const [fromDate, setFromDate] =
+    useState('')
+
+  const [toDate, setToDate] =
+    useState('')
+
+  const [appliedFromDate, setAppliedFromDate] =
+    useState('')
+
+  const [appliedToDate, setAppliedToDate] =
+    useState('')
 
 
   /* ============================= */
@@ -87,13 +98,28 @@ function AccountManagement({
         'search',
         search.trim()
       )
-
     }
 
     params.set(
       'sort',
       sort
     )
+
+    if (appliedFromDate) {
+
+      params.set(
+        'from_date',
+        appliedFromDate
+      )
+    }
+
+    if (appliedToDate) {
+
+      params.set(
+        'to_date',
+        appliedToDate
+      )
+    }
 
 
     /*
@@ -119,11 +145,9 @@ function AccountManagement({
           throw new Error(
             'Unable to get accounts'
           )
-
         }
 
         return response.json()
-
       })
       .then((data) => {
 
@@ -133,7 +157,6 @@ function AccountManagement({
           data.vendors ||
           []
         )
-
       })
       .catch((error) => {
 
@@ -143,14 +166,48 @@ function AccountManagement({
         )
 
         setAccounts([])
-
       })
 
   }, [
     role,
     search,
-    sort
+    sort,
+    appliedFromDate,
+    appliedToDate
   ])
+
+
+  /* ============================= */
+  /* Apply Date Range              */
+  /* ============================= */
+
+  const applyDateRange = () => {
+
+    if (
+      fromDate &&
+      toDate &&
+      fromDate > toDate
+    ) {
+
+      alert(
+        'From date cannot be later than To date.'
+      )
+
+      return
+    }
+
+    setAppliedFromDate(
+      fromDate
+    )
+
+    setAppliedToDate(
+      toDate
+    )
+
+    setSortDropdownOpen(
+      false
+    )
+  }
 
 
   return (
@@ -224,6 +281,7 @@ function AccountManagement({
         {/* ============================= */}
 
         <div className="account-management-sort">
+
 
           <button
             type="button"
@@ -368,7 +426,7 @@ function AccountManagement({
 
 
               {/* ============================= */}
-              {/* Created Latest                */}
+              {/* Created Date Range            */}
               {/* ============================= */}
 
               <button
@@ -376,39 +434,75 @@ function AccountManagement({
                 onClick={() => {
 
                   setSort(
-                    'created_latest'
-                  )
-
-                  setSortDropdownOpen(
-                    false
+                    'created_range'
                   )
 
                 }}
               >
-                Created: Latest
+                Created: Date Range
               </button>
 
 
               {/* ============================= */}
-              {/* Created Earliest              */}
+              {/* Date Range                    */}
               {/* ============================= */}
 
-              <button
-                type="button"
-                onClick={() => {
+              {sort === 'created_range' && (
 
-                  setSort(
-                    'created_earliest'
-                  )
+                <div className="account-management-date-range">
 
-                  setSortDropdownOpen(
-                    false
-                  )
 
-                }}
-              >
-                Created: Earliest
-              </button>
+                  <div className="account-management-date-field">
+
+                    <label>
+                      From
+                    </label>
+
+                    <input
+                      type="date"
+                      value={fromDate}
+                      onChange={(event) =>
+                        setFromDate(
+                          event.target.value
+                        )
+                      }
+                    />
+
+                  </div>
+
+
+                  <div className="account-management-date-field">
+
+                    <label>
+                      To
+                    </label>
+
+                    <input
+                      type="date"
+                      value={toDate}
+                      onChange={(event) =>
+                        setToDate(
+                          event.target.value
+                        )
+                      }
+                    />
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    className="account-management-date-apply"
+                    onClick={
+                      applyDateRange
+                    }
+                  >
+                    Apply
+                  </button>
+
+                </div>
+
+              )}
 
             </div>
 

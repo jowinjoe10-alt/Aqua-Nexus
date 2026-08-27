@@ -17,13 +17,6 @@ type StatisticsPeriod =
   | 'This Month'
 
 
-type BackendStatisticsPeriod =
-  | 'total'
-  | 'daily'
-  | 'weekly'
-  | 'monthly'
-
-
 type FarmerStats = {
   farmers: number
   orders: number
@@ -78,31 +71,11 @@ function Farmer() {
 
 
   /* ============================= */
-  /* Convert UI Period             */
+  /* Farmer Hover Message          */
   /* ============================= */
 
-  const getBackendPeriod = (
-    period: StatisticsPeriod
-  ): BackendStatisticsPeriod => {
-
-    switch (period) {
-
-      case 'Today':
-        return 'daily'
-
-      case 'This Week':
-        return 'weekly'
-
-      case 'This Month':
-        return 'monthly'
-
-      case 'Total':
-      default:
-        return 'total'
-
-    }
-
-  }
+  const [showFarmerMessage, setShowFarmerMessage] =
+    useState(false)
 
 
   /* ============================= */
@@ -123,11 +96,17 @@ function Farmer() {
       new URLSearchParams()
 
 
+    const periodValue = {
+      'Total': 'total',
+      'Today': 'daily',
+      'This Week': 'weekly',
+      'This Month': 'monthly'
+    }
+
+
     params.set(
       'period',
-      getBackendPeriod(
-        statisticsPeriod
-      )
+      periodValue[statisticsPeriod]
     )
 
 
@@ -204,11 +183,17 @@ function Farmer() {
     type: ManagementType
   ) => {
 
-    setManagementType(type)
+    setManagementType(
+      type
+    )
 
-    setManagementDropdownOpen(false)
+    setManagementDropdownOpen(
+      false
+    )
 
-    setShowAccounts(false)
+    setShowAccounts(
+      false
+    )
 
   }
 
@@ -221,9 +206,13 @@ function Farmer() {
     period: StatisticsPeriod
   ) => {
 
-    setStatisticsPeriod(period)
+    setStatisticsPeriod(
+      period
+    )
 
-    setStatisticsDropdownOpen(false)
+    setStatisticsDropdownOpen(
+      false
+    )
 
   }
 
@@ -234,7 +223,13 @@ function Farmer() {
 
   const handleFarmersCard = () => {
 
-    setShowAccounts(true)
+    setShowFarmerMessage(
+      false
+    )
+
+    setShowAccounts(
+      true
+    )
 
   }
 
@@ -245,15 +240,19 @@ function Farmer() {
 
   const handleBackFromAccounts = () => {
 
-    setShowAccounts(false)
+    setShowAccounts(
+      false
+    )
 
-    setManagementType('Farmer')
+    setManagementType(
+      'Farmer'
+    )
 
   }
 
 
   /* ============================= */
-  /* Farmer Accounts Page          */
+  /* Farmer Account Management     */
   /* ============================= */
 
   if (showAccounts) {
@@ -285,6 +284,7 @@ function Farmer() {
             <span>
               Farmer
             </span>
+
 
             <span className="admin-farmer-arrow">
 
@@ -387,8 +387,9 @@ function Farmer() {
           >
 
             <span>
-              Fishes
+              {managementType}
             </span>
+
 
             <span className="admin-farmer-arrow">
 
@@ -409,6 +410,7 @@ function Farmer() {
 
               <button
                 type="button"
+                className=""
                 onClick={() =>
                   handleManagementSelect(
                     'Farmer'
@@ -462,7 +464,7 @@ function Farmer() {
     <section className="admin-farmer-card">
 
       {/* ============================= */}
-      {/* Farmer / Fishes Switcher      */}
+      {/* Management Dropdown           */}
       {/* ============================= */}
 
       <div className="admin-farmer-switcher">
@@ -482,8 +484,9 @@ function Farmer() {
         >
 
           <span>
-            Farmer
+            {managementType}
           </span>
+
 
           <span className="admin-farmer-arrow">
 
@@ -504,7 +507,11 @@ function Farmer() {
 
             <button
               type="button"
-              className="selected"
+              className={
+                managementType === 'Farmer'
+                  ? 'selected'
+                  : ''
+              }
               onClick={() =>
                 handleManagementSelect(
                   'Farmer'
@@ -519,6 +526,7 @@ function Farmer() {
 
             <button
               type="button"
+              className=""
               onClick={() =>
                 handleManagementSelect(
                   'Fishes'
@@ -536,240 +544,263 @@ function Farmer() {
 
 
       {/* ============================= */}
-      {/* Farmer Header                 */}
+      {/* Farmer Management             */}
       {/* ============================= */}
 
-      <div className="admin-farmer-header">
+      <div className="admin-farmer-content">
 
-        <div>
+        {/* ============================= */}
+        {/* Farmer Statistics              */}
+        {/* ============================= */}
 
-          <h2>
-            Farmer
-          </h2>
+        <div className="admin-farmer-header">
 
-          <p>
-            Manage and monitor farmer activity.
-          </p>
+          <div>
+
+            <h2>
+              Farmer
+            </h2>
+
+            <p>
+              Manage and monitor farmer activity.
+            </p>
+
+          </div>
+
+
+          {/* ============================= */}
+          {/* Period Dropdown                */}
+          {/* ============================= */}
+
+          <div className="admin-farmer-period">
+
+            <button
+              type="button"
+              className="admin-farmer-period-select"
+              onClick={() =>
+                setStatisticsDropdownOpen(
+                  (current) => !current
+                )
+              }
+              aria-haspopup="true"
+              aria-expanded={
+                statisticsDropdownOpen
+              }
+            >
+
+              <span>
+                {statisticsPeriod}
+              </span>
+
+
+              <span className="admin-farmer-period-arrow">
+
+                {statisticsDropdownOpen
+                  ? '▴'
+                  : '▾'}
+
+              </span>
+
+            </button>
+
+
+            {statisticsDropdownOpen && (
+
+              <div className="admin-farmer-period-options">
+
+                {/* Total */}
+
+                <button
+                  type="button"
+                  className={
+                    statisticsPeriod === 'Total'
+                      ? 'selected'
+                      : ''
+                  }
+                  onClick={() =>
+                    handleStatisticsPeriodSelect(
+                      'Total'
+                    )
+                  }
+                >
+                  Total
+                </button>
+
+
+                {/* Today */}
+
+                <button
+                  type="button"
+                  className={
+                    statisticsPeriod === 'Today'
+                      ? 'selected'
+                      : ''
+                  }
+                  onClick={() =>
+                    handleStatisticsPeriodSelect(
+                      'Today'
+                    )
+                  }
+                >
+                  Today
+                </button>
+
+
+                {/* This Week */}
+
+                <button
+                  type="button"
+                  className={
+                    statisticsPeriod === 'This Week'
+                      ? 'selected'
+                      : ''
+                  }
+                  onClick={() =>
+                    handleStatisticsPeriodSelect(
+                      'This Week'
+                    )
+                  }
+                >
+                  This Week
+                </button>
+
+
+                {/* This Month */}
+
+                <button
+                  type="button"
+                  className={
+                    statisticsPeriod === 'This Month'
+                      ? 'selected'
+                      : ''
+                  }
+                  onClick={() =>
+                    handleStatisticsPeriodSelect(
+                      'This Month'
+                    )
+                  }
+                >
+                  This Month
+                </button>
+
+              </div>
+
+            )}
+
+          </div>
 
         </div>
 
 
         {/* ============================= */}
-        {/* Statistics Period             */}
+        {/* Statistics                     */}
         {/* ============================= */}
 
-        <div className="admin-farmer-period">
+        <div className="admin-farmer-stats">
 
-          <button
-            type="button"
-            className="admin-farmer-period-select"
-            onClick={() =>
-              setStatisticsDropdownOpen(
-                (current) => !current
+          {/* ============================= */}
+          {/* Farmers                        */}
+          {/* ============================= */}
+
+          <div
+            className="admin-farmer-stat-card"
+
+            onMouseEnter={() =>
+              setShowFarmerMessage(
+                true
               )
             }
-            aria-haspopup="true"
-            aria-expanded={
-              statisticsDropdownOpen
+
+            onMouseLeave={() =>
+              setShowFarmerMessage(
+                false
+              )
             }
+
+            onDoubleClick={
+              handleFarmersCard
+            }
+
           >
 
-            <span>
-              {statisticsPeriod}
+            {/* ============================= */}
+            {/* Hover Message                  */}
+            {/* ============================= */}
+
+            {showFarmerMessage && (
+
+              <div className="admin-farmer-hover-message">
+
+                Double tap to reach Farmer management.
+
+              </div>
+
+            )}
+
+
+            <span className="admin-farmer-stat-icon">
+              ♙
             </span>
 
-            <span className="admin-farmer-period-arrow">
 
-              {statisticsDropdownOpen
-                ? '▴'
-                : '▾'}
-
+            <span className="admin-farmer-stat-title">
+              Farmers
             </span>
 
-          </button>
+
+            <strong>
+              {stats.farmers}
+            </strong>
+
+          </div>
 
 
-          {statisticsDropdownOpen && (
+          {/* ============================= */}
+          {/* Orders                         */}
+          {/* ============================= */}
 
-            <div className="admin-farmer-period-options">
+          <div className="admin-farmer-stat-card">
 
-              {/* Total */}
-
-              <button
-                type="button"
-                className={
-                  statisticsPeriod === 'Total'
-                    ? 'selected'
-                    : ''
-                }
-                onClick={() =>
-                  handleStatisticsPeriodSelect(
-                    'Total'
-                  )
-                }
-              >
-                Total
-              </button>
+            <span className="admin-farmer-stat-icon">
+              ◫
+            </span>
 
 
-              {/* Today */}
-
-              <button
-                type="button"
-                className={
-                  statisticsPeriod === 'Today'
-                    ? 'selected'
-                    : ''
-                }
-                onClick={() =>
-                  handleStatisticsPeriodSelect(
-                    'Today'
-                  )
-                }
-              >
-                Today
-              </button>
+            <span className="admin-farmer-stat-title">
+              Orders
+            </span>
 
 
-              {/* This Week */}
+            <strong>
+              {stats.orders}
+            </strong>
 
-              <button
-                type="button"
-                className={
-                  statisticsPeriod === 'This Week'
-                    ? 'selected'
-                    : ''
-                }
-                onClick={() =>
-                  handleStatisticsPeriodSelect(
-                    'This Week'
-                  )
-                }
-              >
-                This Week
-              </button>
+          </div>
 
 
-              {/* This Month */}
+          {/* ============================= */}
+          {/* Subscriptions                  */}
+          {/* ============================= */}
 
-              <button
-                type="button"
-                className={
-                  statisticsPeriod === 'This Month'
-                    ? 'selected'
-                    : ''
-                }
-                onClick={() =>
-                  handleStatisticsPeriodSelect(
-                    'This Month'
-                  )
-                }
-              >
-                This Month
-              </button>
+          <div className="admin-farmer-stat-card">
 
-            </div>
+            <span className="admin-farmer-stat-icon">
+              ↻
+            </span>
 
-          )}
+
+            <span className="admin-farmer-stat-title">
+              Subscriptions
+            </span>
+
+
+            <strong>
+              {stats.subscriptions}
+            </strong>
+
+          </div>
 
         </div>
-
-      </div>
-
-
-      {/* ============================= */}
-      {/* Statistics Cards              */}
-      {/* ============================= */}
-
-      <div className="admin-farmer-statistics">
-
-        {/* ============================= */}
-        {/* Farmers                       */}
-        {/* ============================= */}
-
-        <button
-          type="button"
-          className="admin-farmer-stat-card"
-          onDoubleClick={
-            handleFarmersCard
-          }
-        >
-
-          <div className="admin-farmer-stat-icon">
-            ♙
-          </div>
-
-          <div className="admin-farmer-stat-label">
-            Farmers
-          </div>
-
-          <div className="admin-farmer-stat-value">
-            {stats.farmers}
-          </div>
-
-        </button>
-
-
-        {/* ============================= */}
-        {/* Orders                        */}
-        {/* ============================= */}
-
-        <button
-          type="button"
-          className="admin-farmer-stat-card"
-          onClick={() => {
-
-            console.log(
-              'Farmer Orders selected'
-            )
-
-          }}
-        >
-
-          <div className="admin-farmer-stat-icon">
-            ▣
-          </div>
-
-          <div className="admin-farmer-stat-label">
-            Orders
-          </div>
-
-          <div className="admin-farmer-stat-value">
-            {stats.orders}
-          </div>
-
-        </button>
-
-
-        {/* ============================= */}
-        {/* Subscriptions                 */}
-        {/* ============================= */}
-
-        <button
-          type="button"
-          className="admin-farmer-stat-card"
-          onClick={() => {
-
-            console.log(
-              'Farmer Subscriptions selected'
-            )
-
-          }}
-        >
-
-          <div className="admin-farmer-stat-icon">
-            ↻
-          </div>
-
-          <div className="admin-farmer-stat-label">
-            Subscriptions
-          </div>
-
-          <div className="admin-farmer-stat-value">
-            {stats.subscriptions}
-          </div>
-
-        </button>
 
       </div>
 

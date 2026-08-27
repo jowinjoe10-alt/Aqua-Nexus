@@ -869,7 +869,7 @@ function Fish({ onBack }: FishProps) {
           ADD FISH
           ================================================= */}
 
-      <div className="admin-fish-add-container">
+      <div className="admin-fish-add-wrapper">
 
         <button
           type="button"
