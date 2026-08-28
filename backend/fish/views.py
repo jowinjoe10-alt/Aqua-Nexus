@@ -5,8 +5,8 @@ from rest_framework.parsers import (
     JSONParser,
 )
 
-from .models import Fish
-from .serializers import FishSerializer
+from .models import Fish, FishStage
+from .serializers import FishSerializer, FishStageSerializer
 
 
 class FishListCreateView(
@@ -110,3 +110,80 @@ class FishDetailView(
     def get_queryset(self):
 
         return Fish.objects.all()
+
+    def perform_update(self, serializer):
+
+        fish = serializer.save()
+
+        duration_days = round(
+            fish.culture_period_days / 6
+        )
+
+        FishStage.objects.filter(
+            fish=fish
+        ).update(
+            duration_days=duration_days
+        )
+
+        
+class FishStageListCreateView(
+    generics.ListCreateAPIView
+):
+
+    serializer_class = FishStageSerializer
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser,
+        JSONParser,
+    ]
+
+    def get_queryset(self):
+
+        fish_id = self.kwargs['fish_id']
+
+        return FishStage.objects.filter(
+            fish_id=fish_id
+        ).order_by(
+            'stage_number'
+        )
+
+    def perform_create(self, serializer):
+
+        fish_id = self.kwargs['fish_id']
+
+        fish = Fish.objects.get(
+            id=fish_id
+        )
+
+        duration_days = round(
+            fish.culture_period_days / 6
+        )
+
+        serializer.save(
+            fish=fish,
+            duration_days=duration_days
+        )
+
+
+class FishStageDetailView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = FishStageSerializer
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser,
+        JSONParser,
+    ]
+
+    lookup_url_kwarg = 'stage_id'
+
+    def get_queryset(self):
+
+        fish_id = self.kwargs['fish_id']
+
+        return FishStage.objects.filter(
+            fish_id=fish_id
+        )

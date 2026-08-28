@@ -1,5 +1,11 @@
+/* ================================================= */
+/* ADMIN FISH                                      */
+/* Fish List / Details / Stages / Delete            */
+/* ================================================= */
+
+
 /* ============================= */
-/* Admin Fish Card               */
+/* Fish Card                     */
 /* ============================= */
 
 .admin-fish-card {
@@ -407,7 +413,7 @@
 
 
 /* ============================= */
-/* Fish Card                     */
+/* Fish Item                     */
 /* ============================= */
 
 .admin-fish-item {
@@ -926,6 +932,10 @@
 }
 
 
+/* ============================= */
+/* Detail Image                  */
+/* ============================= */
+
 .admin-fish-detail-image-wrapper {
 
   display: flex;
@@ -1089,720 +1099,94 @@
 }
 
 
-/* ================================================= */
-/* FISH FORM / EDIT PAGE                             */
-/* ================================================= */
-
-
 /* ============================= */
-/* Form Wrapper                  */
+/* Stage List                    */
 /* ============================= */
 
-.admin-fish-form-wrapper {
-
-  width: 100%;
-
-  animation:
-    admin-fish-content-appear
-    0.2s ease;
-
-}
-
-
-.admin-fish-edit-wrapper {
-
-  width: 100%;
-
-}
-
-
-/* ============================= */
-/* Form Top Header               */
-/* ============================= */
-
-.admin-fish-form-top {
-
-  display: flex;
-
-  align-items: flex-start;
-
-  justify-content: space-between;
-
-  margin-bottom: 24px;
-
-}
-
-
-.admin-fish-form-title h2 {
-
-  margin: 0 0 7px;
-
-  color: #263238;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 29px;
-
-  font-weight: 600;
-
-  line-height: 1.2;
-
-}
-
-
-.admin-fish-form-id {
-
-  color: #1595a3;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 13px;
-
-  font-weight: 500;
-
-}
-
-
-/* ============================= */
-/* Error Message                 */
-/* ============================= */
-
-.admin-fish-error {
-
-  margin-bottom: 18px;
-
-  padding: 11px 14px;
-
-  border:
-    1px solid
-    rgba(170, 75, 75, 0.14);
-
-  border-radius: 10px;
-
-  background:
-    rgba(170, 75, 75, 0.06);
-
-  color: #9b5151;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 13px;
-
-  line-height: 1.5;
-
-}
-
-
-/* ============================= */
-/* Edit Form                     */
-/* ============================= */
-
-.admin-fish-edit-form {
-
-  width: 100%;
-
-}
-
-
-/* ============================= */
-/* Edit General Card             */
-/* ============================= */
-
-.admin-fish-edit-general {
+.admin-fish-stage-list {
 
   display: grid;
 
   grid-template-columns:
-    minmax(230px, 350px)
-    1fr;
+    repeat(3, minmax(0, 1fr));
 
-  gap: 42px;
+  gap: 20px;
 
-  padding: 30px;
+  margin-top: 25px;
 
-  box-sizing: border-box;
+  text-align: left;
+
+}
+
+
+.admin-fish-stage-item {
+
+  padding: 20px;
 
   border:
     1px solid
-    rgba(20, 156, 168, 0.1);
-
-  border-radius: 18px;
-
-  background:
-    rgba(255, 255, 255, 0.62);
-
-}
-
-
-/* ============================= */
-/* Edit Image Column             */
-/* ============================= */
-
-.admin-fish-edit-image-column {
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: stretch;
-
-}
-
-
-.admin-fish-edit-image-wrapper {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  width: 100%;
-
-  min-height: 280px;
-
-  overflow: hidden;
-
-  border-radius: 15px;
-
-  background:
-    rgba(20, 156, 168, 0.055);
-
-}
-
-
-.admin-fish-edit-image {
-
-  display: block;
-
-  width: 100%;
-
-  height: 280px;
-
-  object-fit: contain;
-
-}
-
-
-.admin-fish-edit-no-image {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  width: 100%;
-
-  height: 280px;
-
-  color: #84969b;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 13px;
-
-}
-
-
-/* ============================= */
-/* Image Controls                */
-/* ============================= */
-
-.admin-fish-edit-image-control {
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 10px;
-
-  margin-top: 14px;
-
-}
-
-
-.admin-fish-edit-image-button {
-
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 9px 13px;
-
-  border:
-    1px solid
-    rgba(20, 156, 168, 0.18);
-
-  border-radius: 9px;
-
-  background:
-    rgba(20, 156, 168, 0.07);
-
-  color: #1595a3;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 12px;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease;
-
-}
-
-
-.admin-fish-edit-image-button:hover {
-
-  background:
     rgba(20, 156, 168, 0.12);
 
-  border-color:
-    rgba(20, 156, 168, 0.28);
+  border-radius: 14px;
 
-  transform:
-    translateY(-1px);
-
-}
-
-
-.admin-fish-edit-image-control > span {
-
-  color: #8a9a9f;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 11px;
-
-}
-
-
-.admin-fish-edit-image-input {
-
-  display: none;
-
-}
-
-
-/* ============================= */
-/* Edit Data                     */
-/* ============================= */
-
-.admin-fish-edit-data {
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
-
-  align-content: start;
-
-  gap: 20px 24px;
-
-}
-
-
-/* ============================= */
-/* Edit Field                    */
-/* ============================= */
-
-.admin-fish-edit-field {
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 7px;
-
-}
-
-
-.admin-fish-edit-field > label {
-
-  color: #82949a;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 11px;
-
-  font-weight: 500;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.05em;
-
-}
-
-
-.admin-fish-edit-field input {
-
-  width: 100%;
-
-  min-height: 42px;
-
-  padding:
-    0 12px;
+  background: #ffffff;
 
   box-sizing: border-box;
 
-  border:
-    1px solid
-    rgba(20, 156, 168, 0.15);
+}
 
-  border-radius: 9px;
 
-  outline: none;
+.admin-fish-stage-item h4 {
 
-  background:
-    rgba(255, 255, 255, 0.76);
+  margin: 0 0 16px;
 
   color: #263238;
 
   font-family: 'Space Grotesk', sans-serif;
 
-  font-size: 13px;
-
-  transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    background-color 0.18s ease;
-
-}
-
-
-.admin-fish-edit-field input:hover {
-
-  border-color:
-    rgba(20, 156, 168, 0.27);
-
-  background:
-    rgba(255, 255, 255, 0.9);
-
-}
-
-
-.admin-fish-edit-field input:focus {
-
-  border-color:
-    rgba(20, 156, 168, 0.42);
-
-  background:
-    rgba(255, 255, 255, 0.96);
-
-  box-shadow:
-    0 0 0 3px
-    rgba(20, 156, 168, 0.08);
-
-}
-
-
-.admin-fish-edit-field input::placeholder {
-
-  color: #9aa9ad;
-
-}
-
-
-/* ============================= */
-/* Field Groups                  */
-/* ============================= */
-
-.admin-fish-edit-field-group {
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 7px;
-
-}
-
-
-.admin-fish-edit-group-label {
-
-  color: #82949a;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 11px;
-
-  font-weight: 500;
-
-  text-transform: uppercase;
-
-  letter-spacing: 0.05em;
-
-}
-
-
-/* ============================= */
-/* Range Fields                  */
-/* ============================= */
-
-.admin-fish-edit-range {
-
-  display: grid;
-
-  grid-template-columns:
-    1fr
-    auto
-    1fr;
-
-  align-items: end;
-
-  gap: 10px;
-
-}
-
-
-.admin-fish-edit-range .admin-fish-edit-field {
-
-  min-width: 0;
-
-}
-
-
-.admin-fish-edit-range-separator {
-
-  padding-bottom: 12px;
-
-  color: #71858b;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 15px;
-
-}
-
-
-/* ============================= */
-/* Input + Unit                  */
-/* ============================= */
-
-.admin-fish-edit-input-unit {
-
-  position: relative;
-
-  display: flex;
-
-  align-items: center;
-
-}
-
-
-.admin-fish-edit-input-unit input {
-
-  padding-right: 48px;
-
-}
-
-
-.admin-fish-edit-input-unit span {
-
-  position: absolute;
-
-  right: 12px;
-
-  color: #7b8e93;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 11px;
-
-  pointer-events: none;
-
-}
-
-
-/* ============================= */
-/* Edit Actions                  */
-/* ============================= */
-
-.admin-fish-edit-actions {
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: flex-end;
-
-  gap: 10px;
-
-  margin-top: 20px;
-
-}
-
-
-/* ============================= */
-/* Cancel Button                 */
-/* ============================= */
-
-.admin-fish-form-cancel {
-
-  min-width: 90px;
-
-  padding: 10px 15px;
-
-  border:
-    1px solid
-    rgba(20, 156, 168, 0.15);
-
-  border-radius: 9px;
-
-  background:
-    rgba(255, 255, 255, 0.78);
-
-  color: #62777e;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 13px;
+  font-size: 17px;
 
   font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease;
-
-}
-
-
-.admin-fish-form-cancel:hover {
-
-  background:
-    rgba(20, 156, 168, 0.06);
-
-  border-color:
-    rgba(20, 156, 168, 0.24);
-
-}
-
-
-/* ============================= */
-/* Submit Button                 */
-/* ============================= */
-
-.admin-fish-form-submit {
-
-  min-width: 120px;
-
-  padding: 10px 16px;
-
-  border:
-    1px solid
-    rgba(20, 156, 168, 0.2);
-
-  border-radius: 9px;
-
-  background:
-    rgba(20, 156, 168, 0.1);
-
-  color: #1595a3;
-
-  font-family: 'Space Grotesk', sans-serif;
-
-  font-size: 13px;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    background-color 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-
-}
-
-
-.admin-fish-form-submit:hover {
-
-  background:
-    rgba(20, 156, 168, 0.15);
-
-  border-color:
-    rgba(20, 156, 168, 0.3);
-
-  transform:
-    translateY(-1px);
-
-  box-shadow:
-    0 5px 14px
-    rgba(30, 120, 130, 0.07);
-
-}
-
-
-.admin-fish-form-submit:disabled,
-.admin-fish-form-cancel:disabled {
-
-  opacity: 0.55;
-
-  cursor: not-allowed;
-
-  transform: none;
-
-}
-
-
-/* ============================= */
-/* Edit Stages                   */
-/* ============================= */
-
-.admin-fish-edit-stages {
-
-  min-height: 250px;
-
-  padding: 34px;
-
-  box-sizing: border-box;
-
-  border:
-    1px solid
-    rgba(20, 156, 168, 0.1);
-
-  border-radius: 18px;
-
-  background:
-    rgba(255, 255, 255, 0.6);
 
   text-align: center;
 
 }
 
 
-.admin-fish-edit-stages h3 {
+.admin-fish-stage-image {
 
-  margin: 0 0 12px;
+  width: 100%;
 
-  color: #263238;
+  height: 140px;
 
-  font-family: 'Space Grotesk', sans-serif;
+  display: block;
 
-  font-size: 20px;
+  object-fit: cover;
 
-  font-weight: 600;
+  margin-bottom: 15px;
+
+  border-radius: 10px;
 
 }
 
 
-.admin-fish-edit-stages p {
+.admin-fish-stage-no-image {
 
-  max-width: 560px;
+  width: 100%;
 
-  margin:
-    0 auto 10px;
+  height: 140px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  margin-bottom: 15px;
+
+  border-radius: 10px;
+
+  background: #f3f8f9;
 
   color: #71858b;
 
@@ -1810,7 +1194,66 @@
 
   font-size: 13px;
 
-  line-height: 1.6;
+}
+
+
+.admin-fish-stage-data {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+}
+
+
+.admin-fish-stage-data div {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding-bottom: 9px;
+
+  border-bottom:
+    1px solid
+    rgba(20, 156, 168, 0.08);
+
+}
+
+
+.admin-fish-stage-data div:last-child {
+
+  padding-bottom: 0;
+
+  border-bottom: none;
+
+}
+
+
+.admin-fish-stage-data span {
+
+  color: #71858b;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 12px;
+
+}
+
+
+.admin-fish-stage-data strong {
+
+  color: #263238;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 13px;
 
 }
 
@@ -2063,32 +1506,35 @@
 
 
 /* ============================= */
-/* Responsive                    */
+/* Responsive - Tablet           */
 /* ============================= */
 
-@media (max-width: 850px) {
+@media (max-width: 900px) {
 
-  .admin-fish-edit-general {
-
-    grid-template-columns:
-      minmax(200px, 280px)
-      1fr;
-
-    gap: 25px;
-
-    padding: 24px;
-
-  }
-
-  .admin-fish-edit-data {
+  .admin-fish-stage-list {
 
     grid-template-columns:
-      1fr;
+      repeat(2, minmax(0, 1fr));
 
   }
 
 }
 
+
+@media (max-width: 850px) {
+
+  .admin-fish-header {
+
+    gap: 22px;
+
+  }
+
+}
+
+
+/* ============================= */
+/* Responsive - Mobile           */
+/* ============================= */
 
 @media (max-width: 760px) {
 
@@ -2153,28 +1599,6 @@
   .admin-fish-detail-image-wrapper {
 
     max-width: 320px;
-
-  }
-
-
-  .admin-fish-edit-general {
-
-    grid-template-columns:
-      1fr;
-
-  }
-
-
-  .admin-fish-edit-image-wrapper {
-
-    max-width: 380px;
-
-  }
-
-
-  .admin-fish-edit-image-column {
-
-    align-items: flex-start;
 
   }
 
@@ -2277,85 +1701,9 @@
   }
 
 
-  .admin-fish-form-title h2 {
+  .admin-fish-stage-list {
 
-    font-size: 26px;
-
-  }
-
-
-  .admin-fish-form-id {
-
-    font-size: 12px;
-
-  }
-
-
-  .admin-fish-edit-general {
-
-    padding: 18px;
-
-    border-radius: 15px;
-
-  }
-
-
-  .admin-fish-edit-image-wrapper {
-
-    min-height: 220px;
-
-  }
-
-
-  .admin-fish-edit-image {
-
-    height: 220px;
-
-  }
-
-
-  .admin-fish-edit-no-image {
-
-    height: 220px;
-
-  }
-
-
-  .admin-fish-edit-range {
-
-    grid-template-columns:
-      1fr;
-
-    gap: 12px;
-
-  }
-
-
-  .admin-fish-edit-range-separator {
-
-    display: none;
-
-  }
-
-
-  .admin-fish-edit-actions {
-
-    justify-content: stretch;
-
-  }
-
-
-  .admin-fish-form-cancel,
-  .admin-fish-form-submit {
-
-    flex: 1;
-
-  }
-
-
-  .admin-fish-edit-stages {
-
-    padding: 24px;
+    grid-template-columns: 1fr;
 
   }
 

@@ -1,11 +1,59 @@
 from rest_framework import serializers
 
-from .models import Fish
+from .models import Fish, FishStage
+
+
+class FishStageSerializer(
+    serializers.ModelSerializer
+):
+
+    def validate_stage_number(self, value):
+
+        if value < 1 or value > 6:
+            raise serializers.ValidationError(
+                "Stage number must be between 1 and 6."
+            )
+
+        return value
+
+    class Meta:
+
+        model = FishStage
+
+        fields = [
+            'id',
+            'fish',
+            'stage_number',
+            'image',
+            'duration_days',
+            'min_weight',
+            'max_weight',
+            'created_at',
+        ]
+
+        read_only_fields = [
+            'id',
+            'fish',
+            'duration_days',
+            'created_at',
+        ]
+
+        extra_kwargs = {
+            'image': {
+                'required': False,
+                'allow_null': True,
+            },
+        }
 
 
 class FishSerializer(
     serializers.ModelSerializer
 ):
+
+    stages = FishStageSerializer(
+        many=True,
+        read_only=True
+    )
 
     class Meta:
 
@@ -23,11 +71,13 @@ class FishSerializer(
             'ph_max',
             'culture_period_days',
             'created_at',
+            'stages',
         ]
 
         read_only_fields = [
             'id',
             'created_at',
+            'stages',
         ]
 
         extra_kwargs = {

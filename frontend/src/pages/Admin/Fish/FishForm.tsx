@@ -3,7 +3,7 @@ import {
   useState
 } from 'react'
 
-import './Fish.css'
+import './FishForm.css'
 
 
 type Fish = {
@@ -33,6 +33,17 @@ type FishFormTab =
   | 'Stages'
 
 
+type FishStage = {
+  id?: number
+  fish?: number
+  stage_number: number
+  image: string | null
+  duration_days: number
+  min_weight: string
+  max_weight: string
+}
+
+
 function FishForm({
   fish,
   onComplete,
@@ -48,50 +59,40 @@ function FishForm({
       'General Info'
     )
 
-
   const [name, setName] =
     useState('')
-
 
   const [waterType, setWaterType] =
     useState('')
 
-
   const [feedingHabit, setFeedingHabit] =
     useState('')
-
 
   const [temperatureMin, setTemperatureMin] =
     useState('')
 
-
   const [temperatureMax, setTemperatureMax] =
     useState('')
-
 
   const [phMin, setPhMin] =
     useState('')
 
-
   const [phMax, setPhMax] =
     useState('')
-
 
   const [culturePeriodDays, setCulturePeriodDays] =
     useState('')
 
 
   /* ============================= */
-  /* Image                         */
+  /* Fish Image                    */
   /* ============================= */
 
   const [image, setImage] =
     useState<File | null>(null)
 
-
   const [existingImage, setExistingImage] =
     useState<string | null>(null)
-
 
   const [previewImage, setPreviewImage] =
     useState<string | null>(null)
@@ -104,9 +105,39 @@ function FishForm({
   const [loading, setLoading] =
     useState(false)
 
-
   const [error, setError] =
     useState('')
+
+
+  /* ============================= */
+  /* Stage State                   */
+  /* ============================= */
+
+  const [stages, setStages] =
+    useState<FishStage[]>([])
+
+  const [stageImages, setStageImages] =
+    useState<Record<number, File | null>>({})
+
+
+  /* ============================= */
+  /* Create Empty Stages           */
+  /* ============================= */
+
+  const createEmptyStages = (): FishStage[] => {
+
+    return Array.from(
+      { length: 6 },
+      (_, index) => ({
+        stage_number: index + 1,
+        image: null,
+        duration_days: 0,
+        min_weight: '',
+        max_weight: ''
+      })
+    )
+
+  }
 
 
   /* ============================= */
@@ -120,7 +151,6 @@ function FishForm({
     )
 
     setError('')
-
 
     if (!fish) {
 
@@ -140,8 +170,13 @@ function FishForm({
       setExistingImage(null)
       setPreviewImage(null)
 
-      return
+      setStageImages({})
 
+      setStages(
+        createEmptyStages()
+      )
+
+      return
     }
 
 
@@ -149,36 +184,29 @@ function FishForm({
       fish.name
     )
 
-
     setWaterType(
       fish.water_type
     )
-
 
     setFeedingHabit(
       fish.feeding_habit
     )
 
-
     setTemperatureMin(
       fish.temperature_min
     )
-
 
     setTemperatureMax(
       fish.temperature_max
     )
 
-
     setPhMin(
       fish.ph_min
     )
 
-
     setPhMax(
       fish.ph_max
     )
-
 
     setCulturePeriodDays(
       String(
@@ -186,21 +214,65 @@ function FishForm({
       )
     )
 
-
     setExistingImage(
       fish.image
     )
 
-
     setImage(null)
-
     setPreviewImage(null)
+    setStageImages({})
+
+
+    /* ============================= */
+    /* Load Existing Stages           */
+    /* ============================= */
+
+    fetch(
+      `http://127.0.0.1:8000/api/fish/${fish.id}/stages/`
+    )
+      .then((response) => {
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Unable to load fish stages.'
+          )
+
+        }
+
+        return response.json()
+
+      })
+      .then((data) => {
+
+        const loadedStages =
+          Array.isArray(data)
+            ? data
+            : data.results || []
+
+        setStages(
+          loadedStages
+        )
+
+      })
+      .catch((stageError) => {
+
+        console.error(
+          'Error loading fish stages:',
+          stageError
+        )
+
+        setStages(
+          createEmptyStages()
+        )
+
+      })
 
   }, [fish])
 
 
   /* ============================= */
-  /* Image Preview                 */
+  /* Fish Image Preview            */
   /* ============================= */
 
   useEffect(() => {
@@ -219,7 +291,6 @@ function FishForm({
         image
       )
 
-
     setPreviewImage(
       objectUrl
     )
@@ -237,7 +308,7 @@ function FishForm({
 
 
   /* ============================= */
-  /* Image Selection               */
+  /* Fish Image Selection          */
   /* ============================= */
 
   const handleImageChange = (
@@ -249,7 +320,6 @@ function FishForm({
       event.target.files?.[0] ||
       null
 
-
     setImage(
       selectedFile
     )
@@ -258,7 +328,55 @@ function FishForm({
 
 
   /* ============================= */
-  /* Form Validation               */
+  /* Stage Update                  */
+  /* ============================= */
+
+  const updateStage = (
+    stageNumber: number,
+    field:
+      | 'min_weight'
+      | 'max_weight',
+    value: string
+  ) => {
+
+    setStages(
+      (currentStages) =>
+        currentStages.map(
+          (stage) =>
+            stage.stage_number ===
+            stageNumber
+              ? {
+                  ...stage,
+                  [field]: value
+                }
+              : stage
+        )
+    )
+
+  }
+
+
+  /* ============================= */
+  /* Stage Image Selection         */
+  /* ============================= */
+
+  const handleStageImageChange = (
+    stageNumber: number,
+    file: File | null
+  ) => {
+
+    setStageImages(
+      (current) => ({
+        ...current,
+        [stageNumber]: file
+      })
+    )
+
+  }
+
+
+  /* ============================= */
+  /* Validation                    */
   /* ============================= */
 
   const validateForm = (): boolean => {
@@ -395,16 +513,93 @@ function FishForm({
     }
 
 
+    if (
+      Number(culturePeriodDays) <= 0
+    ) {
+
+      setError(
+        'Culture period must be greater than 0.'
+      )
+
+      setActiveTab(
+        'General Info'
+      )
+
+      return false
+
+    }
+
+
+    for (const stage of stages) {
+
+      if (
+        stage.min_weight !== '' &&
+        Number(stage.min_weight) < 0
+      ) {
+
+        setError(
+          `Stage ${stage.stage_number} minimum weight cannot be negative.`
+        )
+
+        setActiveTab(
+          'Stages'
+        )
+
+        return false
+
+      }
+
+
+      if (
+        stage.max_weight !== '' &&
+        Number(stage.max_weight) < 0
+      ) {
+
+        setError(
+          `Stage ${stage.stage_number} maximum weight cannot be negative.`
+        )
+
+        setActiveTab(
+          'Stages'
+        )
+
+        return false
+
+      }
+
+
+      if (
+        stage.min_weight !== '' &&
+        stage.max_weight !== '' &&
+        Number(stage.min_weight) >
+        Number(stage.max_weight)
+      ) {
+
+        setError(
+          `Stage ${stage.stage_number} minimum weight cannot be greater than maximum weight.`
+        )
+
+        setActiveTab(
+          'Stages'
+        )
+
+        return false
+
+      }
+
+    }
+
+
     return true
 
   }
 
 
   /* ============================= */
-  /* Submit                        */
+  /* Save Fish                     */
   /* ============================= */
 
-  const handleSubmit = (
+  const handleSubmit = async (
     event:
       React.FormEvent<HTMLFormElement>
   ) => {
@@ -430,59 +625,41 @@ function FishForm({
       name.trim()
     )
 
-
     formData.append(
       'water_type',
       waterType.trim()
     )
-
 
     formData.append(
       'feeding_habit',
       feedingHabit.trim()
     )
 
-
     formData.append(
       'temperature_min',
       temperatureMin
     )
-
 
     formData.append(
       'temperature_max',
       temperatureMax
     )
 
-
     formData.append(
       'ph_min',
       phMin
     )
-
 
     formData.append(
       'ph_max',
       phMax
     )
 
-
     formData.append(
       'culture_period_days',
       culturePeriodDays
     )
 
-
-    /*
-     * Image remains optional.
-     *
-     * For an existing fish:
-     * - existing image stays unchanged
-     *   when no new image is selected.
-     *
-     * - a new image replaces it when
-     *   the admin selects one.
-     */
 
     if (image) {
 
@@ -497,111 +674,243 @@ function FishForm({
     setLoading(true)
 
 
-    const endpoint =
-      fish
-        ? `http://127.0.0.1:8000/api/fish/${fish.id}/`
-        : 'http://127.0.0.1:8000/api/fish/'
+    try {
+
+      /* ============================= */
+      /* Fish Request                  */
+      /* ============================= */
+
+      const endpoint =
+        fish
+          ? `http://127.0.0.1:8000/api/fish/${fish.id}/`
+          : 'http://127.0.0.1:8000/api/fish/'
 
 
-    fetch(
-      endpoint,
-      {
-        method:
-          fish
-            ? 'PATCH'
-            : 'POST',
+      const response =
+        await fetch(
+          endpoint,
+          {
+            method:
+              fish
+                ? 'PATCH'
+                : 'POST',
 
-        body: formData
-      }
-    )
-      .then((response) => {
+            body:
+              formData
+          }
+        )
 
-        if (!response.ok) {
 
-          return response
+      if (!response.ok) {
+
+        const data =
+          await response
             .json()
-            .then((data) => {
-
-              const message =
-                data.detail ||
-                data.name?.[0] ||
-                data.image?.[0] ||
-                data.water_type?.[0] ||
-                data.feeding_habit?.[0] ||
-                data.temperature_min?.[0] ||
-                data.temperature_max?.[0] ||
-                data.ph_min?.[0] ||
-                data.ph_max?.[0] ||
-                data.culture_period_days?.[0] ||
-                'Unable to save fish.'
+            .catch(
+              () => ({})
+            )
 
 
-              throw new Error(
-                message
-              )
-
-            })
-            .catch((error) => {
-
-              if (
-                error instanceof Error &&
-                error.message !==
-                  'Unable to save fish.'
-              ) {
-
-                throw error
-
-              }
+        const message =
+          data.detail ||
+          data.name?.[0] ||
+          data.image?.[0] ||
+          data.water_type?.[0] ||
+          data.feeding_habit?.[0] ||
+          data.temperature_min?.[0] ||
+          data.temperature_max?.[0] ||
+          data.ph_min?.[0] ||
+          data.ph_max?.[0] ||
+          data.culture_period_days?.[0] ||
+          'Unable to save fish.'
 
 
-              throw new Error(
-                'Unable to save fish.'
-              )
+        throw new Error(
+          message
+        )
 
-            })
+      }
+
+
+      const savedFish =
+        await response.json()
+
+
+      const fishId =
+        fish?.id ||
+        savedFish.id
+
+
+      if (!fishId) {
+
+        throw new Error(
+          'Fish was saved, but its ID was not returned.'
+        )
+
+      }
+
+
+      /* ============================= */
+      /* Save Six Stages               */
+      /* ============================= */
+
+      for (
+        const stage
+        of stages
+      ) {
+
+        const stageData =
+          new FormData()
+
+
+        stageData.append(
+          'stage_number',
+          String(
+            stage.stage_number
+          )
+        )
+
+
+        if (
+          stage.min_weight !== ''
+        ) {
+
+          stageData.append(
+            'min_weight',
+            stage.min_weight
+          )
 
         }
 
 
-        return response.json()
+        if (
+          stage.max_weight !== ''
+        ) {
 
-      })
-      .then(() => {
+          stageData.append(
+            'max_weight',
+            stage.max_weight
+          )
 
-        onComplete()
-
-      })
-      .catch((saveError) => {
-
-        console.error(
-          'Error saving fish:',
-          saveError
-        )
+        }
 
 
-        setError(
-          saveError instanceof Error
-            ? saveError.message
-            : 'Unable to save fish.'
-        )
+        const stageImage =
+          stageImages[
+            stage.stage_number
+          ] ||
+          null
 
-      })
-      .finally(() => {
 
-        setLoading(false)
+        if (stageImage) {
 
-      })
+          stageData.append(
+            'image',
+            stageImage
+          )
+
+        }
+
+
+        const stageEndpoint =
+          stage.id
+            ? `http://127.0.0.1:8000/api/fish/${fishId}/stages/${stage.id}/`
+            : `http://127.0.0.1:8000/api/fish/${fishId}/stages/`
+
+
+        const stageResponse =
+          await fetch(
+            stageEndpoint,
+            {
+              method:
+                stage.id
+                  ? 'PATCH'
+                  : 'POST',
+
+              body:
+                stageData
+            }
+          )
+
+
+        if (
+          !stageResponse.ok
+        ) {
+
+          const stageErrorData =
+            await stageResponse
+              .json()
+              .catch(
+                () => ({})
+              )
+
+
+          const stageMessage =
+            stageErrorData.detail ||
+            stageErrorData.stage_number?.[0] ||
+            stageErrorData.min_weight?.[0] ||
+            stageErrorData.max_weight?.[0] ||
+            stageErrorData.image?.[0] ||
+            `Unable to save Stage ${stage.stage_number}.`
+
+
+          throw new Error(
+            stageMessage
+          )
+
+        }
+
+      }
+
+
+      onComplete()
+
+    }
+    catch (saveError) {
+
+      console.error(
+        'Error saving fish:',
+        saveError
+      )
+
+
+      setError(
+        saveError instanceof Error
+          ? saveError.message
+          : 'Unable to save fish.'
+      )
+
+    }
+    finally {
+
+      setLoading(false)
+
+    }
 
   }
 
 
   /* ============================= */
-  /* Display Image                 */
+  /* Display Fish Image            */
   /* ============================= */
 
   const displayImage =
     previewImage ||
     existingImage
+
+
+  /* ============================= */
+  /* Stage Duration                */
+  /* ============================= */
+
+  const calculatedStageDuration =
+    culturePeriodDays
+      ? Math.round(
+          Number(
+            culturePeriodDays
+          ) / 6
+        )
+      : 0
 
 
   /* ============================= */
@@ -627,11 +936,9 @@ function FishForm({
         <div className="admin-fish-form-title">
 
           <h2>
-
             {fish
               ? fish.name
               : 'Add Fish'}
-
           </h2>
 
 
@@ -729,7 +1036,7 @@ function FishForm({
           <div className="admin-fish-edit-general">
 
             {/* ============================= */}
-            {/* Image                          */}
+            {/* Fish Image                     */}
             {/* ============================= */}
 
             <div className="admin-fish-edit-image-column">
@@ -762,21 +1069,15 @@ function FishForm({
               </div>
 
 
-              {/* ============================= */}
-              {/* Image Control                  */}
-              {/* ============================= */}
-
               <div className="admin-fish-edit-image-control">
 
                 <label
                   htmlFor="fish-edit-image"
                   className="admin-fish-edit-image-button"
                 >
-
                   {displayImage
                     ? 'Change Image'
                     : 'Add Image'}
-
                 </label>
 
 
@@ -806,18 +1107,13 @@ function FishForm({
 
             <div className="admin-fish-edit-data">
 
-              {/* ============================= */}
-              {/* Fish Name                      */}
-              {/* ============================= */}
+              {/* Fish Name */}
 
               <div className="admin-fish-edit-field">
 
                 <label htmlFor="fish-name">
-
                   Fish Name
-
                 </label>
-
 
                 <input
                   id="fish-name"
@@ -834,18 +1130,13 @@ function FishForm({
               </div>
 
 
-              {/* ============================= */}
-              {/* Water Type                     */}
-              {/* ============================= */}
+              {/* Water Type */}
 
               <div className="admin-fish-edit-field">
 
                 <label htmlFor="fish-water-type">
-
                   Water Type
-
                 </label>
-
 
                 <input
                   id="fish-water-type"
@@ -862,18 +1153,13 @@ function FishForm({
               </div>
 
 
-              {/* ============================= */}
-              {/* Feeding Habit                  */}
-              {/* ============================= */}
+              {/* Feeding Habit */}
 
               <div className="admin-fish-edit-field">
 
                 <label htmlFor="fish-feeding-habit">
-
                   Feeding Habit
-
                 </label>
-
 
                 <input
                   id="fish-feeding-habit"
@@ -890,16 +1176,12 @@ function FishForm({
               </div>
 
 
-              {/* ============================= */}
-              {/* Temperature Range              */}
-              {/* ============================= */}
+              {/* Temperature Range */}
 
               <div className="admin-fish-edit-field-group">
 
                 <span className="admin-fish-edit-group-label">
-
                   Temperature Range
-
                 </span>
 
 
@@ -908,9 +1190,7 @@ function FishForm({
                   <div className="admin-fish-edit-field">
 
                     <label htmlFor="temperature-min">
-
                       Minimum
-
                     </label>
 
 
@@ -939,18 +1219,14 @@ function FishForm({
 
 
                   <span className="admin-fish-edit-range-separator">
-
                     –
-
                   </span>
 
 
                   <div className="admin-fish-edit-field">
 
                     <label htmlFor="temperature-max">
-
                       Maximum
-
                     </label>
 
 
@@ -982,16 +1258,12 @@ function FishForm({
               </div>
 
 
-              {/* ============================= */}
-              {/* pH Range                      */}
-              {/* ============================= */}
+              {/* pH Range */}
 
               <div className="admin-fish-edit-field-group">
 
                 <span className="admin-fish-edit-group-label">
-
                   pH Range
-
                 </span>
 
 
@@ -1000,9 +1272,7 @@ function FishForm({
                   <div className="admin-fish-edit-field">
 
                     <label htmlFor="ph-min">
-
                       Minimum
-
                     </label>
 
 
@@ -1023,18 +1293,14 @@ function FishForm({
 
 
                   <span className="admin-fish-edit-range-separator">
-
                     –
-
                   </span>
 
 
                   <div className="admin-fish-edit-field">
 
                     <label htmlFor="ph-max">
-
                       Maximum
-
                     </label>
 
 
@@ -1058,16 +1324,12 @@ function FishForm({
               </div>
 
 
-              {/* ============================= */}
-              {/* Culture Period                 */}
-              {/* ============================= */}
+              {/* Culture Period */}
 
               <div className="admin-fish-edit-field">
 
                 <label htmlFor="culture-period">
-
                   Culture Period
-
                 </label>
 
 
@@ -1100,7 +1362,7 @@ function FishForm({
 
 
           {/* ============================= */}
-          {/* Form Actions                   */}
+          {/* General Form Actions           */}
           {/* ============================= */}
 
           <div className="admin-fish-edit-actions">
@@ -1145,26 +1407,308 @@ function FishForm({
         <div className="admin-fish-edit-stages">
 
           <h3>
-            Stages
+            Fish Stages
           </h3>
 
 
           <p>
-
-            Stage information and feed
-            recommendations will be added later.
-
+            Enter the weight range for each
+            growth stage and optionally add
+            a stage image. Stage duration is
+            calculated automatically from the
+            culture period.
           </p>
 
 
-          <p>
+          <div className="admin-fish-stage-list">
 
-            The six fish growth stages,
-            stage images, and stage-specific
-            feed recommendations will be
-            configured here.
+            {stages.map((stage) => {
 
-          </p>
+              const selectedStageImage =
+                stageImages[
+                  stage.stage_number
+                ]
+
+
+              return (
+
+                <div
+                  key={
+                    stage.id ||
+                    stage.stage_number
+                  }
+                  className="admin-fish-stage-item"
+                >
+
+                  <h4>
+                    Stage {stage.stage_number}
+                  </h4>
+
+
+                  {/* ============================= */}
+                  {/* Stage Image                    */}
+                  {/* ============================= */}
+
+                  <div className="admin-fish-stage-image-wrapper">
+
+                    {selectedStageImage ? (
+
+                      <img
+                        src={
+                          URL.createObjectURL(
+                            selectedStageImage
+                          )
+                        }
+                        alt={
+                          `Stage ${stage.stage_number}`
+                        }
+                        className="admin-fish-stage-image"
+                      />
+
+                    ) : stage.image ? (
+
+                      <img
+                        src={stage.image}
+                        alt={
+                          `Stage ${stage.stage_number}`
+                        }
+                        className="admin-fish-stage-image"
+                      />
+
+                    ) : (
+
+                      <div className="admin-fish-stage-no-image">
+
+                        No image
+
+                      </div>
+
+                    )}
+
+                  </div>
+
+
+                  <div className="admin-fish-edit-field">
+
+                    <label
+                      htmlFor={`stage-image-${stage.stage_number}`}
+                    >
+                      Stage Image
+                    </label>
+
+
+                    <input
+                      id={`stage-image-${stage.stage_number}`}
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => {
+
+                        const file =
+                          event.target.files?.[0] ||
+                          null
+
+                        handleStageImageChange(
+                          stage.stage_number,
+                          file
+                        )
+
+                      }}
+                    />
+
+                  </div>
+
+
+                  {/* ============================= */}
+                  {/* Duration                       */}
+                  {/* ============================= */}
+
+                  <div className="admin-fish-edit-field">
+
+                    <label>
+                      Duration
+                    </label>
+
+
+                    <div className="admin-fish-edit-input-unit">
+
+                      <input
+                        type="number"
+                        value={
+                          calculatedStageDuration
+                        }
+                        readOnly
+                      />
+
+                      <span>
+                        days
+                      </span>
+
+                    </div>
+
+                  </div>
+
+
+                  {/* ============================= */}
+                  {/* Weight Range                   */}
+                  {/* ============================= */}
+
+                  <div className="admin-fish-edit-field-group">
+
+                    <span className="admin-fish-edit-group-label">
+                      Weight Range
+                    </span>
+
+
+                    <div className="admin-fish-edit-range">
+
+                      <div className="admin-fish-edit-field">
+
+                        <label
+                          htmlFor={`stage-${stage.stage_number}-min`}
+                        >
+                          Minimum
+                        </label>
+
+
+                        <div className="admin-fish-edit-input-unit">
+
+                          <input
+                            id={`stage-${stage.stage_number}-min`}
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={
+                              stage.min_weight
+                            }
+                            onChange={(event) =>
+                              updateStage(
+                                stage.stage_number,
+                                'min_weight',
+                                event.target.value
+                              )
+                            }
+                            placeholder="Minimum"
+                          />
+
+                          <span>
+                            g
+                          </span>
+
+                        </div>
+
+                      </div>
+
+
+                      <span className="admin-fish-edit-range-separator">
+                        –
+                      </span>
+
+
+                      <div className="admin-fish-edit-field">
+
+                        <label
+                          htmlFor={`stage-${stage.stage_number}-max`}
+                        >
+                          Maximum
+                        </label>
+
+
+                        <div className="admin-fish-edit-input-unit">
+
+                          <input
+                            id={`stage-${stage.stage_number}-max`}
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={
+                              stage.max_weight
+                            }
+                            onChange={(event) =>
+                              updateStage(
+                                stage.stage_number,
+                                'max_weight',
+                                event.target.value
+                              )
+                            }
+                            placeholder="Maximum"
+                          />
+
+                          <span>
+                            g
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              )
+
+            })}
+
+          </div>
+
+
+          {/* ============================= */}
+          {/* Stage Actions                  */}
+          {/* ============================= */}
+
+          <div className="admin-fish-edit-actions">
+
+            <button
+              type="button"
+              className="admin-fish-form-cancel"
+              onClick={onCancel}
+              disabled={loading}
+            >
+              Cancel
+            </button>
+
+
+            <button
+              type="button"
+              className="admin-fish-form-submit"
+              onClick={() => {
+
+                setError('')
+
+                const form =
+                  document.querySelector(
+                    '.admin-fish-edit-form'
+                  ) as HTMLFormElement | null
+
+
+                if (form) {
+
+                  form.requestSubmit()
+
+                }
+                else {
+
+                  setError(
+                    'Please save the General Info first.'
+                  )
+
+                }
+
+              }}
+              disabled={loading}
+            >
+
+              {loading
+                ? 'Saving...'
+                : fish
+                  ? 'Save Changes'
+                  : 'Add Fish'}
+
+            </button>
+
+          </div>
 
         </div>
 

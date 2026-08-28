@@ -1,4 +1,9 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useState,
+  type MouseEvent,
+} from 'react'
+
 import './Fish.css'
 import FishForm from './FishForm'
 
@@ -15,6 +20,17 @@ type Fish = {
   ph_max: string
   culture_period_days: number
   created_at: string
+}
+
+
+type FishStage = {
+  id?: number
+  fish?: number
+  stage_number: number
+  image: string | null
+  duration_days: number
+  min_weight: string
+  max_weight: string
 }
 
 
@@ -69,6 +85,9 @@ function Fish({ onBack }: FishProps) {
 
   const [error, setError] =
     useState('')
+
+  const [stages, setStages] =
+    useState<FishStage[]>([])
 
 
   /* =====================================================
@@ -154,6 +173,59 @@ function Fish({ onBack }: FishProps) {
 
 
   /* =====================================================
+     LOAD SELECTED FISH STAGES
+     ===================================================== */
+
+  useEffect(() => {
+
+    if (!selectedFish) {
+
+      setStages([])
+
+      return
+
+    }
+
+    fetch(
+      `http://127.0.0.1:8000/api/fish/${selectedFish.id}/stages/`
+    )
+      .then((response) => {
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Unable to load stages.'
+          )
+
+        }
+
+        return response.json()
+
+      })
+      .then((data) => {
+
+        setStages(
+          Array.isArray(data)
+            ? data
+            : data.results || []
+        )
+
+      })
+      .catch((stageError) => {
+
+        console.error(
+          'Error loading stages:',
+          stageError
+        )
+
+        setStages([])
+
+      })
+
+  }, [selectedFish])
+
+
+  /* =====================================================
      FISH DETAILS
      ===================================================== */
 
@@ -173,6 +245,8 @@ function Fish({ onBack }: FishProps) {
   const handleDetailsBack = () => {
 
     setSelectedFish(null)
+
+    setStages([])
 
   }
 
@@ -195,7 +269,7 @@ function Fish({ onBack }: FishProps) {
      ===================================================== */
 
   const handleEditFish = (
-    event: React.MouseEvent,
+    event: MouseEvent,
     fish: Fish
   ) => {
 
@@ -215,7 +289,7 @@ function Fish({ onBack }: FishProps) {
      ===================================================== */
 
   const handleDeleteClick = (
-    event: React.MouseEvent,
+    event: MouseEvent,
     fish: Fish
   ) => {
 
@@ -229,7 +303,9 @@ function Fish({ onBack }: FishProps) {
   const handleConfirmDelete = () => {
 
     if (!deleteFish) {
+
       return
+
     }
 
     fetch(
@@ -254,6 +330,8 @@ function Fish({ onBack }: FishProps) {
         setDeleteFish(null)
 
         setSelectedFish(null)
+
+        setStages([])
 
         loadFishes()
 
@@ -303,8 +381,6 @@ function Fish({ onBack }: FishProps) {
 
         <div className="admin-fish-details">
 
-          {/* Back button is ONLY for details */}
-
           <button
             type="button"
             className="admin-fish-back"
@@ -313,8 +389,6 @@ function Fish({ onBack }: FishProps) {
             ← Back
           </button>
 
-
-          {/* Header */}
 
           <div className="admin-fish-details-header">
 
@@ -333,7 +407,7 @@ function Fish({ onBack }: FishProps) {
           </div>
 
 
-          {/* Tabs */}
+          {/* TABS */}
 
           <div className="admin-fish-details-tabs">
 
@@ -371,7 +445,9 @@ function Fish({ onBack }: FishProps) {
           </div>
 
 
-          {/* GENERAL INFO */}
+          {/* =================================================
+              GENERAL INFO
+              ================================================= */}
 
           {activeTab === 'General Info' && (
 
@@ -496,7 +572,9 @@ function Fish({ onBack }: FishProps) {
           )}
 
 
-          {/* STAGES */}
+          {/* =================================================
+              STAGES
+              ================================================= */}
 
           {activeTab === 'Stages' && (
 
@@ -506,11 +584,94 @@ function Fish({ onBack }: FishProps) {
                 Fish Stages
               </h3>
 
-              <p>
-                Stage information, stage images
-                and feed recommendations will
-                be added here.
-              </p>
+
+              {stages.length === 0 ? (
+
+                <p>
+                  No stage information available.
+                </p>
+
+              ) : (
+
+                <div className="admin-fish-stage-list">
+
+                  {stages.map((stage) => (
+
+                    <div
+                      key={
+                        stage.id ||
+                        stage.stage_number
+                      }
+                      className="admin-fish-stage-item"
+                    >
+
+                      <h4>
+                        Stage {stage.stage_number}
+                      </h4>
+
+
+                      {stage.image ? (
+
+                        <img
+                          src={stage.image}
+                          alt={
+                            `Stage ${stage.stage_number}`
+                          }
+                          className="admin-fish-stage-image"
+                        />
+
+                      ) : (
+
+                        <div className="admin-fish-stage-no-image">
+                          No image available
+                        </div>
+
+                      )}
+
+
+                      <div className="admin-fish-stage-data">
+
+                        <div>
+
+                          <span>
+                            Duration
+                          </span>
+
+                          <strong>
+                            {stage.duration_days}
+                            {' '}days
+                          </strong>
+
+                        </div>
+
+
+                        <div>
+
+                          <span>
+                            Weight Range
+                          </span>
+
+                          <strong>
+
+                            {stage.min_weight}
+                            {' '}g
+                            {' '}–{' '}
+                            {stage.max_weight}
+                            {' '}g
+
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              )}
 
             </div>
 
@@ -587,11 +748,6 @@ function Fish({ onBack }: FishProps) {
 
     <section className="admin-fish-card">
 
-      {/* No Back button on the main Fish page */}
-
-
-      {/* Header */}
-
       <div className="admin-fish-header">
 
         <div className="admin-fish-header-content">
@@ -609,7 +765,7 @@ function Fish({ onBack }: FishProps) {
       </div>
 
 
-      {/* Error */}
+      {/* ERROR */}
 
       {error && (
 
@@ -620,7 +776,7 @@ function Fish({ onBack }: FishProps) {
       )}
 
 
-      {/* Search + Sort */}
+      {/* SEARCH + SORT */}
 
       <div className="admin-fish-controls">
 
@@ -661,9 +817,11 @@ function Fish({ onBack }: FishProps) {
             </span>
 
             <span className="admin-fish-sort-arrow">
+
               {sortDropdownOpen
                 ? '▴'
                 : '▾'}
+
             </span>
 
           </button>
@@ -757,7 +915,7 @@ function Fish({ onBack }: FishProps) {
       </div>
 
 
-      {/* Fish List */}
+      {/* FISH LIST */}
 
       <div className="admin-fish-list">
 
@@ -809,8 +967,6 @@ function Fish({ onBack }: FishProps) {
 
               <div className="admin-fish-actions">
 
-                {/* Edit */}
-
                 <button
                   type="button"
                   className="admin-fish-edit"
@@ -827,8 +983,6 @@ function Fish({ onBack }: FishProps) {
                   ⋮
                 </button>
 
-
-                {/* Delete */}
 
                 <button
                   type="button"
@@ -865,9 +1019,7 @@ function Fish({ onBack }: FishProps) {
       </div>
 
 
-      {/* =================================================
-          ADD FISH
-          ================================================= */}
+      {/* ADD FISH */}
 
       <div className="admin-fish-add-wrapper">
 

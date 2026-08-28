@@ -51,3 +51,53 @@ class Fish(models.Model):
     def __str__(self):
 
         return self.name
+
+
+class FishStage(models.Model):
+
+    fish = models.ForeignKey(
+        Fish,
+        on_delete=models.CASCADE,
+        related_name='stages'
+    )
+
+    stage_number = models.PositiveIntegerField()
+
+    image = models.ImageField(
+        upload_to='fish_stage_images/',
+        blank=True,
+        null=True
+    )
+
+    duration_days = models.PositiveIntegerField()
+
+    min_weight = models.DecimalField(
+       max_digits=8,
+       decimal_places=2,
+       blank=True,
+       null=True
+    )
+
+    max_weight = models.DecimalField(
+       max_digits=8,
+       decimal_places=2,
+       blank=True,
+       null=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=['fish', 'stage_number'],
+                name='unique_fish_stage'
+            )
+        ]
+
+    def __str__(self):
+
+        return f'{self.fish.name} - Stage {self.stage_number}'
