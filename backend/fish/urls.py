@@ -5,6 +5,8 @@ from .views import (
     FishDetailView,
     FishStageListCreateView,
     FishStageDetailView,
+    FeedRecommendationListCreateView,
+    FeedRecommendationDetailView,
 )
 
 urlpatterns = [
@@ -29,4 +31,13 @@ urlpatterns = [
         FishStageDetailView.as_view()
     ),
 
+    path(
+       '<int:fish_id>/stages/<int:stage_id>/feed-recommendations/',
+       FeedRecommendationListCreateView.as_view()
+    ),
+
+    path(
+       '<int:fish_id>/stages/<int:stage_id>/feed-recommendations/<int:recommendation_id>/',
+       FeedRecommendationDetailView.as_view()
+    ),
 ]

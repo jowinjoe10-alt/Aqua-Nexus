@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from .models import Fish, FishStage
+from .models import Fish, FishStage, FeedRecommendation
 
 
 class FishStageSerializer(
@@ -86,3 +85,34 @@ class FishSerializer(
                 'allow_null': True,
             },
         }
+
+
+class FeedRecommendationSerializer(
+    serializers.ModelSerializer
+):
+
+    class Meta:
+
+        model = FeedRecommendation
+
+        fields = [
+            'id',
+            'fish_stage',
+            'feed_name',
+            'feed_type',
+            'feed_form',
+            'protein_min',
+            'protein_max',
+            'particle_size_min',
+            'particle_size_max',
+            'is_organic',
+            'created_at',
+            'updated_at',
+        ]
+
+        read_only_fields = [
+            'id',
+            'fish_stage',
+            'created_at',
+            'updated_at',
+        ]

@@ -6,6 +6,7 @@ import {
 
 import './Fish.css'
 import FishForm from './FishForm'
+import FishFeed from './FishFeed/FishFeed'
 
 
 type Fish = {
@@ -37,6 +38,7 @@ type FishStage = {
 type FishTab =
   | 'General Info'
   | 'Stages'
+  | 'Feed'
 
 
 type SortType =
@@ -442,6 +444,21 @@ function Fish({ onBack }: FishProps) {
               Stages
             </button>
 
+
+            <button
+             type="button"
+             className={
+               activeTab === 'Feed'
+                 ? 'admin-fish-details-tab active'
+                 : 'admin-fish-details-tab'
+             }
+             onClick={() =>
+               setActiveTab('Feed')
+             }
+            >
+             Feed
+            </button>
+
           </div>
 
 
@@ -675,6 +692,10 @@ function Fish({ onBack }: FishProps) {
 
             </div>
 
+          )}
+          
+          {activeTab === 'Feed' && (
+            <FishFeed fish={selectedFish} />
           )}
 
         </div>

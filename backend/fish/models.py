@@ -101,3 +101,62 @@ class FishStage(models.Model):
     def __str__(self):
 
         return f'{self.fish.name} - Stage {self.stage_number}'
+
+
+class FeedRecommendation(models.Model):
+    fish_stage = models.ForeignKey(
+        FishStage,
+        on_delete=models.CASCADE,
+        related_name="feed_recommendations"
+    )
+
+    feed_name = models.CharField(
+       max_length=100,
+       blank=True,
+       null=True
+    )
+
+    feed_type = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    feed_form = models.CharField(
+        max_length=100
+    )
+
+    protein_min = models.DecimalField(
+        max_digits=5,
+        decimal_places=2
+    )
+
+    protein_max = models.DecimalField(
+        max_digits=5,
+        decimal_places=2
+    )
+
+    particle_size_min = models.DecimalField(
+        max_digits=5,
+        decimal_places=2
+    )
+
+    particle_size_max = models.DecimalField(
+        max_digits=5,
+        decimal_places=2
+    )
+
+    is_organic = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return f"{self.fish_stage} - {self.feed_name}"

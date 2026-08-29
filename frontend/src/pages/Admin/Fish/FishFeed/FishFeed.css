@@ -1,0 +1,1063 @@
+/* =========================================================
+   Fish Feed
+   ========================================================= */
+
+.fish-feed-container {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.fish-feed-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  margin-bottom: 28px;
+}
+
+.fish-feed-header > div {
+  min-width: 0;
+}
+
+.fish-feed-eyebrow {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #159bb2;
+
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+}
+
+.fish-feed-header h3 {
+  margin: 0;
+
+  color: #172b3a;
+
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.fish-feed-header p {
+  margin: 8px 0 0;
+
+  color: #718391;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   Back Button
+   ========================================================= */
+
+.fish-feed-back-button {
+  display: inline-flex;
+  align-items: center;
+
+  margin-bottom: 22px;
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  color: #079bb5;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.fish-feed-back-button:hover {
+  color: #087f96;
+
+  transform: translateX(-2px);
+}
+
+.fish-feed-back-button:focus-visible {
+  outline: 2px solid #75d5e5;
+  outline-offset: 4px;
+
+  border-radius: 4px;
+}
+
+
+/* =========================================================
+   Stage Grid
+   ========================================================= */
+
+.fish-feed-stage-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 20px;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   Stage Card
+   ========================================================= */
+
+.fish-feed-stage-card {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+
+  border: 1px solid #d9edf1;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  text-align: left;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 8px rgba(28, 91, 105, 0.04);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.fish-feed-stage-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #b7e1e8;
+
+  box-shadow:
+    0 10px 28px rgba(28, 91, 105, 0.09);
+}
+
+.fish-feed-stage-card:focus-visible {
+  outline: 2px solid #4fc5d7;
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   Stage Card Image
+   ========================================================= */
+
+.fish-feed-stage-image-wrapper {
+  position: relative;
+
+  width: 100%;
+  height: 175px;
+
+  background: #f1fafb;
+
+  overflow: hidden;
+}
+
+.fish-feed-stage-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.fish-feed-stage-no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f0fafb,
+      #e8f6f8
+    );
+
+  color: #6e9aa3;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   Stage Card Content
+   ========================================================= */
+
+.fish-feed-stage-content {
+  display: flex;
+  flex-direction: column;
+
+  padding: 18px 19px 20px;
+}
+
+.fish-feed-stage-number {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #139eb7;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.fish-feed-stage-content h4 {
+  margin: 0 0 15px;
+
+  color: #19303e;
+
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.fish-feed-stage-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 9px 0;
+
+  border-top: 1px solid #edf5f6;
+}
+
+.fish-feed-stage-info span {
+  color: #84939b;
+
+  font-size: 12px;
+}
+
+.fish-feed-stage-info strong {
+  color: #334b58;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fish-feed-stage-arrow {
+  display: block;
+
+  margin-top: 15px;
+
+  color: #079bb5;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   Recommendation Grid
+   ========================================================= */
+
+.fish-feed-recommendation-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 20px;
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   Recommendation Card
+   ========================================================= */
+
+.fish-feed-recommendation-card {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+
+  border: 1px solid #d9edf1;
+  border-radius: 18px;
+
+  background: #ffffff;
+
+  text-align: left;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 8px rgba(28, 91, 105, 0.04);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.fish-feed-recommendation-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #b7e1e8;
+
+  box-shadow:
+    0 10px 28px rgba(28, 91, 105, 0.09);
+}
+
+.fish-feed-recommendation-card:focus-visible {
+  outline: 2px solid #4fc5d7;
+  outline-offset: 3px;
+}
+
+
+/* =========================================================
+   Recommendation Card Image
+   ========================================================= */
+
+.fish-feed-card-image-wrapper {
+  width: 100%;
+  height: 170px;
+
+  background: #f1fafb;
+
+  overflow: hidden;
+}
+
+.fish-feed-card-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+.fish-feed-card-no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f0fafb,
+      #e8f6f8
+    );
+
+  color: #6e9aa3;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   Recommendation Card Content
+   ========================================================= */
+
+.fish-feed-card-content {
+  display: flex;
+  flex-direction: column;
+
+  padding: 18px 19px 20px;
+}
+
+.fish-feed-card-rank {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #159bb2;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.fish-feed-card-content h4 {
+  margin: 0;
+
+  color: #1b303e;
+
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.fish-feed-card-type {
+  display: inline-flex;
+  align-self: flex-start;
+
+  margin-top: 9px;
+  padding: 5px 10px;
+
+  border: 1px solid #d8eef1;
+  border-radius: 20px;
+
+  background: #f4fbfc;
+
+  color: #328394;
+
+  font-size: 11px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   Recommendation Factors
+   ========================================================= */
+
+.fish-feed-card-factors {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 8px;
+
+  margin-top: 18px;
+}
+
+.fish-feed-card-factors > div {
+  min-width: 0;
+
+  padding: 10px 9px;
+
+  border: 1px solid #edf4f5;
+  border-radius: 10px;
+
+  background: #fbfdfd;
+}
+
+.fish-feed-card-factors span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #87969e;
+
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.fish-feed-card-factors strong {
+  display: block;
+
+  color: #315361;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   View Details
+   ========================================================= */
+
+.fish-feed-view-details {
+  display: block;
+
+  margin-top: 17px;
+
+  color: #079bb5;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   Complete Detail Card
+   ========================================================= */
+
+.fish-feed-detail-card {
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, 340px)
+    minmax(0, 1fr);
+
+  gap: 30px;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 24px;
+
+  border: 1px solid #d9edf1;
+  border-radius: 20px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 3px 12px rgba(28, 91, 105, 0.04);
+}
+
+
+/* =========================================================
+   Detail Image
+   ========================================================= */
+
+.fish-feed-detail-image-wrapper {
+  width: 100%;
+  min-height: 300px;
+
+  border-radius: 16px;
+
+  background: #f1fafb;
+
+  overflow: hidden;
+}
+
+.fish-feed-detail-image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 300px;
+
+  object-fit: cover;
+}
+
+.fish-feed-detail-no-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 300px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #f0fafb,
+      #e8f6f8
+    );
+
+  color: #6e9aa3;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+
+/* =========================================================
+   Detail Content
+   ========================================================= */
+
+.fish-feed-detail-content {
+  min-width: 0;
+}
+
+.fish-feed-detail-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+}
+
+.fish-feed-rank {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #159bb2;
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.fish-feed-detail-title-row h3 {
+  margin: 0;
+
+  color: #182e3d;
+
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+
+/* =========================================================
+   Basic Details
+   ========================================================= */
+
+.fish-feed-basic-details {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 1px;
+
+  margin-bottom: 24px;
+
+  border: 1px solid #e5f1f3;
+  border-radius: 13px;
+
+  background: #e5f1f3;
+
+  overflow: hidden;
+}
+
+.fish-feed-basic-details > div {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  padding: 13px 15px;
+
+  background: #ffffff;
+}
+
+.fish-feed-basic-details span {
+  margin-bottom: 5px;
+
+  color: #85959d;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.fish-feed-basic-details strong {
+  color: #314c59;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   Detail Sections
+   ========================================================= */
+
+.fish-feed-section {
+  padding: 18px 0;
+
+  border-top: 1px solid #edf4f5;
+}
+
+.fish-feed-section:first-of-type {
+  padding-top: 0;
+
+  border-top: none;
+}
+
+.fish-feed-section h4 {
+  margin: 0 0 13px;
+
+  color: #304b58;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fish-feed-section p {
+  margin: 0;
+
+  color: #687b85;
+
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+
+/* =========================================================
+   Detail Suitability Rows
+   ========================================================= */
+
+.fish-feed-detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 9px 0;
+
+  border-bottom: 1px solid #f0f5f6;
+}
+
+.fish-feed-detail-row:last-child {
+  border-bottom: none;
+}
+
+.fish-feed-detail-label {
+  color: #6d8089;
+
+  font-size: 12px;
+}
+
+.fish-feed-suitability {
+  flex-shrink: 0;
+
+  color: #3b5965;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fish-feed-suitability.high {
+  color: #18856f;
+}
+
+.fish-feed-suitability.medium {
+  color: #9a7620;
+}
+
+.fish-feed-suitability.low {
+  color: #a05252;
+}
+
+
+/* =========================================================
+   Error
+   ========================================================= */
+
+.fish-feed-error {
+  width: 100%;
+  box-sizing: border-box;
+
+  margin-bottom: 20px;
+  padding: 13px 15px;
+
+  border: 1px solid #f1d4d4;
+  border-radius: 10px;
+
+  background: #fff7f7;
+
+  color: #a14d4d;
+
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.fish-feed-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 220px;
+
+  padding: 35px 25px;
+
+  border: 1px dashed #d5e9ec;
+  border-radius: 16px;
+
+  background: #fbfefe;
+
+  text-align: center;
+}
+
+.fish-feed-empty h3 {
+  margin: 0 0 8px;
+
+  color: #36505d;
+
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.fish-feed-empty p {
+  max-width: 440px;
+
+  margin: 0;
+
+  color: #7d9099;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* =========================================================
+   Loading
+   ========================================================= */
+
+.fish-feed-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 220px;
+
+  color: #718791;
+
+  text-align: center;
+}
+
+.fish-feed-loading p {
+  margin: 13px 0 0;
+
+  font-size: 13px;
+}
+
+.fish-feed-loading-spinner {
+  width: 28px;
+  height: 28px;
+
+  border: 3px solid #dceff2;
+  border-top-color: #159eb7;
+
+  border-radius: 50%;
+
+  animation:
+    fish-feed-spin 0.8s linear infinite;
+}
+
+@keyframes fish-feed-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   Tablet
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+  .fish-feed-stage-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .fish-feed-detail-card {
+    grid-template-columns:
+      minmax(200px, 280px)
+      minmax(0, 1fr);
+
+    gap: 22px;
+
+    padding: 20px;
+  }
+
+  .fish-feed-detail-image-wrapper,
+  .fish-feed-detail-image {
+    min-height: 260px;
+  }
+
+}
+
+
+/* =========================================================
+   Small Tablet
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+  .fish-feed-recommendation-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .fish-feed-detail-card {
+    grid-template-columns:
+      1fr;
+  }
+
+  .fish-feed-detail-image-wrapper,
+  .fish-feed-detail-image {
+    min-height: 260px;
+  }
+
+}
+
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .fish-feed-header {
+    margin-bottom: 22px;
+  }
+
+  .fish-feed-header h3 {
+    font-size: 21px;
+  }
+
+  .fish-feed-header p {
+    font-size: 13px;
+  }
+
+
+  .fish-feed-stage-grid {
+    grid-template-columns:
+      1fr;
+
+    gap: 16px;
+  }
+
+
+  .fish-feed-stage-image-wrapper {
+    height: 190px;
+  }
+
+
+  .fish-feed-stage-content {
+    padding: 16px;
+  }
+
+
+  .fish-feed-recommendation-grid {
+    gap: 16px;
+  }
+
+
+  .fish-feed-card-image-wrapper {
+    height: 185px;
+  }
+
+
+  .fish-feed-card-content {
+    padding: 16px;
+  }
+
+
+  .fish-feed-card-factors {
+    grid-template-columns:
+      1fr;
+
+    gap: 7px;
+  }
+
+
+  .fish-feed-card-factors > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 9px 10px;
+  }
+
+
+  .fish-feed-card-factors span {
+    margin-bottom: 0;
+  }
+
+
+  .fish-feed-detail-card {
+    gap: 20px;
+
+    padding: 15px;
+
+    border-radius: 16px;
+  }
+
+
+  .fish-feed-detail-image-wrapper,
+  .fish-feed-detail-image {
+    min-height: 220px;
+  }
+
+
+  .fish-feed-detail-title-row h3 {
+    font-size: 22px;
+  }
+
+
+  .fish-feed-basic-details {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .fish-feed-detail-row {
+    align-items: flex-start;
+    flex-direction: column;
+
+    gap: 4px;
+  }
+
+
+  .fish-feed-suitability {
+    white-space: normal;
+  }
+
+}
+
+
+/* =========================================================
+   Very Small Screens
+   ========================================================= */
+
+@media (max-width: 400px) {
+
+  .fish-feed-stage-image-wrapper {
+    height: 165px;
+  }
+
+  .fish-feed-card-image-wrapper {
+    height: 160px;
+  }
+
+  .fish-feed-detail-image-wrapper,
+  .fish-feed-detail-image {
+    min-height: 190px;
+  }
+
+  .fish-feed-detail-card {
+    padding: 12px;
+  }
+
+}

@@ -5,9 +5,12 @@ from rest_framework.parsers import (
     JSONParser,
 )
 
-from .models import Fish, FishStage
-from .serializers import FishSerializer, FishStageSerializer
-
+from .models import Fish, FishStage, FeedRecommendation
+from .serializers import (
+    FishSerializer,
+    FishStageSerializer,
+    FeedRecommendationSerializer,
+)
 
 class FishListCreateView(
     generics.ListCreateAPIView
@@ -186,4 +189,68 @@ class FishStageDetailView(
 
         return FishStage.objects.filter(
             fish_id=fish_id
+        )
+
+
+class FeedRecommendationListCreateView(
+    generics.ListCreateAPIView
+):
+
+    serializer_class = FeedRecommendationSerializer
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser,
+        JSONParser,
+    ]
+
+    def get_queryset(self):
+
+        fish_id = self.kwargs['fish_id']
+        stage_id = self.kwargs['stage_id']
+
+        return FeedRecommendation.objects.filter(
+            fish_stage_id=stage_id,
+            fish_stage__fish_id=fish_id
+        ).order_by(
+            'id'
+        )
+
+    def perform_create(self, serializer):
+
+        fish_id = self.kwargs['fish_id']
+        stage_id = self.kwargs['stage_id']
+
+        stage = FishStage.objects.get(
+            id=stage_id,
+            fish_id=fish_id
+        )
+
+        serializer.save(
+            fish_stage=stage
+        )
+
+
+class FeedRecommendationDetailView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = FeedRecommendationSerializer
+
+    parser_classes = [
+        MultiPartParser,
+        FormParser,
+        JSONParser,
+    ]
+
+    lookup_url_kwarg = 'recommendation_id'
+
+    def get_queryset(self):
+
+        fish_id = self.kwargs['fish_id']
+        stage_id = self.kwargs['stage_id']
+
+        return FeedRecommendation.objects.filter(
+            fish_stage_id=stage_id,
+            fish_stage__fish_id=fish_id
         )

@@ -1,9 +1,6 @@
-import {
-  useEffect,
-  useState
-} from 'react'
-
-import './FishForm.css'
+import { useEffect, useState } from "react";
+import "./FishForm.css";
+import FishFeed from "./FishFeed/FishFeed";
 
 
 type Fish = {
@@ -31,6 +28,7 @@ type FishFormProps = {
 type FishFormTab =
   | 'General Info'
   | 'Stages'
+  | 'Feed'
 
 
 type FishStage = {
@@ -963,27 +961,24 @@ function FishForm({
 
       <div className="admin-fish-details-tabs">
 
+         {/* General Info */}
         <button
           type="button"
           className={
             activeTab === 'General Info'
               ? 'admin-fish-details-tab active'
               : 'admin-fish-details-tab'
-          }
-          onClick={() => {
-
-            setActiveTab(
-              'General Info'
-            )
-
-            setError('')
-
-          }}
+            }
+            onClick={() => {
+              setActiveTab('General Info')
+              setError('')
+            }}
         >
           General Info
         </button>
 
 
+        {/* Stages */}
         <button
           type="button"
           className={
@@ -992,19 +987,35 @@ function FishForm({
               : 'admin-fish-details-tab'
           }
           onClick={() => {
-
-            setActiveTab(
-              'Stages'
-            )
-
+            setActiveTab('Stages')
             setError('')
-
           }}
         >
           Stages
         </button>
 
+
+        {/* Feed */}
+        {fish && (
+           <button
+              type="button"
+              className={
+                activeTab === 'Feed'
+                  ? 'admin-fish-details-tab active'
+                  : 'admin-fish-details-tab'
+              }
+              onClick={() => {
+                setActiveTab('Feed')
+                setError('')
+              }}
+           >
+             Feed
+           </button>
+        )}
       </div>
+
+
+
 
 
       {/* ============================= */}
@@ -1713,6 +1724,12 @@ function FishForm({
         </div>
 
       )}
+      
+      
+      {fish && activeTab === 'Feed' && (
+        <FishFeed fish={fish} />
+      )}
+
 
     </div>
 
