@@ -1013,3 +1013,194 @@ class FarmerAccountsView(APIView):
                 'Farmer account deleted successfully'
 
         }, status=200)
+
+
+class VendorAccountsView(APIView):
+
+    def get(self, request):
+
+        search = request.GET.get(
+            'search',
+            ''
+        ).strip()
+
+        sort = request.GET.get(
+            'sort',
+            'id_asc'
+        )
+
+        from_date = request.GET.get(
+            'from_date'
+        )
+
+        to_date = request.GET.get(
+            'to_date'
+        )
+
+
+        # =============================
+        # Get Vendor Accounts
+        # =============================
+
+        vendors = Account.objects.filter(
+            role='vendor'
+        )
+
+
+        # =============================
+        # Search
+        # =============================
+
+        if search:
+
+            search_query = Q(
+                name__icontains=search
+            ) | Q(
+                city__icontains=search
+            ) | Q(
+                state__icontains=search
+            )
+
+            if search.isdigit():
+
+                search_query |= Q(
+                    id=int(search)
+                )
+
+            vendors = vendors.filter(
+                search_query
+            )
+
+
+        # =============================
+        # Created Date Range
+        # =============================
+
+        if from_date:
+
+            vendors = vendors.filter(
+                created_at__date__gte=from_date
+            )
+
+        if to_date:
+
+            vendors = vendors.filter(
+                created_at__date__lte=to_date
+            )
+
+
+        # =============================
+        # Sorting
+        # =============================
+
+        if sort == 'id_desc':
+
+            vendors = vendors.order_by(
+                '-id'
+            )
+
+        elif sort == 'name_asc':
+
+            vendors = vendors.order_by(
+                'name',
+                'id'
+            )
+
+        elif sort == 'name_desc':
+
+            vendors = vendors.order_by(
+                '-name',
+                'id'
+            )
+
+        elif sort == 'location_asc':
+
+            vendors = vendors.order_by(
+                'city',
+                'state',
+                'id'
+            )
+
+        else:
+
+            vendors = vendors.order_by(
+                'id'
+            )
+
+
+        # =============================
+        # Vendor Data
+        # =============================
+
+        vendor_list = []
+
+        for vendor in vendors:
+
+            vendor_list.append({
+
+                'id':
+                    vendor.id,
+
+                'name':
+                    vendor.name,
+
+                'gmail':
+                    vendor.gmail,
+
+                'city':
+                    vendor.city,
+
+                'state':
+                    vendor.state,
+
+                'created_at':
+                    vendor.created_at,
+
+            })
+
+
+        return Response({
+
+            'vendors':
+                vendor_list,
+
+            'count':
+                len(vendor_list),
+
+        })
+
+
+    def delete(self, request, vendor_id=None):
+
+        if not vendor_id:
+
+            return Response({
+                'message':
+                    'Vendor ID is required'
+            }, status=400)
+
+
+        try:
+
+            vendor = Account.objects.get(
+                id=vendor_id,
+                role='vendor'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response({
+                'message':
+                    'Vendor account not found'
+            }, status=404)
+
+
+        vendor.delete()
+
+
+        return Response({
+
+            'message':
+                'Vendor account deleted successfully'
+
+        }, status=200)

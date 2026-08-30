@@ -1,3 +1,4 @@
+from django.db import models
 from rest_framework import generics
 from rest_framework.parsers import (
     MultiPartParser,
@@ -10,6 +11,7 @@ from .serializers import (
     FishSerializer,
     FishStageSerializer,
     FeedRecommendationSerializer,
+    AdminFeedRecommendationSerializer,
 )
 
 class FishListCreateView(
@@ -253,4 +255,73 @@ class FeedRecommendationDetailView(
         return FeedRecommendation.objects.filter(
             fish_stage_id=stage_id,
             fish_stage__fish_id=fish_id
+        )
+
+
+class AdminFeedRecommendationDetailView(
+    generics.RetrieveUpdateDestroyAPIView
+):
+
+    serializer_class = AdminFeedRecommendationSerializer
+
+    lookup_url_kwarg = 'recommendation_id'
+
+    def get_queryset(self):
+
+        return FeedRecommendation.objects.select_related(
+            'fish_stage__fish'
+        )
+
+
+class AdminFeedRecommendationListView(
+    generics.ListAPIView
+):
+
+    serializer_class = AdminFeedRecommendationSerializer
+
+    def get_queryset(self):
+
+        queryset = FeedRecommendation.objects.select_related(
+            'fish_stage__fish'
+        )
+
+        # =============================
+        # Stage
+        # =============================
+
+        stage = self.request.query_params.get(
+            'stage'
+        )
+
+        if stage:
+
+            queryset = queryset.filter(
+                fish_stage__stage_number=stage
+            )
+
+
+        # =============================
+        # Search
+        # =============================
+
+        search = self.request.query_params.get(
+            'search',
+            ''
+        ).strip()
+
+        if search:
+
+            queryset = queryset.filter(
+                models.Q(
+                    feed_name__icontains=search
+                )
+                |
+                models.Q(
+                    fish_stage__fish__name__icontains=search
+                )
+            )
+
+
+        return queryset.order_by(
+            'id'
         )

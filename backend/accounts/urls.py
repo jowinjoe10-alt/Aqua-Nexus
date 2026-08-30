@@ -11,6 +11,7 @@ from .views import (
     FarmerStatsView,
     VendorStatsView,
     FarmerAccountsView,
+    VendorAccountsView,
 )
 
 
@@ -100,4 +101,17 @@ urlpatterns = [
         UpdateProfileView.as_view()
     ),
 
+        # =============================
+    # Vendor Accounts
+    # =============================
+
+    path(
+        'admin/vendors/',
+        VendorAccountsView.as_view()
+    ),
+
+    path(
+        'admin/vendors/<int:vendor_id>/',
+        VendorAccountsView.as_view()
+    ),
 ]

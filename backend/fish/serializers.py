@@ -116,3 +116,47 @@ class FeedRecommendationSerializer(
             'created_at',
             'updated_at',
         ]
+
+class AdminFeedRecommendationSerializer(
+    serializers.ModelSerializer
+):
+
+    fish_name = serializers.CharField(
+        source='fish_stage.fish.name',
+        read_only=True
+    )
+
+    stage_number = serializers.IntegerField(
+        source='fish_stage.stage_number',
+        read_only=True
+    )
+
+    class Meta:
+
+        model = FeedRecommendation
+
+        fields = [
+            'id',
+            'fish_name',
+            'fish_stage',
+            'stage_number',
+            'feed_name',
+            'feed_type',
+            'feed_form',
+            'protein_min',
+            'protein_max',
+            'particle_size_min',
+            'particle_size_max',
+            'is_organic',
+            'created_at',
+            'updated_at',
+        ]
+
+        read_only_fields = [
+            'id',
+            'fish_name',
+            'fish_stage',
+            'stage_number',
+            'created_at',
+            'updated_at',
+        ]
