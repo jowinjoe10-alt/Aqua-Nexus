@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import './Farmer.css'
 import HamburgerMenu from '../../components/HamburgerMenu/HamburgerMenu'
+import FarmerFeed from './FarmerFeed'
+
 
 type Fish = {
   id: number
@@ -39,6 +41,9 @@ function Farmer() {
 
   const [selectedFish, setSelectedFish] =
     useState<Fish | null>(null)
+
+  const [showFarmerFeed, setShowFarmerFeed] =
+  useState(false)
 
   const [locationPopupOpen, setLocationPopupOpen] =
     useState(false)
@@ -407,11 +412,9 @@ function Farmer() {
                 placeholder="Search for fish..."
                 value={searchText}
                 onChange={(event) => {
-                  setSearchText(
-                    event.target.value
-                  )
-
-                  setSelectedFish(null)
+                 setSearchText(event.target.value)
+                 setSelectedFish(null)
+                 setShowFarmerFeed(false)
                 }}
               />
 
@@ -461,12 +464,15 @@ function Farmer() {
 
             {/* Selected Fish */}
 
-            {selectedFish && (
+            {selectedFish && !showFarmerFeed && (
               <div className="fish-details">
 
                <button
                   className="fish-back-button"
-                  onClick={() => setSelectedFish(null)}
+                  onClick={() => {
+                    setSelectedFish(null)
+                    setShowFarmerFeed(false)
+                  }}
                >
                 ← Back to Fish
                </button>
@@ -555,7 +561,9 @@ function Farmer() {
 
                <div className="fish-continue-wrapper">
                  <button
+                   type="button"
                    className="fish-continue-button"
+                   onClick={() => setShowFarmerFeed(true)}
                  >
                    Continue →
                  </button>
@@ -563,7 +571,14 @@ function Farmer() {
 
               </div>
             )}
-
+            
+            {selectedFish && showFarmerFeed && (
+              <FarmerFeed
+                fish={selectedFish}
+                onBack={() => setShowFarmerFeed(false)}
+              />
+            )}
+            
             {/* Empty State */}
 
             {!selectedFish && (

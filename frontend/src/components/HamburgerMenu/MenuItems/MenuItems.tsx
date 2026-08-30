@@ -109,38 +109,46 @@ function MenuItems({
       {/* Orders                        */}
       {/* ============================= */}
 
-      <button
-        type="button"
-        className="side-menu-item"
-        onClick={() => {
+      {role !== 'admin' && (
 
-          console.log(
-            `Orders selected for ${role}`
-          )
+        <button
+          type="button"
+          className="side-menu-item"
+          onClick={() => {
 
-        }}
-      >
-        Orders
-      </button>
+            console.log(
+              `Orders selected for ${role}`
+            )
+
+          }}
+        >
+          Orders
+        </button>
+
+      )}
 
 
       {/* ============================= */}
       {/* Subscriptions                 */}
       {/* ============================= */}
 
-      <button
-        type="button"
-        className="side-menu-item"
-        onClick={() => {
+      {role !== 'admin' && (
 
-          console.log(
-            `Subscriptions selected for ${role}`
-          )
+        <button
+          type="button"
+          className="side-menu-item"
+          onClick={() => {
 
-        }}
-      >
-        Subscriptions
-      </button>
+            console.log(
+              `Subscriptions selected for ${role}`
+            )
+
+          }}
+        >
+          Subscriptions
+        </button>
+
+      )}
 
 
       {/* ============================= */}
@@ -150,44 +158,6 @@ function MenuItems({
       {role === 'admin' && (
 
         <>
-
-          <button
-            type="button"
-            className="side-menu-item"
-            onClick={() =>
-              handleAdminSection(
-                'Farmer'
-              )
-            }
-          >
-            Farmer
-          </button>
-
-
-          <button
-            type="button"
-            className="side-menu-item"
-            onClick={() =>
-              handleAdminSection(
-                'Vendor'
-              )
-            }
-          >
-            Vendor
-          </button>
-
-
-          <button
-            type="button"
-            className="side-menu-item"
-            onClick={() =>
-              handleAdminSection(
-                'Admin'
-              )
-            }
-          >
-            Admin
-          </button>
 
         </>
 
@@ -205,6 +175,7 @@ function MenuItems({
       >
         Sign Out
       </button>
+
 
     </nav>
 
