@@ -211,11 +211,13 @@ class FeedRecommendationListCreateView(
         fish_id = self.kwargs['fish_id']
         stage_id = self.kwargs['stage_id']
 
-        return FeedRecommendation.objects.filter(
-            fish_stage_id=stage_id,
-            fish_stage__fish_id=fish_id
+        return FeedRecommendation.objects.select_related(
+            'fish_stage__fish'
+        ).filter(
+           fish_stage_id=stage_id,
+           fish_stage__fish_id=fish_id
         ).order_by(
-            'id'
+           'id'
         )
 
     def perform_create(self, serializer):

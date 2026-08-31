@@ -25,42 +25,36 @@ type FishStage = {
   stage_number: number
   image: string | null
   duration_days: number
-  min_weight: string
-  max_weight: string
+  min_weight: string | null
+  max_weight: string | null
 }
 
 type FeedRecommendation = {
   id: number
 
-  feed_name: string
-  feed_type?: string | null
-  brand?: string | null
-
-  fish?: number | string | null
-  stage?: number | string | null
+  fish_stage?: number | null
+  fish_name?: string | null
   stage_number?: number | null
 
-  organic_suitability?: string | number | null
-  stage_suitability?: string | number | null
-  seasonal_suitability?: string | number | null
-  special_period_suitability?: string | number | null
-  effectiveness?: string | number | null
-  cost_efficiency?: string | number | null
+  feed_name?: string | null
+  feed_type?: string | null
+  feed_form?: string | null
 
-  description?: string | null
-  recommended_usage?: string | null
-  feeding_rate?: string | null
-  price?: string | number | null
+  protein_min?: number | string | null
+  protein_max?: number | string | null
 
-  image?: string | null
+  particle_size_min?: number | string | null
+  particle_size_max?: number | string | null
 
-  [key: string]: unknown
+  organic?: boolean | null
+
+  created_at?: string | null
+  updated_at?: string | null
 }
 
 type FishFeedProps = {
   fish: Fish | null
 }
-
 
 /* =========================================================
    API
@@ -79,11 +73,12 @@ const getRecommendationsUrl = (
   stageId: number
 ) =>
   `${API_BASE_URL}/fish/${fishId}/stages/${stageId}/feed-recommendations/`
+
 /* =========================================================
    Component
    ========================================================= */
 
-function FishFeed({
+function FarmerFeed({
   fish
 }: FishFeedProps) {
 
@@ -140,8 +135,8 @@ function FishFeed({
       setSelectedStage(null)
       setSelectedRecommendation(null)
       setRecommendations([])
-      return
 
+      return
     }
 
     setSelectedStage(null)
@@ -211,78 +206,83 @@ function FishFeed({
      ======================================================= */
 
   const loadRecommendations = async (
-  stage: FishStage
-) => {
+    stage: FishStage
+  ) => {
 
-  if (!fish) {
-    return
-  }
-
-  if (!stage.id) {
-    setError('Unable to identify the selected stage.')
-    return
-  }
-
-  setSelectedStage(stage)
-  setSelectedRecommendation(null)
-  setRecommendations([])
-  setError('')
-  setLoadingRecommendations(true)
-
-  try {
-
-    const response = await fetch(
-      getRecommendationsUrl(
-        fish.id,
-        stage.id
-      )
-    )
-
-    if (!response.ok) {
-
-      const data =
-        await response
-          .json()
-          .catch(() => ({}))
-
-      throw new Error(
-        data.detail ||
-        'Unable to load feed recommendations.'
-      )
+    if (!fish) {
+      return
     }
 
-    const data =
-      await response.json()
+    if (!stage.id) {
 
-    const loadedRecommendations:
-      FeedRecommendation[] =
-      Array.isArray(data)
-        ? data
-        : data.results || []
+      setError(
+        'Unable to identify the selected stage.'
+      )
 
-    setRecommendations(
-      loadedRecommendations
-    )
+      return
+    }
 
-  } catch (recommendationError) {
+    setSelectedStage(stage)
+    setSelectedRecommendation(null)
+    setRecommendations([])
+    setError('')
+    setLoadingRecommendations(true)
 
-    console.error(
-      'Error loading feed recommendations:',
-      recommendationError
-    )
+    try {
 
-    setError(
-      recommendationError instanceof Error
-        ? recommendationError.message
-        : 'Unable to load feed recommendations.'
-    )
+      const response = await fetch(
+        getRecommendationsUrl(
+          fish.id,
+          stage.id
+        )
+      )
 
-  } finally {
+      if (!response.ok) {
 
-    setLoadingRecommendations(false)
+        const data =
+          await response
+            .json()
+            .catch(() => ({}))
 
+        throw new Error(
+          data.detail ||
+          'Unable to load feed recommendations.'
+        )
+
+      }
+
+      const data =
+        await response.json()
+
+      const loadedRecommendations:
+        FeedRecommendation[] =
+        Array.isArray(data)
+          ? data
+          : data.results || []
+
+      setRecommendations(
+        loadedRecommendations
+      )
+
+    } catch (recommendationError) {
+
+      console.error(
+        'Error loading feed recommendations:',
+        recommendationError
+      )
+
+      setError(
+        recommendationError instanceof Error
+          ? recommendationError.message
+          : 'Unable to load feed recommendations.'
+      )
+
+    } finally {
+
+      setLoadingRecommendations(false)
+
+    }
   }
-}
 
 
   /* =======================================================
@@ -334,73 +334,73 @@ function FishFeed({
   }
 
 
-  const getSuitabilityClass = (
-    value: unknown
+  const formatRange = (
+    min: unknown,
+    max: unknown,
+    unit = ''
   ) => {
 
-    const normalized =
-      String(value)
-        .toLowerCase()
-        .trim()
+    const hasMin =
+      min !== null &&
+      min !== undefined &&
+      min !== ''
 
-    if (
-      normalized === 'high' ||
-      normalized === 'excellent' ||
-      normalized === 'very high'
-    ) {
+    const hasMax =
+      max !== null &&
+      max !== undefined &&
+      max !== ''
 
-      return 'high'
+    if (!hasMin && !hasMax) {
+      return 'Not specified'
+    }
+
+    if (hasMin && hasMax) {
+
+      return `${min} – ${max}${unit}`
 
     }
 
-    if (
-      normalized === 'medium' ||
-      normalized === 'moderate'
-    ) {
+    if (hasMin) {
 
-      return 'medium'
+      return `${min}${unit}`
 
     }
 
-    if (
-      normalized === 'low' ||
-      normalized === 'poor'
-    ) {
-
-      return 'low'
-
-    }
-
-    return ''
+    return `${max}${unit}`
 
   }
 
 
-  const renderSuitability = (
-    label: string,
-    value: unknown
+  const getOrganicText = (
+    value: boolean | null | undefined
   ) => {
 
-    return (
+    if (value === true) {
+      return 'Yes'
+    }
 
-      <div className="fish-feed-detail-row">
+    if (value === false) {
+      return 'No'
+    }
 
-        <span className="fish-feed-detail-label">
-          {label}
-        </span>
+    return 'Not specified'
 
-        <span
-          className={
-            `fish-feed-suitability ` +
-            getSuitabilityClass(value)
-          }
-        >
-          {formatValue(value)}
-        </span>
+  }
 
-      </div>
 
-    )
+  const getOrganicClass = (
+    value: boolean | null | undefined
+  ) => {
+
+    if (value === true) {
+      return 'organic-yes'
+    }
+
+    if (value === false) {
+      return 'organic-no'
+    }
+
+    return ''
 
   }
 
@@ -515,33 +515,6 @@ function FishFeed({
 
         <div className="fish-feed-detail-card">
 
-          {/* Image */}
-
-          <div className="fish-feed-detail-image-wrapper">
-
-            {selectedRecommendation.image ? (
-
-              <img
-                src={
-                  selectedRecommendation.image
-                }
-                alt={
-                  selectedRecommendation.feed_name
-                }
-                className="fish-feed-detail-image"
-              />
-
-            ) : (
-
-              <div className="fish-feed-detail-no-image">
-                No image
-              </div>
-
-            )}
-
-          </div>
-
-
           {/* Main Information */}
 
           <div className="fish-feed-detail-content">
@@ -559,7 +532,9 @@ function FishFeed({
 
                 <h3>
                   {
-                    selectedRecommendation.feed_name
+                    formatValue(
+                      selectedRecommendation.feed_name
+                    )
                   }
                 </h3>
 
@@ -620,13 +595,13 @@ function FishFeed({
               <div>
 
                 <span>
-                  Brand
+                  Feed Form
                 </span>
 
                 <strong>
                   {
                     formatValue(
-                      selectedRecommendation.brand
+                      selectedRecommendation.feed_form
                     )
                   }
                 </strong>
@@ -636,137 +611,99 @@ function FishFeed({
             </div>
 
 
-            {/* Recommendation Factors */}
+            {/* Feed Specifications */}
 
             <div className="fish-feed-section">
 
               <h4>
-                Recommendation Factors
+                Feed Specifications
               </h4>
 
-              {renderSuitability(
-                'Organic Suitability',
-                selectedRecommendation
-                  .organic_suitability
-              )}
 
-              {renderSuitability(
-                'Stage Suitability',
-                selectedRecommendation
-                  .stage_suitability
-              )}
+              {/* Protein */}
 
-              {renderSuitability(
-                'Seasonal Suitability',
-                selectedRecommendation
-                  .seasonal_suitability
-              )}
+              <div className="fish-feed-detail-row">
 
-              {renderSuitability(
-                'Special / Breeding Period',
-                selectedRecommendation
-                  .special_period_suitability
-              )}
+                <span className="fish-feed-detail-label">
+                  Protein
+                </span>
 
-              {renderSuitability(
-                'Effectiveness',
-                selectedRecommendation
-                  .effectiveness
-              )}
-
-              {renderSuitability(
-                'Cost Efficiency',
-                selectedRecommendation
-                  .cost_efficiency
-              )}
-
-            </div>
-
-
-            {/* Usage */}
-
-            <div className="fish-feed-section">
-
-              <h4>
-                Recommended Usage
-              </h4>
-
-              <p>
-                {
-                  formatValue(
-                    selectedRecommendation
-                      .recommended_usage
-                  )
-                }
-              </p>
-
-            </div>
-
-
-            {/* Feeding Rate */}
-
-            {selectedRecommendation.feeding_rate && (
-
-              <div className="fish-feed-section">
-
-                <h4>
-                  Feeding Rate
-                </h4>
-
-                <p>
+                <span>
                   {
-                    selectedRecommendation
-                      .feeding_rate
+                    formatRange(
+                      selectedRecommendation.protein_min,
+                      selectedRecommendation.protein_max,
+                      '%'
+                    )
                   }
-                </p>
+                </span>
 
               </div>
 
-            )}
+
+              {/* Particle Size */}
+
+              <div className="fish-feed-detail-row">
+
+                <span className="fish-feed-detail-label">
+                  Particle Size
+                </span>
+
+                <span>
+                  {
+                    formatRange(
+                      selectedRecommendation.particle_size_min,
+                      selectedRecommendation.particle_size_max,
+                      ' mm'
+                    )
+                  }
+                </span>
+
+              </div>
 
 
-            {/* Price */}
+              {/* Organic */}
 
-            {
-              selectedRecommendation.price !== null &&
-              selectedRecommendation.price !== undefined && (
+              <div className="fish-feed-detail-row">
 
-                <div className="fish-feed-section">
+                <span className="fish-feed-detail-label">
+                  Organic Feed
+                </span>
 
-                  <h4>
-                    Cost
-                  </h4>
+                <span
+                  className={
+                    `fish-feed-suitability ` +
+                    getOrganicClass(
+                      selectedRecommendation.organic
+                    )
+                  }
+                >
+                  {
+                    getOrganicText(
+                      selectedRecommendation.organic
+                    )
+                  }
+                </span>
 
-                  <p>
-                    ₹
-                    {
-                      formatValue(
-                        selectedRecommendation.price
-                      )
-                    }
-                  </p>
+              </div>
 
-                </div>
-
-              )
-            }
+            </div>
 
 
-            {/* Description */}
+            {/* Feed Information */}
 
             <div className="fish-feed-section">
 
               <h4>
-                Description
+                Feed Information
               </h4>
 
               <p>
-                {
-                  formatValue(
-                    selectedRecommendation
-                      .description
-                  )
-                }
+                This feed is configured as a
+                recommendation for {fish.name}
+                during Stage {
+                  selectedStage.stage_number
+                }.
               </p>
 
             </div>
@@ -903,33 +840,6 @@ function FishFeed({
                 }
               >
 
-                {/* Image */}
-
-                <div className="fish-feed-card-image-wrapper">
-
-                  {recommendation.image ? (
-
-                    <img
-                      src={
-                        recommendation.image
-                      }
-                      alt={
-                        recommendation.feed_name
-                      }
-                      className="fish-feed-card-image"
-                    />
-
-                  ) : (
-
-                    <div className="fish-feed-card-no-image">
-                      No image
-                    </div>
-
-                  )}
-
-                </div>
-
-
                 {/* Card Content */}
 
                 <div className="fish-feed-card-content">
@@ -940,10 +850,14 @@ function FishFeed({
 
                   <h4>
                     {
-                      recommendation.feed_name
+                      formatValue(
+                        recommendation.feed_name
+                      )
                     }
                   </h4>
 
+
+                  {/* Feed Type */}
 
                   {recommendation.feed_type && (
 
@@ -956,92 +870,86 @@ function FishFeed({
                   )}
 
 
-                  {/* Main Ranking Factors */}
+                  {/* Main Feed Information */}
 
                   <div className="fish-feed-card-factors">
 
-                    {recommendation
-                      .organic_suitability && (
+                    <div>
 
-                      <div>
+                      <span>
+                        Form
+                      </span>
 
-                        <span>
-                          Organic
-                        </span>
+                      <strong>
+                        {
+                          formatValue(
+                            recommendation.feed_form
+                          )
+                        }
+                      </strong>
 
-                        <strong>
-                          {
-                            recommendation
-                              .organic_suitability
-                          }
-                        </strong>
-
-                      </div>
-
-                    )}
+                    </div>
 
 
-                    {recommendation
-                      .stage_suitability && (
+                    <div>
 
-                      <div>
+                      <span>
+                        Protein
+                      </span>
 
-                        <span>
-                          Stage
-                        </span>
+                      <strong>
+                        {
+                          formatRange(
+                            recommendation.protein_min,
+                            recommendation.protein_max,
+                            '%'
+                          )
+                        }
+                      </strong>
 
-                        <strong>
-                          {
-                            recommendation
-                              .stage_suitability
-                          }
-                        </strong>
-
-                      </div>
-
-                    )}
+                    </div>
 
 
-                    {recommendation
-                      .seasonal_suitability && (
+                    <div>
 
-                      <div>
+                      <span>
+                        Particle Size
+                      </span>
 
-                        <span>
-                          Seasonal
-                        </span>
+                      <strong>
+                        {
+                          formatRange(
+                            recommendation.particle_size_min,
+                            recommendation.particle_size_max,
+                            ' mm'
+                          )
+                        }
+                      </strong>
 
-                        <strong>
-                          {
-                            recommendation
-                              .seasonal_suitability
-                          }
-                        </strong>
-
-                      </div>
-
-                    )}
+                    </div>
 
 
-                    {recommendation
-                      .effectiveness && (
+                    <div>
 
-                      <div>
+                      <span>
+                        Organic
+                      </span>
 
-                        <span>
-                          Effectiveness
-                        </span>
+                      <strong
+                        className={
+                          getOrganicClass(
+                            recommendation.organic
+                          )
+                        }
+                      >
+                        {
+                          getOrganicText(
+                            recommendation.organic
+                          )
+                        }
+                      </strong>
 
-                        <strong>
-                          {
-                            recommendation
-                              .effectiveness
-                          }
-                        </strong>
-
-                      </div>
-
-                    )}
+                    </div>
 
                   </div>
 
@@ -1111,7 +1019,7 @@ function FishFeed({
       )}
 
 
-      {/* Six Stage Cards */}
+      {/* Stage Cards */}
 
       <div className="fish-feed-stage-grid">
 
@@ -1167,6 +1075,8 @@ function FishFeed({
               </h4>
 
 
+              {/* Duration */}
+
               {stage.duration_days > 0 && (
 
                 <div className="fish-feed-stage-info">
@@ -1184,11 +1094,17 @@ function FishFeed({
               )}
 
 
+              {/* Weight */}
+
               {
                 (
-                  stage.min_weight ||
-                  stage.max_weight
-                ) && (
+                  stage.min_weight !== null &&
+                  stage.min_weight !== undefined
+                ) ||
+                (
+                  stage.max_weight !== null &&
+                  stage.max_weight !== undefined
+                ) ? (
 
                   <div className="fish-feed-stage-info">
 
@@ -1198,11 +1114,17 @@ function FishFeed({
 
                     <strong>
 
-                      {stage.min_weight || '0'}
+                      {
+                        stage.min_weight ||
+                        '0'
+                      }
 
                       {' – '}
 
-                      {stage.max_weight || '—'}
+                      {
+                        stage.max_weight ||
+                        '—'
+                      }
 
                       {' g'}
 
@@ -1210,7 +1132,7 @@ function FishFeed({
 
                   </div>
 
-                )
+                ) : null
               }
 
 
@@ -1258,4 +1180,4 @@ function FishFeed({
    Single Default Export
    ========================================================= */
 
-export default FishFeed
+export default FarmerFeed

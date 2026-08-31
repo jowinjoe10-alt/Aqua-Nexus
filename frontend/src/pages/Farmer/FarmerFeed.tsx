@@ -21,9 +21,9 @@ type FishStage = {
 
 type FeedRecommendation = {
   id: number
-  fish?: number | string | null
+
+  fish_stage?: number | null
   fish_name?: string | null
-  stage?: number | string | null
   stage_number?: number | null
 
   feed_name?: string | null
@@ -477,34 +477,21 @@ function FarmerFeed({
       !showResults ||
       !selectedStage
     ) {
-
       return
-
     }
-
 
     const loadRecommendations =
       async () => {
 
         try {
 
-          setRecommendationLoading(
-            true
-          )
-
+          setRecommendationLoading(true)
           setRecommendationError('')
-
-
-          /*
-           * Load recommendations for
-           * the selected fish.
-           */
 
           const response =
             await fetch(
-              `http://127.0.0.1:8000/api/feed-recommendations/?fish=${fish.id}`
+               `http://127.0.0.1:8000/api/fish/${fish.id}/stages/${selectedStage.id}/feed-recommendations/`
             )
-
 
           if (!response.ok) {
 
@@ -514,47 +501,17 @@ function FarmerFeed({
 
           }
 
-
           const data =
-            await response.json()
-
+          await response.json()
 
           const recommendationData =
             Array.isArray(data)
               ? data
               : data.results || []
 
-
-          /*
-           * Filter recommendations
-           * for the selected stage.
-           */
-
-          const filtered =
-            recommendationData.filter(
-              (
-                item: FeedRecommendation
-              ) => {
-
-                const itemStage =
-                  Number(
-                    item.stage_number ??
-                    item.stage
-                  )
-
-                return (
-                  itemStage ===
-                  selectedStage.stage_number
-                )
-
-              }
-            )
-
-
           setFeedRecommendations(
-            filtered
+            recommendationData
           )
-
 
         } catch (err) {
 
@@ -566,14 +523,11 @@ function FarmerFeed({
 
         } finally {
 
-          setRecommendationLoading(
-            false
-          )
+          setRecommendationLoading(false)
 
         }
 
       }
-
 
     loadRecommendations()
 
