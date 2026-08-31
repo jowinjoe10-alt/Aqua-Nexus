@@ -242,42 +242,44 @@ function FarmerPond() {
 
       const response =
         await fetch(
-          '/api/pond/',
-          {
-            method: 'POST',
+           '/api/pond/',
+           {
+             method: 'POST',
 
-            headers: {
-              'Content-Type':
-                'application/json'
-            },
+             headers: {
+               'Content-Type':
+               'application/json'
+             },
 
-            body: JSON.stringify({
-              farmer: Number(farmerId),
-              name: trimmedName
-            })
-          }
+             body: JSON.stringify({
+               farmer: Number(farmerId),
+               name: trimmedName
+             })
+           }
         )
 
-      const data =
-        await response.json()
+      const responseText =
+        await response.text()
 
       console.log(
-        'CREATE POND RESPONSE:',
-        data
+        'POND CREATE STATUS:',
+        response.status
+      )
+
+      console.log(
+        'POND CREATE RESPONSE:',
+        responseText
       )
 
       if (!response.ok) {
-
-        setError(
-          data.message ||
-          data.detail ||
-          JSON.stringify(data)
+        throw new Error(
+          `Pond creation failed: ${response.status} - ${responseText}`
         )
-
-        return
       }
 
-    const newPond = data
+      const newPond =
+        JSON.parse(responseText)
+
 
     setPonds(
       (currentPonds) => [
@@ -790,7 +792,7 @@ function FarmerPond() {
 
             {/* Fish Selection */}
 
-            <div className="farmer-pond-form-group">
+            <div className="farmer-pond-form-group farmer-pond-fish-selection-group">
 
               <label>
                 Select Fish
@@ -806,14 +808,18 @@ function FarmerPond() {
 
               {!fishLoading && (
 
-                <div>
-
+                <div className="farmer-pond-fish-grid">
                   {fishList.map(
                     (fish) => (
 
                       <button
-                        key={fish.id}
-                        type="button"
+                       key={fish.id}
+                       type="button"
+                       className={`farmer-pond-fish-option ${
+                          selectedFish?.id === fish.id
+                            ? 'selected'
+                            : ''
+                       }`}
                         onClick={() =>
                           handleSelectFish(
                             fish
@@ -857,26 +863,35 @@ function FarmerPond() {
 
               <div>
 
-                <h4>
-                  {selectedFish.name}
-                </h4>
+                <div className="farmer-pond-selected-fish">
+                   <span>Selected Fish</span>
+
+                   <h4>
+                      {selectedFish.name}
+                   </h4>
+                </div>
 
                 {/* Stage Selection */}
 
-                <div className="farmer-pond-form-group">
+                <div className="farmer-pond-form-group farmer-pond-stage-selection-group">
 
                   <label>
                     Select Stage
                   </label>
 
-                  <div>
-
+                  <div className="farmer-pond-stage-grid">
                     {stages.map(
                       (stage) => (
 
                         <button
                           key={stage.id}
                           type="button"
+                          className={`farmer-pond-stage-option ${
+                            selectedStage?.id === stage.id
+                              ? 'selected'
+                              : ''
+                          }`}
+                          
                           onClick={() =>
                             handleSelectStage(
                               stage
