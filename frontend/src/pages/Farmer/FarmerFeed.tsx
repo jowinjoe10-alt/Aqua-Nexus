@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
+
 import './FarmerFeed.css'
+
+import {
+  calculateFeedRequirement as calculateFeedRequirementUtility,
+  formatFeedAmount as formatFeedAmountUtility,
+} from '../../utils/feedCalculation'
 
 
 type Fish = {
@@ -54,35 +60,46 @@ function FarmerFeed({
   onBack
 }: FarmerFeedProps) {
 
+
   const [stages, setStages] =
     useState<FishStage[]>([])
+
 
   const [selectedStage, setSelectedStage] =
     useState<FishStage | null>(null)
 
+
   const [quantity, setQuantity] =
     useState('')
+
 
   const [feedRecommendations, setFeedRecommendations] =
     useState<FeedRecommendation[]>([])
 
+
   const [estimatedFeedMin, setEstimatedFeedMin] =
     useState<number | null>(null)
+
 
   const [estimatedFeedMax, setEstimatedFeedMax] =
     useState<number | null>(null)
 
+
   const [showResults, setShowResults] =
     useState(false)
+
 
   const [loading, setLoading] =
     useState(true)
 
+
   const [recommendationLoading, setRecommendationLoading] =
     useState(false)
 
+
   const [error, setError] =
     useState('')
+
 
   const [recommendationError, setRecommendationError] =
     useState('')
@@ -99,6 +116,7 @@ function FarmerFeed({
       try {
 
         setLoading(true)
+
         setError('')
 
         const response = await fetch(
@@ -183,6 +201,7 @@ function FarmerFeed({
     setShowResults(false)
 
     setEstimatedFeedMin(null)
+
     setEstimatedFeedMax(null)
 
     setFeedRecommendations([])
@@ -218,130 +237,8 @@ function FarmerFeed({
     setShowResults(false)
 
     setEstimatedFeedMin(null)
+
     setEstimatedFeedMax(null)
-
-  }
-
-
-  /* ================================= */
-  /* Feeding Rate                      */
-  /* ================================= */
-
-  const getFeedingRate = (
-    stage: FishStage
-  ) => {
-
-    const minWeight =
-      Number(stage.min_weight ?? 0)
-
-    const maxWeight =
-      Number(stage.max_weight ?? 0)
-
-    const averageWeight =
-      (minWeight + maxWeight) / 2
-
-
-    /*
-     * Approximate project-level
-     * feeding model.
-     *
-     * Smaller fish generally require
-     * a higher percentage of body weight
-     * as feed.
-     */
-
-    if (averageWeight <= 0.1) {
-
-      return {
-        min: 8,
-        max: 12
-      }
-
-    }
-
-
-    if (averageWeight <= 2) {
-
-      return {
-        min: 6,
-        max: 9
-      }
-
-    }
-
-
-    if (averageWeight <= 20) {
-
-      return {
-        min: 4,
-        max: 6
-      }
-
-    }
-
-
-    if (averageWeight <= 80) {
-
-      return {
-        min: 2.5,
-        max: 4
-      }
-
-    }
-
-
-    if (averageWeight <= 250) {
-
-      return {
-        min: 2,
-        max: 3
-      }
-
-    }
-
-
-    return {
-      min: 1.5,
-      max: 2.5
-    }
-
-  }
-
-
-  /* ================================= */
-  /* Feed Display Format               */
-  /* ================================= */
-
-  const formatFeedAmount = (
-    amountKg: number
-  ) => {
-
-    if (!selectedStage) {
-      return ''
-    }
-
-
-    /*
-     * Stage 1–5 → grams
-     */
-
-    if (
-      selectedStage.stage_number <= 5
-    ) {
-
-      const amountGrams =
-        amountKg * 1000
-
-      return `${amountGrams.toFixed(2)} g`
-
-    }
-
-
-    /*
-     * Stage 6 → kilograms
-     */
-
-    return `${amountKg.toFixed(2)} kg`
 
   }
 
@@ -373,94 +270,29 @@ function FarmerFeed({
     }
 
 
-    const minWeight =
-      Number(
-        selectedStage.min_weight ?? 0
-      )
-
-    const maxWeight =
-      Number(
-        selectedStage.max_weight ?? 0
+    const result =
+      calculateFeedRequirementUtility(
+        selectedStage,
+        fishCount
       )
 
 
-    if (
-      minWeight <= 0 ||
-      maxWeight <= 0
-    ) {
+    if (!result) {
 
       return
 
     }
 
 
-    /*
-     * Average fish weight in grams.
-     */
-
-    const averageWeight =
-      (minWeight + maxWeight) / 2
-
-
-    /*
-     * Total biomass in kilograms.
-     *
-     * fish count × average weight(g)
-     * divided by 1000
-     */
-
-    const biomassKg =
-      (
-        fishCount *
-        averageWeight
-      ) / 1000
-
-
-    /*
-     * Approximate feeding rate.
-     */
-
-    const feedingRate =
-      getFeedingRate(
-        selectedStage
-      )
-
-
-    /*
-     * Feed requirement in kilograms/day.
-     */
-
-    const minimumFeed =
-      biomassKg *
-      (feedingRate.min / 100)
-
-    const maximumFeed =
-      biomassKg *
-      (feedingRate.max / 100)
-
-
-    /*
-     * Round to 4 decimal places internally.
-     */
-
-    const roundedMin =
-      Number(
-        minimumFeed.toFixed(4)
-      )
-
-    const roundedMax =
-      Number(
-        maximumFeed.toFixed(4)
-      )
-
-
     setEstimatedFeedMin(
-      roundedMin
+      result.minimumFeed
     )
+
 
     setEstimatedFeedMax(
-      roundedMax
+      result.maximumFeed
     )
+
 
     setShowResults(true)
 
@@ -477,8 +309,11 @@ function FarmerFeed({
       !showResults ||
       !selectedStage
     ) {
+
       return
+
     }
+
 
     const loadRecommendations =
       async () => {
@@ -486,6 +321,7 @@ function FarmerFeed({
         try {
 
           setRecommendationLoading(true)
+
           setRecommendationError('')
 
           const response =
@@ -566,7 +402,9 @@ function FarmerFeed({
         className="farmer-feed-back"
         onClick={handleBack}
       >
+
         ← Back to Fish
+
       </button>
 
 
@@ -577,19 +415,31 @@ function FarmerFeed({
       <div className="farmer-feed-header">
 
         <span className="farmer-feed-label">
+
           FEEDING INFORMATION
+
         </span>
 
+
         <h2>
+
           {fish.name}
+
         </h2>
 
+
         <p>
+
           Select the current stage of your{' '}
+
           {fish.name} and enter the
+
           number of fish to get an
+
           estimated daily feed requirement
+
           and recommended feeds.
+
         </p>
 
       </div>
@@ -604,12 +454,18 @@ function FarmerFeed({
         <div className="farmer-feed-section-header">
 
           <h3>
+
             Select Fish Stage
+
           </h3>
 
+
           <p>
+
             Choose one stage that matches
+
             your fish.
+
           </p>
 
         </div>
@@ -620,7 +476,9 @@ function FarmerFeed({
         {loading && (
 
           <div className="farmer-feed-message">
+
             Loading stages...
+
           </div>
 
         )}
@@ -631,7 +489,9 @@ function FarmerFeed({
         {!loading && error && (
 
           <div className="farmer-feed-message error">
+
             {error}
+
           </div>
 
         )}
@@ -640,11 +500,15 @@ function FarmerFeed({
         {/* No Stages */}
 
         {!loading &&
+
           !error &&
+
           stages.length === 0 && (
 
             <div className="farmer-feed-message">
+
               No stage information available.
+
             </div>
 
           )}
@@ -653,12 +517,15 @@ function FarmerFeed({
         {/* Stage Cards */}
 
         {!loading &&
+
           !error &&
+
           stages.length > 0 && (
 
             <div className="farmer-stage-grid">
 
               {stages.map(
+
                 (stage) => {
 
                   const isSelected =
@@ -702,7 +569,9 @@ function FarmerFeed({
                         ) : (
 
                           <div className="farmer-stage-image-placeholder">
+
                             Stage {stage.stage_number}
+
                           </div>
 
                         )}
@@ -717,7 +586,9 @@ function FarmerFeed({
                         <div className="farmer-stage-title-row">
 
                           <h4>
+
                             Stage {stage.stage_number}
+
                           </h4>
 
 
@@ -745,9 +616,13 @@ function FarmerFeed({
                         {stage.duration_days != null && (
 
                           <p>
+
                             Duration:{' '}
+
                             {stage.duration_days}{' '}
+
                             days
+
                           </p>
 
                         )}
@@ -756,37 +631,55 @@ function FarmerFeed({
                         {/* Weight */}
 
                         {(stage.min_weight != null ||
+
                           stage.max_weight != null) && (
 
                           <p>
 
                             Weight:{' '}
 
+
                             {stage.stage_number === 6 ? (
 
                               <>
+
                                 {stage.min_weight != null
+
                                   ? (
+
                                       stage.min_weight /
+
                                       1000
+
                                     ).toFixed(2)
+
                                   : '—'}
+
 
                                 {' – '}
 
+
                                 {stage.max_weight != null
+
                                   ? (
+
                                       stage.max_weight /
+
                                       1000
+
                                     ).toFixed(2)
+
                                   : '—'}
 
+
                                 {' kg'}
+
                               </>
 
                             ) : (
 
                               <>
+
                                 {stage.min_weight ?? '—'}
 
                                 {' – '}
@@ -794,6 +687,7 @@ function FarmerFeed({
                                 {stage.max_weight ?? '—'}
 
                                 {' g'}
+
                               </>
 
                             )}
@@ -809,6 +703,7 @@ function FarmerFeed({
                   )
 
                 }
+
               )}
 
             </div>
@@ -827,12 +722,18 @@ function FarmerFeed({
         <div className="farmer-feed-section-header">
 
           <h3>
+
             Number of Fish
+
           </h3>
 
+
           <p>
+
             Enter the number of fish in
+
             this stage.
+
           </p>
 
         </div>
@@ -856,7 +757,9 @@ function FarmerFeed({
 
 
           <span className="farmer-quantity-unit">
+
             fish
+
           </span>
 
         </div>
@@ -876,7 +779,9 @@ function FarmerFeed({
               calculateFeedRequirement
             }
           >
+
             Okay →
+
           </button>
 
         </div>
@@ -889,7 +794,9 @@ function FarmerFeed({
       {/* ================================= */}
 
       {showResults &&
+
         estimatedFeedMin !== null &&
+
         estimatedFeedMax !== null && (
 
           <div className="farmer-feed-results">
@@ -902,20 +809,24 @@ function FarmerFeed({
             <div className="farmer-feed-estimate">
 
               <span className="farmer-feed-result-label">
+
                 ESTIMATED DAILY FEED
+
               </span>
 
 
               <h3>
 
-                {formatFeedAmount(
-                  estimatedFeedMin
+                {formatFeedAmountUtility(
+                  estimatedFeedMin,
+                  selectedStage
                 )}
 
                 {' – '}
 
-                {formatFeedAmount(
-                  estimatedFeedMax
+                {formatFeedAmountUtility(
+                  estimatedFeedMax,
+                  selectedStage
                 )}
 
                 {' /day'}
@@ -924,17 +835,26 @@ function FarmerFeed({
 
 
               <p>
+
                 Approximate feed requirement
+
                 for {quantity} {fish.name}
+
                 at Stage {selectedStage?.stage_number}.
+
               </p>
 
 
               <span className="farmer-feed-note">
+
                 This is an estimated range and
+
                 may vary depending on actual fish
+
                 weight, feeding conditions and
+
                 farming practices.
+
               </span>
 
             </div>
@@ -949,12 +869,18 @@ function FarmerFeed({
               <div className="farmer-feed-section-header">
 
                 <h3>
+
                   Recommended Feeds
+
                 </h3>
 
+
                 <p>
+
                   Feeds available for Stage{' '}
+
                   {selectedStage?.stage_number}.
+
                 </p>
 
               </div>
@@ -965,7 +891,9 @@ function FarmerFeed({
               {recommendationLoading && (
 
                 <div className="farmer-feed-message">
+
                   Loading recommended feeds...
+
                 </div>
 
               )}
@@ -974,10 +902,13 @@ function FarmerFeed({
               {/* Error */}
 
               {!recommendationLoading &&
+
                 recommendationError && (
 
                   <div className="farmer-feed-message error">
+
                     {recommendationError}
+
                   </div>
 
                 )}
@@ -986,12 +917,17 @@ function FarmerFeed({
               {/* No Recommendations */}
 
               {!recommendationLoading &&
+
                 !recommendationError &&
+
                 feedRecommendations.length === 0 && (
 
                   <div className="farmer-feed-message">
+
                     No feed recommendations are
+
                     available for this stage.
+
                   </div>
 
                 )}
@@ -1000,12 +936,15 @@ function FarmerFeed({
               {/* Recommendation Cards */}
 
               {!recommendationLoading &&
+
                 !recommendationError &&
+
                 feedRecommendations.length > 0 && (
 
                   <div className="farmer-recommendation-grid">
 
                     {feedRecommendations.map(
+
                       (feed) => (
 
                         <div
@@ -1019,8 +958,11 @@ function FarmerFeed({
                           <div className="farmer-recommendation-top">
 
                             <span className="farmer-recommendation-stage">
+
                               Stage{' '}
+
                               {selectedStage?.stage_number}
+
                             </span>
 
                           </div>
@@ -1029,8 +971,11 @@ function FarmerFeed({
                           {/* Feed Name */}
 
                           <h4>
+
                             {feed.feed_name ||
+
                               'Feed Product'}
+
                           </h4>
 
 
@@ -1039,6 +984,7 @@ function FarmerFeed({
                           <div className="farmer-recommendation-fish">
 
                             {feed.fish_name ||
+
                               fish.name}
 
                           </div>
@@ -1056,11 +1002,15 @@ function FarmerFeed({
                               <div className="farmer-recommendation-row">
 
                                 <span>
+
                                   Feed Type
+
                                 </span>
 
                                 <strong>
+
                                   {feed.feed_type}
+
                                 </strong>
 
                               </div>
@@ -1075,11 +1025,15 @@ function FarmerFeed({
                               <div className="farmer-recommendation-row">
 
                                 <span>
+
                                   Feed Form
+
                                 </span>
 
                                 <strong>
+
                                   {feed.feed_form}
+
                                 </strong>
 
                               </div>
@@ -1090,12 +1044,15 @@ function FarmerFeed({
                             {/* Protein */}
 
                             {(feed.protein_min != null ||
+
                               feed.protein_max != null) && (
 
                               <div className="farmer-recommendation-row">
 
                                 <span>
+
                                   Protein
+
                                 </span>
 
                                 <strong>
@@ -1118,12 +1075,15 @@ function FarmerFeed({
                             {/* Particle Size */}
 
                             {(feed.particle_size_min != null ||
+
                               feed.particle_size_max != null) && (
 
                               <div className="farmer-recommendation-row">
 
                                 <span>
+
                                   Particle Size
+
                                 </span>
 
                                 <strong>
@@ -1148,13 +1108,19 @@ function FarmerFeed({
                               <div className="farmer-recommendation-row">
 
                                 <span>
+
                                   Organic
+
                                 </span>
 
                                 <strong>
+
                                   {feed.organic
+
                                     ? 'Yes'
+
                                     : 'No'}
+
                                 </strong>
 
                               </div>
@@ -1166,6 +1132,7 @@ function FarmerFeed({
                         </div>
 
                       )
+
                     )}
 
                   </div>
