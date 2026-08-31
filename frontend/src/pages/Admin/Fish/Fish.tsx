@@ -49,11 +49,13 @@ type SortType =
 
 
 type FishProps = {
-  onBack?: () => void
+  // other props...
 }
 
 
-function Fish({ onBack }: FishProps) {
+function Fish({
+  // other props...
+}: FishProps) {
 
   const [fishes, setFishes] =
     useState<Fish[]>([])

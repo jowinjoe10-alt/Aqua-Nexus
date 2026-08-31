@@ -26,6 +26,11 @@ urlpatterns = [
         include('fish.urls')
     ),
 
+    path(
+        'api/pond/',
+        include('pond.urls')
+    ),
+
 ]
 
 

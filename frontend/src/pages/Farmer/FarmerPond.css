@@ -1,0 +1,779 @@
+/* =========================================================
+   Container
+   ========================================================= */
+
+.farmer-pond-container {
+
+  width: 100%;
+
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+}
+
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.farmer-pond-header {
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 40px;
+
+}
+
+
+.farmer-pond-eyebrow {
+
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+
+  color: #708894;
+
+}
+
+
+.farmer-pond-header h2 {
+
+  margin: 0;
+
+  font-size: 40px;
+
+  font-weight: 700;
+
+  letter-spacing: -1px;
+
+  color: #142c40;
+
+}
+
+
+.farmer-pond-header p {
+
+  margin: 10px 0 0;
+
+  font-size: 17px;
+
+  line-height: 1.6;
+
+  color: #71838d;
+
+}
+
+
+/* =========================================================
+   Add Pond Button
+   ========================================================= */
+
+.farmer-pond-add-button {
+
+  border: none;
+
+  border-radius: 14px;
+
+  padding: 15px 24px;
+
+  background: #159eae;
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+
+}
+
+
+.farmer-pond-add-button:hover {
+
+  transform: translateY(-2px);
+
+  opacity: 0.9;
+
+}
+
+
+/* =========================================================
+   Add Pond Form
+   ========================================================= */
+
+.farmer-pond-form-card {
+
+  margin-bottom: 32px;
+
+  padding: 30px;
+
+  border: 1px solid #d6ecef;
+
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.72);
+
+}
+
+
+.farmer-pond-form-header {
+
+  margin-bottom: 26px;
+
+}
+
+
+.farmer-pond-form-eyebrow {
+
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.8px;
+
+  text-transform: uppercase;
+
+  color: #159eae;
+
+}
+
+
+.farmer-pond-form-header h3 {
+
+  margin: 0;
+
+  font-size: 25px;
+
+  color: #142c40;
+
+}
+
+
+/* =========================================================
+   Form Group
+   ========================================================= */
+
+.farmer-pond-form-group {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+
+  max-width: 500px;
+
+}
+
+
+.farmer-pond-form-group label {
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #304958;
+
+}
+
+
+.farmer-pond-form-group input {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 14px 16px;
+
+  border: 1px solid #cfe5e9;
+
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.8);
+
+  color: #142c40;
+
+  font-family: inherit;
+
+  font-size: 15px;
+
+  outline: none;
+
+}
+
+
+.farmer-pond-form-group input::placeholder {
+
+  color: #9aaab0;
+
+}
+
+
+.farmer-pond-form-group input:focus {
+
+  border-color: #159eae;
+
+}
+
+
+/* =========================================================
+   Error
+   ========================================================= */
+
+.farmer-pond-error {
+
+  margin-top: 10px;
+
+  font-size: 13px;
+
+  color: #b45b5b;
+
+}
+
+
+/* =========================================================
+   Form Actions
+   ========================================================= */
+
+.farmer-pond-form-actions {
+
+  display: flex;
+
+  gap: 10px;
+
+  margin-top: 22px;
+
+}
+
+
+.farmer-pond-form-actions button {
+
+  padding: 11px 20px;
+
+  border-radius: 10px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+.farmer-pond-cancel-button {
+
+  border: 1px solid #cfe5e9;
+
+  background: transparent;
+
+  color: #526d79;
+
+}
+
+
+.farmer-pond-save-button {
+
+  border: none;
+
+  background: #159eae;
+
+  color: white;
+
+}
+
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.farmer-pond-empty {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-height: 430px;
+
+  padding: 50px 40px;
+
+  border: 1px dashed #c5dfe4;
+
+  border-radius: 22px;
+
+  background: rgba(255, 255, 255, 0.42);
+
+  text-align: center;
+
+}
+
+
+.farmer-pond-empty-icon {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 72px;
+
+  height: 72px;
+
+  margin-bottom: 22px;
+
+  border-radius: 50%;
+
+  background: #eaf6f8;
+
+  color: #173247;
+
+  font-size: 36px;
+
+  font-weight: 300;
+
+}
+
+
+.farmer-pond-empty h3 {
+
+  margin: 0;
+
+  font-size: 26px;
+
+  font-weight: 700;
+
+  color: #142c40;
+
+}
+
+
+.farmer-pond-empty p {
+
+  max-width: 500px;
+
+  margin: 12px 0 25px;
+
+  font-size: 16px;
+
+  line-height: 1.7;
+
+  color: #71838d;
+
+}
+
+
+.farmer-pond-empty-button {
+
+  border: none;
+
+  border-radius: 11px;
+
+  padding: 13px 22px;
+
+  background: #159eae;
+
+  color: white;
+
+  font-family: inherit;
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+
+}
+
+
+.farmer-pond-empty-button:hover {
+
+  transform: translateY(-2px);
+
+  opacity: 0.9;
+
+}
+
+
+/* =========================================================
+   Pond Grid
+   ========================================================= */
+
+.farmer-pond-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(330px, 1fr)
+    );
+
+  gap: 20px;
+
+}
+
+
+/* =========================================================
+   Pond Card
+   ========================================================= */
+
+.farmer-pond-card {
+
+  overflow: hidden;
+
+  border: 1px solid #d6ecef;
+
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.7);
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+
+}
+
+
+.farmer-pond-card:hover {
+
+  transform: translateY(-2px);
+
+  border-color: #b9dfe4;
+
+}
+
+
+/* =========================================================
+   Pond Card Header
+   ========================================================= */
+
+.farmer-pond-card-header {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 25px;
+
+}
+
+
+.farmer-pond-card-label {
+
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.8px;
+
+  text-transform: uppercase;
+
+  color: #159eae;
+
+}
+
+
+.farmer-pond-card-header h3 {
+
+  margin: 0;
+
+  font-size: 23px;
+
+  font-weight: 700;
+
+  color: #142c40;
+
+}
+
+
+/* =========================================================
+   Status
+   ========================================================= */
+
+.farmer-pond-status {
+
+  padding: 6px 11px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+}
+
+
+.farmer-pond-status.active {
+
+  background: #e7f7ef;
+
+  color: #32805c;
+
+}
+
+
+.farmer-pond-status.inactive {
+
+  background: #eef2f3;
+
+  color: #718087;
+
+}
+
+
+/* =========================================================
+   Pond Information
+   ========================================================= */
+
+.farmer-pond-info {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  border-top: 1px solid #e0eef0;
+
+  border-bottom: 1px solid #e0eef0;
+
+}
+
+
+.farmer-pond-info-item {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+  padding: 18px;
+
+}
+
+
+.farmer-pond-info-item
++ .farmer-pond-info-item {
+
+  border-left: 1px solid #e0eef0;
+
+}
+
+
+.farmer-pond-info-item span {
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
+
+  text-transform: uppercase;
+
+  color: #78909b;
+
+}
+
+
+.farmer-pond-info-item strong {
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  color: #193247;
+
+}
+
+
+/* =========================================================
+   Card Actions
+   ========================================================= */
+
+.farmer-pond-card-actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 18px 20px;
+
+  flex-wrap: wrap;
+
+}
+
+
+.farmer-pond-card-actions button {
+
+  border: none;
+
+  font-family: inherit;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
+
+
+.farmer-pond-view-button {
+
+  flex: 1;
+
+  padding: 11px 14px;
+
+  border-radius: 10px !important;
+
+  background: #159eae;
+
+  color: white;
+
+}
+
+
+.farmer-pond-status-button,
+.farmer-pond-delete-button {
+
+  padding: 9px 5px;
+
+  background: transparent;
+
+  color: #5e7580;
+
+}
+
+
+.farmer-pond-status-button:hover {
+
+  color: #159eae;
+
+}
+
+
+.farmer-pond-delete-button {
+
+  color: #9a7777;
+
+  opacity: 0.75;
+
+}
+
+
+.farmer-pond-delete-button:hover {
+
+  opacity: 1;
+
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .farmer-pond-header {
+
+    align-items: stretch;
+
+    flex-direction: column;
+
+  }
+
+
+  .farmer-pond-header h2 {
+
+    font-size: 34px;
+
+  }
+
+
+  .farmer-pond-add-button {
+
+    align-self: flex-start;
+
+  }
+
+
+  .farmer-pond-grid {
+
+    grid-template-columns: 1fr;
+
+  }
+
+}
+
+
+@media (max-width: 450px) {
+
+  .farmer-pond-info {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+  .farmer-pond-info-item
+  + .farmer-pond-info-item {
+
+    border-left: none;
+
+    border-top: 1px solid #e0eef0;
+
+  }
+
+
+  .farmer-pond-empty {
+
+    padding: 40px 20px;
+
+  }
+
+}

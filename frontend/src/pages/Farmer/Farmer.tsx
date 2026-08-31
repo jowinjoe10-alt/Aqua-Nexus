@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './Farmer.css'
 import HamburgerMenu from '../../components/HamburgerMenu/HamburgerMenu'
 import FarmerFeed from './FarmerFeed'
+import FarmerPond from './FarmerPond'
 
 
 type Fish = {
@@ -621,16 +622,10 @@ function Farmer() {
 
         {activeSection === 'Pond' && (
 
-          <section className="section-placeholder">
-
-            <h2>
-              Pond
-            </h2>
-
-          </section>
+          <FarmerPond />
 
         )}
-
+        
         {/* ============================= */}
         {/* Vendors Section               */}
         {/* ============================= */}
