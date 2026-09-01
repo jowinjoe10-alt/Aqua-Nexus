@@ -5,6 +5,8 @@ from .views import (
     PondDetailView,
     PondFishListCreateView,
     PondFishDetailView,
+    NotificationListView,
+    NotificationReadView,
 )
 
 
@@ -38,4 +40,19 @@ urlpatterns = [
         '<int:pond_id>/fish/<int:pond_fish_id>/',
         PondFishDetailView.as_view()
     ),
+
+        # =============================
+    # Notifications
+    # =============================
+
+    path(
+        'notifications/',
+        NotificationListView.as_view()
+    ),
+
+    path(
+        'notifications/<int:notification_id>/read/',
+        NotificationReadView.as_view()
+    ),
+    
 ]
