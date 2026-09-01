@@ -1306,3 +1306,371 @@
   }
 
 }
+
+
+/* =========================================================
+   Recommended Feeds
+   ========================================================= */
+
+.farmer-pond-recommendations {
+  margin-top: 42px;
+  width: 100%;
+}
+
+
+/* =========================================================
+   Header
+   ========================================================= */
+
+.farmer-pond-recommendations-header {
+  margin-bottom: 20px;
+}
+
+.farmer-pond-recommendations-header h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #16324f;
+}
+
+.farmer-pond-recommendations-header p {
+  margin: 7px 0 0;
+  font-size: 15px;
+  color: #66819a;
+}
+
+
+/* =========================================================
+   Carousel Wrapper
+   ========================================================= */
+
+.farmer-pond-recommendation-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+
+/* =========================================================
+   Recommendation Grid
+   ========================================================= */
+
+.farmer-pond-recommendation-grid {
+  flex: 1;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+/* =========================================================
+   Recommendation Card
+   ========================================================= */
+
+.farmer-pond-recommendation-card {
+  min-width: 0;
+  background: #ffffff;
+
+  border: 1px solid #dce9ee;
+  border-radius: 15px;
+
+  box-shadow:
+    0 5px 18px rgba(20, 65, 85, 0.08);
+
+  overflow: hidden;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.farmer-pond-recommendation-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 9px 24px rgba(20, 65, 85, 0.12);
+}
+
+
+/* =========================================================
+   Card Top
+   ========================================================= */
+
+.farmer-pond-recommendation-card-top {
+  min-height: 104px;
+
+  padding: 18px 18px 15px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+
+.farmer-pond-recommendation-card-top > div {
+  min-width: 0;
+}
+
+
+.farmer-pond-recommendation-label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  letter-spacing: 1.4px;
+
+  color: #159db0;
+}
+
+
+.farmer-pond-recommendation-card h4 {
+  margin: 0;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  color: #173550;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.farmer-pond-recommendation-card-top p {
+  margin: 5px 0 0;
+
+  font-size: 14px;
+
+  color: #607b91;
+}
+
+
+/* =========================================================
+   Recommended Badge
+   ========================================================= */
+
+.farmer-pond-recommendation-badge {
+  flex-shrink: 0;
+
+  padding: 5px 9px;
+
+  border-radius: 999px;
+
+  background: #dff6e7;
+
+  color: #25874d;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Card Details
+   ========================================================= */
+
+.farmer-pond-recommendation-details {
+  border-top: 1px solid #e7eef2;
+
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+}
+
+
+.farmer-pond-recommendation-details > div {
+  padding: 14px 18px 17px;
+
+  min-width: 0;
+}
+
+
+.farmer-pond-recommendation-details > div + div {
+  border-left: 1px solid #e7eef2;
+}
+
+
+.farmer-pond-recommendation-details span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  color: #70879a;
+
+  letter-spacing: 0.4px;
+}
+
+
+.farmer-pond-recommendation-details strong {
+  display: block;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: #183852;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   Navigation Arrows
+   ========================================================= */
+
+.farmer-pond-recommendation-arrow {
+  flex-shrink: 0;
+
+  width: 48px;
+  height: 48px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #18a1b4;
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 23px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 5px 14px rgba(24, 161, 180, 0.22);
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.farmer-pond-recommendation-arrow:hover {
+  transform: scale(1.06);
+
+  box-shadow:
+    0 7px 18px rgba(24, 161, 180, 0.3);
+}
+
+
+.farmer-pond-recommendation-arrow:active {
+  transform: scale(0.96);
+}
+
+
+.farmer-pond-recommendation-arrow.previous {
+  order: 0;
+}
+
+
+.farmer-pond-recommendation-arrow.next {
+  order: 2;
+}
+
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.farmer-pond-recommendation-empty {
+  width: 100%;
+
+  padding: 28px;
+
+  border: 1px solid #dce9ee;
+  border-radius: 14px;
+
+  background: #f8fbfc;
+
+  text-align: center;
+
+  color: #6b8396;
+
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+  .farmer-pond-recommendation-grid {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+}
+
+
+@media (max-width: 900px) {
+
+  .farmer-pond-recommendation-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+  }
+
+  .farmer-pond-recommendation-wrapper {
+    gap: 9px;
+  }
+
+  .farmer-pond-recommendation-arrow {
+    width: 42px;
+    height: 42px;
+
+    font-size: 20px;
+  }
+
+}
+
+
+@media (max-width: 650px) {
+
+  .farmer-pond-recommendations {
+    margin-top: 32px;
+  }
+
+  .farmer-pond-recommendation-grid {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .farmer-pond-recommendation-card-top {
+    min-height: auto;
+  }
+
+  .farmer-pond-recommendation-arrow {
+    width: 38px;
+    height: 38px;
+
+    font-size: 18px;
+  }
+
+  .farmer-pond-recommendation-details strong {
+    font-size: 13px;
+  }
+
+}

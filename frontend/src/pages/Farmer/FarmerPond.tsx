@@ -1,54 +1,153 @@
 import { useEffect, useState } from 'react'
 import './FarmerPond.css'
 
+import {
+  calculateFeedRequirement,
+  formatFeedAmount
+} from '../../utils/feedCalculation'
+
 
 /* =========================================================
    Types
    ========================================================= */
 
-type Fish = {
+type FeedRecommendation = {
+
   id: number
-  name: string
-  image: string | null
-  water_type: string
-  feeding_habit: string
-  temperature_min: string
-  temperature_max: string
-  ph_min: string
-  ph_max: string
-  culture_period_days: number
+
+  fish_stage: number
+
+  fish_name: string
+
+  stage_number: number
+
+  feed_name: string | null
+
+  feed_type: string | null
+
+  feed_form: string
+
+  protein_min: string
+
+  protein_max: string
+
+  particle_size_min: string
+
+  particle_size_max: string
+
+  organic: boolean
+
 }
+
+
+type PondRecommendation = {
+
+  id: string
+
+  feed_name: string
+
+  fish_name: string
+
+  stage_number: number
+
+  required_min: string
+
+  required_max: string
+
+  organic: boolean
+
+}
+
+
+type Fish = {
+
+  id: number
+
+  name: string
+
+  image: string | null
+
+  water_type: string
+
+  feeding_habit: string
+
+  temperature_min: string
+
+  temperature_max: string
+
+  ph_min: string
+
+  ph_max: string
+
+  culture_period_days: number
+
+}
+
 
 type FishStage = {
+
   id: number
+
   fish: number
+
   stage_number: number
+
   image: string | null
+
   duration_days: number
+
   min_weight: string | null
+
   max_weight: string | null
+
 }
+
 
 type PondFish = {
+
   id: number
+
   pond: number
+
   fish: number
+
   fish_name: string
+
   quantity: number
+
   current_stage: number
+
   stage_number: number
+
+  min_weight: string | null
+
+  max_weight: string | null
+
+  feed_recommendations: FeedRecommendation[]
+
   stage_started_at: string
+
   created_at: string
+
   updated_at: string
+
 }
 
+
 type Pond = {
+
   id: number
+
   farmer: number
+
   name: string
+
   created_at: string
+
   updated_at: string
+
   fish: PondFish[]
+
 }
 
 
@@ -58,11 +157,13 @@ type Pond = {
 
 function FarmerPond() {
 
+
   /* =======================================================
      Pond State
      ======================================================= */
 
-  const [ponds, setPonds] = useState<Pond[]>([])
+  const [ponds, setPonds] =
+    useState<Pond[]>([])
 
   const [showAddPond, setShowAddPond] =
     useState(false)
@@ -115,32 +216,58 @@ function FarmerPond() {
 
 
   /* =========================================================
+     Pond Feed Recommendations
+     ========================================================= */
+
+  const [pondRecommendations, setPondRecommendations] =
+    useState<PondRecommendation[]>([])
+
+  const [recommendationLoading, setRecommendationLoading] =
+    useState(false)
+
+  const [recommendationError, setRecommendationError] =
+    useState('')
+
+  const [recommendationIndex, setRecommendationIndex] =
+    useState(0)
+
+
+  /* =========================================================
      Get Farmer ID
      ========================================================= */
 
   const getFarmerId = () => {
 
-     const account =
-        localStorage.getItem(
-          'aquaNexusAccount'
-        )
+    const account =
+      localStorage.getItem(
+        'aquaNexusAccount'
+      )
 
-     if (!account) {
-       return null
-     }
 
-     const accountData =
-        JSON.parse(account)
+    if (!account) {
 
-     if (
-       accountData.role !== 'farmer'
-     ) {
-       return null
-     }
+      return null
 
-     return String(
-       accountData.id
-     )
+    }
+
+
+    const accountData =
+      JSON.parse(account)
+
+
+    if (
+      accountData.role !== 'farmer'
+    ) {
+
+      return null
+
+    }
+
+
+    return String(
+      accountData.id
+    )
+
   }
 
 
@@ -150,7 +277,9 @@ function FarmerPond() {
 
   const loadPonds = async () => {
 
-    const farmerId = getFarmerId()
+    const farmerId =
+      getFarmerId()
+
 
     if (!farmerId) {
 
@@ -161,7 +290,9 @@ function FarmerPond() {
       setLoading(false)
 
       return
+
     }
+
 
     try {
 
@@ -170,14 +301,19 @@ function FarmerPond() {
           `/api/pond/?farmer_id=${farmerId}`
         )
 
+
       if (!response.ok) {
+
         throw new Error(
           'Failed to load ponds.'
         )
+
       }
+
 
       const data =
         await response.json()
+
 
       setPonds(data)
 
@@ -194,6 +330,7 @@ function FarmerPond() {
       setLoading(false)
 
     }
+
   }
 
 
@@ -217,6 +354,7 @@ function FarmerPond() {
     const trimmedName =
       pondName.trim()
 
+
     if (!trimmedName) {
 
       setError(
@@ -224,10 +362,13 @@ function FarmerPond() {
       )
 
       return
+
     }
+
 
     const farmerId =
       getFarmerId()
+
 
     if (!farmerId) {
 
@@ -236,61 +377,77 @@ function FarmerPond() {
       )
 
       return
+
     }
+
 
     try {
 
       const response =
         await fetch(
-           '/api/pond/',
-           {
-             method: 'POST',
+          '/api/pond/',
+          {
+            method: 'POST',
 
-             headers: {
-               'Content-Type':
-               'application/json'
-             },
+            headers: {
+              'Content-Type':
+                'application/json'
+            },
 
-             body: JSON.stringify({
-               farmer: Number(farmerId),
-               name: trimmedName
-             })
-           }
+            body: JSON.stringify({
+              farmer:
+                Number(farmerId),
+
+              name:
+                trimmedName
+            })
+          }
         )
+
 
       const responseText =
         await response.text()
+
 
       console.log(
         'POND CREATE STATUS:',
         response.status
       )
 
+
       console.log(
         'POND CREATE RESPONSE:',
         responseText
       )
 
+
       if (!response.ok) {
+
         throw new Error(
           `Pond creation failed: ${response.status} - ${responseText}`
         )
+
       }
+
 
       const newPond =
         JSON.parse(responseText)
 
 
-    setPonds(
-      (currentPonds) => [
-         ...currentPonds,
-        newPond
-      ]
-    )
+      setPonds(
+        (currentPonds) => [
+          ...currentPonds,
+          newPond
+        ]
+      )
 
-    setPondName('')
-    setError('')
-    setShowAddPond(false)
+
+      setPondName('')
+
+      setError('')
+
+      setShowAddPond(false)
+
 
     } catch (error) {
 
@@ -299,7 +456,9 @@ function FarmerPond() {
       setError(
         'Unable to create pond.'
       )
+
     }
+
   }
 
 
@@ -310,7 +469,9 @@ function FarmerPond() {
   const handleCancelAddPond = () => {
 
     setPondName('')
+
     setError('')
+
     setShowAddPond(false)
 
   }
@@ -329,9 +490,13 @@ function FarmerPond() {
         'Are you sure you want to delete this pond?'
       )
 
+
     if (!confirmed) {
+
       return
+
     }
+
 
     try {
 
@@ -343,11 +508,15 @@ function FarmerPond() {
           }
         )
 
+
       if (!response.ok) {
+
         throw new Error(
           'Failed to delete pond.'
         )
+
       }
+
 
       setPonds(
         (currentPonds) =>
@@ -357,6 +526,7 @@ function FarmerPond() {
           )
       )
 
+
       if (
         selectedPond &&
         selectedPond.id === pondId
@@ -364,7 +534,10 @@ function FarmerPond() {
 
         setSelectedPond(null)
 
+        setPondRecommendations([])
+
       }
+
 
     } catch (error) {
 
@@ -373,7 +546,9 @@ function FarmerPond() {
       setError(
         'Unable to delete pond.'
       )
+
     }
+
   }
 
 
@@ -388,7 +563,10 @@ function FarmerPond() {
     setSelectedPond(pond)
 
     setShowAddFish(false)
+
     setFishError('')
+
+    setRecommendationIndex(0)
 
   }
 
@@ -400,13 +578,24 @@ function FarmerPond() {
   const handleBackToPonds = () => {
 
     setSelectedPond(null)
+
     setShowAddFish(false)
 
     setSelectedFish(null)
+
     setSelectedStage(null)
+
     setStages([])
+
     setFishQuantity('')
+
     setFishError('')
+
+    setPondRecommendations([])
+
+    setRecommendationError('')
+
+    setRecommendationIndex(0)
 
   }
 
@@ -419,6 +608,7 @@ function FarmerPond() {
 
     setFishLoading(true)
 
+
     try {
 
       const response =
@@ -426,16 +616,22 @@ function FarmerPond() {
           '/api/fish/'
         )
 
+
       if (!response.ok) {
+
         throw new Error(
           'Failed to load fish.'
         )
+
       }
+
 
       const data =
         await response.json()
 
+
       setFishList(data)
+
 
     } catch (error) {
 
@@ -445,11 +641,13 @@ function FarmerPond() {
         'Unable to load fish.'
       )
 
+
     } finally {
 
       setFishLoading(false)
 
     }
+
   }
 
 
@@ -462,9 +660,13 @@ function FarmerPond() {
     setShowAddFish(true)
 
     setSelectedFish(null)
+
     setSelectedStage(null)
+
     setStages([])
+
     setFishQuantity('')
+
     setFishError('')
 
     loadFish()
@@ -488,6 +690,7 @@ function FarmerPond() {
 
     setFishError('')
 
+
     try {
 
       const response =
@@ -495,16 +698,22 @@ function FarmerPond() {
           `/api/fish/${fish.id}/stages/`
         )
 
+
       if (!response.ok) {
+
         throw new Error(
           'Failed to load stages.'
         )
+
       }
+
 
       const data =
         await response.json()
 
+
       setStages(data)
+
 
     } catch (error) {
 
@@ -513,7 +722,9 @@ function FarmerPond() {
       setFishError(
         'Unable to load fish stages.'
       )
+
     }
+
   }
 
 
@@ -541,7 +752,9 @@ function FarmerPond() {
     if (!selectedPond) {
 
       return
+
     }
+
 
     if (!selectedFish) {
 
@@ -550,7 +763,9 @@ function FarmerPond() {
       )
 
       return
+
     }
+
 
     if (!selectedStage) {
 
@@ -559,10 +774,13 @@ function FarmerPond() {
       )
 
       return
+
     }
+
 
     const quantity =
       Number(fishQuantity)
+
 
     if (
       !fishQuantity ||
@@ -574,7 +792,9 @@ function FarmerPond() {
       )
 
       return
+
     }
+
 
     try {
 
@@ -607,14 +827,19 @@ function FarmerPond() {
           }
         )
 
+
       if (!response.ok) {
+
         throw new Error(
           'Failed to add fish.'
         )
+
       }
+
 
       const newPondFish =
         await response.json()
+
 
       const updatedPond = {
 
@@ -627,9 +852,11 @@ function FarmerPond() {
 
       }
 
+
       setSelectedPond(
         updatedPond
       )
+
 
       setPonds(
         (currentPonds) =>
@@ -641,13 +868,19 @@ function FarmerPond() {
           )
       )
 
+
       setSelectedFish(null)
+
       setSelectedStage(null)
+
       setStages([])
+
       setFishQuantity('')
+
       setFishError('')
 
       setShowAddFish(false)
+
 
     } catch (error) {
 
@@ -656,7 +889,285 @@ function FarmerPond() {
       setFishError(
         'Unable to add fish to the pond.'
       )
+
     }
+
+  }
+
+
+  /* =========================================================
+     Load Pond Feed Recommendations
+     ========================================================= */
+
+  const loadPondRecommendations = async (
+    pondFish: PondFish[]
+  ) => {
+
+    if (pondFish.length === 0) {
+
+      setPondRecommendations([])
+
+      setRecommendationError('')
+
+      setRecommendationIndex(0)
+
+      return
+
+    }
+
+
+    try {
+
+      setRecommendationLoading(true)
+
+      setRecommendationError('')
+
+
+      const recommendationGroups =
+        await Promise.all(
+
+          pondFish.map(
+            async (pondFishItem) => {
+
+
+              /* =========================================
+                 Load Current Stage
+                 ========================================= */
+
+              const stageResponse =
+                await fetch(
+                  `/api/fish/${pondFishItem.fish}/stages/${pondFishItem.current_stage}/`
+                )
+
+
+              if (!stageResponse.ok) {
+
+                throw new Error(
+                  `Failed to load stage for ${pondFishItem.fish_name}.`
+                )
+
+              }
+
+
+              const stage =
+                await stageResponse.json()
+
+
+              /* =========================================
+                 Calculate Required Feed
+                 ========================================= */
+
+              const calculation =
+                calculateFeedRequirement(
+                  stage,
+                  pondFishItem.quantity
+                )
+
+
+              if (!calculation) {
+
+                return []
+
+              }
+
+
+              /* =========================================
+                 Load Recommendations
+                 ========================================= */
+
+              const recommendationResponse =
+                await fetch(
+                  `/api/fish/${pondFishItem.fish}/stages/${pondFishItem.current_stage}/feed-recommendations/`
+                )
+
+
+              if (!recommendationResponse.ok) {
+
+                throw new Error(
+                  `Failed to load recommendations for ${pondFishItem.fish_name}.`
+                )
+
+              }
+
+
+              const recommendationData =
+                await recommendationResponse.json()
+
+
+              const feeds: FeedRecommendation[] =
+                Array.isArray(
+                  recommendationData
+                )
+                  ? recommendationData
+                  : recommendationData.results || []
+
+
+              /* =========================================
+                 Create Recommendation Cards
+                 ========================================= */
+
+              return feeds.map(
+                (feed) => {
+
+                  return {
+
+                    id:
+                      `${pondFishItem.id}-${feed.id}`,
+
+                    feed_name:
+                      feed.feed_name ||
+                      'Feed Product',
+
+                    fish_name:
+                      feed.fish_name ||
+                      pondFishItem.fish_name,
+
+                    stage_number:
+                      feed.stage_number ||
+                      pondFishItem.stage_number,
+
+                    required_min:
+                      formatFeedAmount(
+                        calculation.minimumFeed,
+                        stage
+                      ),
+
+                    required_max:
+                      formatFeedAmount(
+                        calculation.maximumFeed,
+                        stage
+                      ),
+
+                    organic:
+                      feed.organic
+
+                  }
+
+                }
+              )
+
+            }
+          )
+
+        )
+
+
+      /* =========================================
+         Flatten Recommendation Groups
+         ========================================= */
+
+      const flattenedRecommendations =
+        recommendationGroups.flat()
+
+
+      setPondRecommendations(
+        flattenedRecommendations
+      )
+
+
+      setRecommendationIndex(0)
+
+
+    } catch (error) {
+
+      console.error(
+        'Pond recommendation error:',
+        error
+      )
+
+
+      setPondRecommendations([])
+
+
+      setRecommendationError(
+        'Unable to load recommended feeds.'
+      )
+
+
+    } finally {
+
+      setRecommendationLoading(false)
+
+    }
+
+  }
+
+
+  /* =========================================================
+     Load Recommendations When Pond Changes
+     ========================================================= */
+
+  useEffect(() => {
+
+    if (!selectedPond) {
+
+      setPondRecommendations([])
+
+      setRecommendationError('')
+
+      setRecommendationIndex(0)
+
+      return
+
+    }
+
+
+    loadPondRecommendations(
+      selectedPond.fish
+    )
+
+  }, [selectedPond])
+
+
+  /* =========================================================
+     Recommendation Navigation
+     ========================================================= */
+
+  const visibleRecommendationCount =
+    4
+
+
+  const canMoveNext =
+    recommendationIndex +
+      visibleRecommendationCount <
+    pondRecommendations.length
+
+
+  const canMovePrevious =
+    recommendationIndex > 0
+
+
+  const handleRecommendationNext = () => {
+
+    if (!canMoveNext) {
+
+      return
+
+    }
+
+
+    setRecommendationIndex(
+      (currentIndex) =>
+        currentIndex + 1
+    )
+
+  }
+
+
+  const handleRecommendationPrevious = () => {
+
+    if (!canMovePrevious) {
+
+      return
+
+    }
+
+
+    setRecommendationIndex(
+      (currentIndex) =>
+        currentIndex - 1
+    )
+
   }
 
 
@@ -669,9 +1180,13 @@ function FarmerPond() {
     setShowAddFish(false)
 
     setSelectedFish(null)
+
     setSelectedStage(null)
+
     setStages([])
+
     setFishQuantity('')
+
     setFishError('')
 
   }
@@ -698,6 +1213,7 @@ function FarmerPond() {
       </div>
 
     )
+
   }
 
 
@@ -777,6 +1293,7 @@ function FarmerPond() {
 
           <div className="farmer-pond-form-card">
 
+
             <div className="farmer-pond-form-header">
 
               <span className="farmer-pond-form-eyebrow">
@@ -798,6 +1315,7 @@ function FarmerPond() {
                 Select Fish
               </label>
 
+
               {fishLoading && (
 
                 <p>
@@ -806,20 +1324,22 @@ function FarmerPond() {
 
               )}
 
+
               {!fishLoading && (
 
                 <div className="farmer-pond-fish-grid">
+
                   {fishList.map(
                     (fish) => (
 
                       <button
-                       key={fish.id}
-                       type="button"
-                       className={`farmer-pond-fish-option ${
+                        key={fish.id}
+                        type="button"
+                        className={`farmer-pond-fish-option ${
                           selectedFish?.id === fish.id
                             ? 'selected'
                             : ''
-                       }`}
+                        }`}
                         onClick={() =>
                           handleSelectFish(
                             fish
@@ -864,12 +1384,17 @@ function FarmerPond() {
               <div>
 
                 <div className="farmer-pond-selected-fish">
-                   <span>Selected Fish</span>
 
-                   <h4>
-                      {selectedFish.name}
-                   </h4>
+                  <span>
+                    Selected Fish
+                  </span>
+
+                  <h4>
+                    {selectedFish.name}
+                  </h4>
+
                 </div>
+
 
                 {/* Stage Selection */}
 
@@ -879,7 +1404,9 @@ function FarmerPond() {
                     Select Stage
                   </label>
 
+
                   <div className="farmer-pond-stage-grid">
+
                     {stages.map(
                       (stage) => (
 
@@ -891,7 +1418,6 @@ function FarmerPond() {
                               ? 'selected'
                               : ''
                           }`}
-                          
                           onClick={() =>
                             handleSelectStage(
                               stage
@@ -905,9 +1431,7 @@ function FarmerPond() {
                               src={
                                 stage.image
                               }
-                              alt={
-                                `Stage ${stage.stage_number}`
-                              }
+                              alt={`Stage ${stage.stage_number}`}
                               width="80"
                             />
 
@@ -966,7 +1490,9 @@ function FarmerPond() {
             {fishError && (
 
               <div className="farmer-pond-error">
+
                 {fishError}
+
               </div>
 
             )}
@@ -986,6 +1512,7 @@ function FarmerPond() {
                 Cancel
               </button>
 
+
               <button
                 type="button"
                 className="farmer-pond-save-button"
@@ -997,6 +1524,7 @@ function FarmerPond() {
               </button>
 
             </div>
+
 
           </div>
 
@@ -1137,13 +1665,235 @@ function FarmerPond() {
 
             </div>
 
+
+            {/* =================================================
+               Recommended Feeds
+               ================================================= */}
+
+            <div className="farmer-pond-recommendations">
+
+
+              <div className="farmer-pond-recommendations-header">
+
+                <h3>
+                  Recommended Feeds
+                </h3>
+
+                <p>
+                  Based on the fish, stage and
+                  quantity in this pond.
+                </p>
+
+              </div>
+
+
+              {/* Loading */}
+
+              {recommendationLoading && (
+
+                <div className="farmer-pond-recommendation-empty">
+
+                  Loading recommended feeds...
+
+                </div>
+
+              )}
+
+
+              {/* Error */}
+
+              {!recommendationLoading &&
+                recommendationError && (
+
+                <div className="farmer-pond-recommendation-empty">
+
+                  {recommendationError}
+
+                </div>
+
+              )}
+
+
+              {/* No Recommendations */}
+
+              {!recommendationLoading &&
+                !recommendationError &&
+                pondRecommendations.length === 0 && (
+
+                <div className="farmer-pond-recommendation-empty">
+
+                  No feed recommendations are
+                  available for the fish in this pond.
+
+                </div>
+
+              )}
+
+
+              {/* Recommendation Cards */}
+
+              {!recommendationLoading &&
+                !recommendationError &&
+                pondRecommendations.length > 0 && (
+
+                <div className="farmer-pond-recommendation-wrapper">
+
+
+                  {/* Previous */}
+
+                  {canMovePrevious && (
+
+                    <button
+                      type="button"
+                      className="farmer-pond-recommendation-arrow previous"
+                      onClick={
+                        handleRecommendationPrevious
+                      }
+                      aria-label="Previous recommendations"
+                    >
+                      ←
+                    </button>
+
+                  )}
+
+
+                  {/* Cards */}
+
+                  <div className="farmer-pond-recommendation-grid">
+
+                    {pondRecommendations
+                      .slice(
+                        recommendationIndex,
+                        recommendationIndex +
+                          visibleRecommendationCount
+                      )
+                      .map(
+                        (recommendation) => (
+
+                          <div
+                            key={
+                              recommendation.id
+                            }
+                            className="farmer-pond-recommendation-card"
+                          >
+
+
+                            <div className="farmer-pond-recommendation-card-top">
+
+                              <div>
+
+                                <span className="farmer-pond-recommendation-label">
+                                  FEED
+                                </span>
+
+                                <h4>
+                                  {
+                                    recommendation.feed_name
+                                  }
+                                </h4>
+
+                                <p>
+                                  {
+                                    recommendation.fish_name
+                                  }
+                                </p>
+
+                              </div>
+
+
+                              <span className="farmer-pond-recommendation-badge">
+
+                                {recommendation.organic
+                                  ? 'Organic'
+                                  : 'Recommended'}
+
+                              </span>
+
+                            </div>
+
+
+                            <div className="farmer-pond-recommendation-details">
+
+
+                              <div>
+
+                                <span>
+                                  STAGE
+                                </span>
+
+                                <strong>
+                                  Stage {
+                                    recommendation.stage_number
+                                  }
+                                </strong>
+
+                              </div>
+
+
+                              <div>
+
+                                <span>
+                                  REQUIRED PER DAY
+                                </span>
+
+                                <strong>
+                                  {
+                                    recommendation.required_min
+                                  }
+                                  {' – '}
+                                  {
+                                    recommendation.required_max
+                                  }
+                                </strong>
+
+                              </div>
+
+
+                            </div>
+
+
+                          </div>
+
+                        )
+                      )}
+
+                  </div>
+
+
+                  {/* Next */}
+
+                  {canMoveNext && (
+
+                    <button
+                      type="button"
+                      className="farmer-pond-recommendation-arrow next"
+                      onClick={
+                        handleRecommendationNext
+                      }
+                      aria-label="Next recommendations"
+                    >
+                      →
+                    </button>
+
+                  )}
+
+
+                </div>
+
+              )}
+
+            </div>
+
+
           </div>
 
         )}
 
+
       </div>
 
     )
+
   }
 
 
@@ -1201,6 +1951,7 @@ function FarmerPond() {
 
         <div className="farmer-pond-form-card">
 
+
           <div className="farmer-pond-form-header">
 
             <span className="farmer-pond-form-eyebrow">
@@ -1239,7 +1990,9 @@ function FarmerPond() {
           {error && (
 
             <div className="farmer-pond-error">
+
               {error}
+
             </div>
 
           )}
@@ -1257,6 +2010,7 @@ function FarmerPond() {
               Cancel
             </button>
 
+
             <button
               type="button"
               className="farmer-pond-save-button"
@@ -1268,6 +2022,7 @@ function FarmerPond() {
             </button>
 
           </div>
+
 
         </div>
 
@@ -1327,6 +2082,7 @@ function FarmerPond() {
                 className="farmer-pond-card"
               >
 
+
                 {/* Card Header */}
 
                 <div className="farmer-pond-card-header">
@@ -1349,6 +2105,7 @@ function FarmerPond() {
                 {/* Pond Information */}
 
                 <div className="farmer-pond-info">
+
 
                   <div className="farmer-pond-info-item">
 
@@ -1392,12 +2149,14 @@ function FarmerPond() {
 
                   </div>
 
+
                 </div>
 
 
                 {/* Actions */}
 
                 <div className="farmer-pond-card-actions">
+
 
                   <button
                     type="button"
@@ -1424,7 +2183,9 @@ function FarmerPond() {
                     Delete
                   </button>
 
+
                 </div>
+
 
               </div>
 
@@ -1435,9 +2196,11 @@ function FarmerPond() {
 
       )}
 
+
     </div>
 
   )
+
 }
 
 

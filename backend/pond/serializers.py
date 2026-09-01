@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from fish.serializers import FeedRecommendationSerializer
 
 from .models import Pond, PondFish
 
@@ -17,6 +18,26 @@ class PondFishSerializer(
         read_only=True
     )
 
+    min_weight = serializers.DecimalField(
+        source='current_stage.min_weight',
+        max_digits=8,
+        decimal_places=2,
+        read_only=True
+    )
+
+    max_weight = serializers.DecimalField(
+        source='current_stage.max_weight',
+        max_digits=8,
+        decimal_places=2,
+        read_only=True
+    )
+
+    feed_recommendations = FeedRecommendationSerializer(
+        source='current_stage.feed_recommendations',
+        many=True,
+        read_only=True
+    )
+
     class Meta:
 
         model = PondFish
@@ -29,6 +50,9 @@ class PondFishSerializer(
             'quantity',
             'current_stage',
             'stage_number',
+            'min_weight',
+            'max_weight',
+            'feed_recommendations',
             'stage_started_at',
             'created_at',
             'updated_at',
@@ -39,11 +63,14 @@ class PondFishSerializer(
             'pond',
             'fish_name',
             'stage_number',
+            'min_weight',
+            'max_weight',
+            'feed_recommendations',
             'created_at',
             'updated_at',
         ]
 
-
+        
 class PondSerializer(
     serializers.ModelSerializer
 ):

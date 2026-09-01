@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db.models import Prefetch
 
 from rest_framework import generics
 from rest_framework.parsers import (
@@ -35,21 +36,29 @@ class PondListCreateView(
 
     def get_queryset(self):
 
+        queryset = Pond.objects.select_related(
+           'farmer'
+        ).prefetch_related(
+            'fish__fish',
+            'fish__current_stage__feed_recommendations'
+        )
+
         farmer_id = self.request.query_params.get(
             'farmer_id'
         )
 
         if farmer_id:
 
-            return Pond.objects.filter(
-                farmer_id=farmer_id
+            return queryset.filter(
+              farmer_id=farmer_id
             ).order_by(
-                'id'
+               'id'
             )
 
-        return Pond.objects.all().order_by(
+        return queryset.order_by(
             'id'
         )
+
 
     def perform_create(self, serializer):
 
