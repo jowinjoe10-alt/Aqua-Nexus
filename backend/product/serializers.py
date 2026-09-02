@@ -33,6 +33,7 @@ class ProductSerializer(
             'feed_type',
             'feed_name',
             'brand_name',
+            'price',
             'protein_range',
             'pellet_size',
             'image',
@@ -87,6 +88,18 @@ class ProductSerializer(
 
         return value
 
+    def validate_price(
+       self,
+       value
+    ):
+
+       if value < 0:
+
+          raise serializers.ValidationError(
+             'Price cannot be negative.'
+          )
+
+       return value
 
     def validate_inventory_quantity(
         self,

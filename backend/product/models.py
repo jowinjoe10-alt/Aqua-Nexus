@@ -22,6 +22,11 @@ class Product(models.Model):
         max_length=100
     )
 
+    price = models.DecimalField(
+            max_digits=10,
+            decimal_places=2
+    )
+
     protein_range = models.CharField(
         max_length=50
     )
@@ -29,7 +34,7 @@ class Product(models.Model):
     pellet_size = models.CharField(
         max_length=50
     )
-
+    
     image = models.ImageField(
         upload_to='product_images/',
         blank=True,
@@ -53,6 +58,18 @@ class Product(models.Model):
 
         return f'{self.brand_name} - {self.feed_name}'
 
+    def validate_price(
+       self,
+       value
+    ):
+
+       if value < 0:
+
+           raise serializers.ValidationError(
+              'Price cannot be negative.'
+           )
+
+       return value
 
 class Inventory(models.Model):
 

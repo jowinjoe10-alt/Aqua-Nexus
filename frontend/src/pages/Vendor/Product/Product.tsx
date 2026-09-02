@@ -11,6 +11,7 @@ type Product = {
   pellet_size: string
   image: string | null
   description: string | null
+  price: string
   inventory: {
     id: number
     quantity: number
@@ -36,7 +37,10 @@ function Product() {
   const [searchText, setSearchText] =
     useState('')
 
+  const [price, setPrice] = useState('')
 
+  const [formError, setFormError] =
+    useState('')
   // =====================================
   // Product Data
   // =====================================
@@ -409,6 +413,10 @@ function Product() {
 
     setPelletSize('')
 
+    setPrice('')
+
+    setFormError('')
+
     setProductImage(null)
 
     setDescription('')
@@ -444,6 +452,8 @@ function Product() {
     setEditingProduct(product)
 
     setFeedType(product.feed_type)
+
+    setPrice(product.price)
 
     setFeedName(product.feed_name)
 
@@ -522,6 +532,17 @@ function Product() {
     }
 
 
+    if (price.trim() === '') {
+      setFormError('Please enter product price.')
+      return
+    }
+
+
+    if (Number(price) < 0) {
+      setFormError('Product price cannot be negative.')
+      return
+    }
+
     if (!feedName) {
 
       alert(
@@ -595,6 +616,10 @@ function Product() {
       String(accountId)
     )
 
+    formData.append(
+      'price',
+      price
+    )
 
     formData.append(
       'feed_type',
@@ -1021,6 +1046,15 @@ function Product() {
 
                     </p>
 
+                    <p>
+                      <strong>Price:</strong> ₹{product.price}
+                    </p>
+                    
+                    {formError && (
+                      <p className="product-form-error">
+                        {formError}
+                      </p>
+                    )}
 
                     <p>
 
@@ -1318,6 +1352,23 @@ function Product() {
 
             }}
             placeholder="Enter brand name"
+          />
+
+
+          <label htmlFor="product-price">
+            Price
+          </label>
+
+          <input
+            type="number"
+            id="product-price"
+            placeholder="Enter product price"
+            value={price}
+            onChange={(event) =>
+              setPrice(event.target.value)
+            }
+            min="0"
+            step="0.01"
           />
 
 
