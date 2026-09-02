@@ -18,6 +18,9 @@ function Vendor() {
   const [receivingOrders, setReceivingOrders] =
     useState(true)
 
+  const [receivingSubscriptions, setReceivingSubscriptions] =
+    useState(true)
+
   const [activeSection, setActiveSection] =
     useState('Products')
 
@@ -64,7 +67,9 @@ function Vendor() {
         !parsedAccount.city?.trim() ||
         !parsedAccount.state?.trim()
       ) {
+
         setLocationPopupOpen(true)
+
       }
 
     } catch (error) {
@@ -182,6 +187,7 @@ function Vendor() {
 
 
   return (
+
     <div className="vendor-page">
 
 
@@ -452,7 +458,7 @@ function Vendor() {
 
                 <span className="availability-label">
 
-                  {receivingOrders
+                  {receivingSubscriptions
                     ? 'ON'
                     : 'OFF'}
 
@@ -462,13 +468,13 @@ function Vendor() {
                 <button
                   type="button"
                   className={`availability-switch ${
-                    receivingOrders
+                    receivingSubscriptions
                       ? 'on'
                       : 'off'
                   }`}
                   onClick={() =>
-                    setReceivingOrders(
-                      !receivingOrders
+                    setReceivingSubscriptions(
+                      !receivingSubscriptions
                     )
                   }
                   aria-label="Toggle receiving orders and subscriptions"
@@ -503,6 +509,7 @@ function Vendor() {
       </main>
 
     </div>
+
   )
 }
 
