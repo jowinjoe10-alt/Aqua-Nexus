@@ -31,6 +31,11 @@ urlpatterns = [
         include('pond.urls')
     ),
 
+    path(
+        'api/product/',
+        include('product.urls')
+    ),
+
 ]
 
 
