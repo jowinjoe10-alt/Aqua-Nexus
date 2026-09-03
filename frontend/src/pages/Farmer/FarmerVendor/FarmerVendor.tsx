@@ -19,6 +19,7 @@ type Product = {
   } | null
 }
 
+
 type FeedRecommendation = {
   id: number
   fish_stage?: number | null
@@ -36,8 +37,10 @@ type FeedRecommendation = {
 
 
 type FarmerVendorProps = {
+  initialSearchText?: string
   selectedFeed?: FeedRecommendation | null
 }
+
 
 function getRangeValues(value: string | null) {
 
@@ -45,11 +48,14 @@ function getRangeValues(value: string | null) {
     return null
   }
 
+
   const numbers = value.match(/\d+(\.\d+)?/g)
+
 
   if (!numbers || numbers.length === 0) {
     return null
   }
+
 
   if (numbers.length === 1) {
 
@@ -62,6 +68,7 @@ function getRangeValues(value: string | null) {
 
   }
 
+
   return {
     min: Number(numbers[0]),
     max: Number(numbers[1])
@@ -71,13 +78,41 @@ function getRangeValues(value: string | null) {
 
 
 function FarmerVendor({
-    selectedFeed
+  initialSearchText = '',
+  selectedFeed = null
 }: FarmerVendorProps) {
 
+
+  const [sortOption, setSortOption] =
+    useState('')
+
+
+  const [products, setProducts] =
+    useState<Product[]>([])
+
+
+  const [loading, setLoading] =
+    useState(true)
+
+
   const [searchText, setSearchText] =
-  useState(
-    selectedFeed?.feed_name || ''
-  )
+    useState(
+      selectedFeed?.feed_name ||
+      initialSearchText
+    )
+
+
+  const [error, setError] =
+    useState('')
+
+
+  const [selectedProduct, setSelectedProduct] =
+    useState<Product | null>(null)
+
+
+  const [quantity, setQuantity] =
+    useState(1)
+
 
   useEffect(() => {
 
@@ -87,27 +122,18 @@ function FarmerVendor({
         selectedFeed.feed_name
       )
 
+    } else {
+
+      setSearchText(
+        initialSearchText
+      )
+
     }
 
-  }, [selectedFeed])
-
-  const [sortOption, setSortOption] =
-    useState('')
-
-  const [products, setProducts] =
-    useState<Product[]>([])
-
-  const [loading, setLoading] =
-    useState(true)
-
-  const [error, setError] =
-    useState('')
-
-  const [selectedProduct, setSelectedProduct] =
-    useState<Product | null>(null)
-
-  const [quantity, setQuantity] =
-    useState(1)
+  }, [
+    selectedFeed,
+    initialSearchText
+  ])
 
 
   /* ============================= */
@@ -124,6 +150,7 @@ function FarmerVendor({
           'http://127.0.0.1:8000/api/product/'
         )
 
+
         if (!response.ok) {
 
           throw new Error(
@@ -132,7 +159,9 @@ function FarmerVendor({
 
         }
 
+
         const data = await response.json()
+
 
         setProducts(data)
 
@@ -142,6 +171,7 @@ function FarmerVendor({
           'Product loading error:',
           error
         )
+
 
         setError(
           'Unable to load products.'
@@ -155,11 +185,12 @@ function FarmerVendor({
 
     }
 
+
     loadProducts()
 
   }, [])
 
-  
+
   /* ============================= */
   /* Search Products               */
   /* ============================= */
@@ -169,56 +200,14 @@ function FarmerVendor({
 
       if (selectedFeed) {
 
-  /* ============================= */
-  /* Feed Name                     */
-  /* ============================= */
+        /* ============================= */
+        /* Feed Name                     */
+        /* ============================= */
 
         if (
+          selectedFeed.feed_name &&
           product.feed_name.toLowerCase() !==
-          selectedFeed.feed_name?.toLowerCase()
-        )  {
-
-         return false
-
-        }
-
-
-        if (
-          product.feed_type.toLowerCase() !==
-          selectedFeed.feed_type?.toLowerCase()
-        ) {
-
-         return false
-
-        }
-
-
-        const recommendedProtein = {
-
-          min: Number(
-            selectedFeed.protein_min
-          ),
-
-          max: Number(
-            selectedFeed.protein_max
-          )
-
-        }
-
-        const productProtein =
-          getRangeValues(
-            product.protein_range
-          )
-
-
-        if (
-          productProtein &&
-          (
-            productProtein.min <
-              recommendedProtein.min ||
-            productProtein.max >
-              recommendedProtein.max
-          )
+          selectedFeed.feed_name.toLowerCase()
         ) {
 
           return false
@@ -226,44 +215,117 @@ function FarmerVendor({
         }
 
 
-        const recommendedParticleSize = {
-
-          min: Number(
-            selectedFeed.particle_size_min
-          ),
-
-          max: Number(
-            selectedFeed.particle_size_max
-          )
-
-        }
-
-        const productParticleSize =
-          getRangeValues(
-            product.pellet_size
-          )
-
+        /* ============================= */
+        /* Feed Type                     */
+        /* ============================= */
 
         if (
-          productParticleSize &&
-          (
-            productParticleSize.min <
-              recommendedParticleSize.min ||
-            productParticleSize.max >
-              recommendedParticleSize.max
-          )
+          selectedFeed.feed_type &&
+          product.feed_type.toLowerCase() !==
+          selectedFeed.feed_type.toLowerCase()
         ) {
 
-         return false
+          return false
 
         }
+
+
+        /* ============================= */
+        /* Protein                       */
+        /* ============================= */
+
+        if (
+          selectedFeed.protein_min !== null &&
+          selectedFeed.protein_min !== undefined &&
+          selectedFeed.protein_max !== null &&
+          selectedFeed.protein_max !== undefined
+        ) {
+
+          const recommendedProtein = {
+
+            min: Number(
+              selectedFeed.protein_min
+            ),
+
+            max: Number(
+              selectedFeed.protein_max
+            )
+
+          }
+
+
+          const productProtein =
+            getRangeValues(
+              product.protein_range
+            )
+
+
+          if (
+            !productProtein ||
+            productProtein.max < recommendedProtein.min ||
+            productProtein.min > recommendedProtein.max
+          ) {
+
+            return false
+
+          }
+
+        }
+
+
+        /* ============================= */
+        /* Particle Size                 */
+        /* ============================= */
+
+        if (
+          selectedFeed.particle_size_min !== null &&
+          selectedFeed.particle_size_min !== undefined &&
+          selectedFeed.particle_size_max !== null &&
+          selectedFeed.particle_size_max !== undefined
+        ) {
+
+          const recommendedParticleSize = {
+
+            min: Number(
+              selectedFeed.particle_size_min
+            ),
+
+            max: Number(
+              selectedFeed.particle_size_max
+            )
+
+          }
+
+
+          const productParticleSize =
+            getRangeValues(
+              product.pellet_size
+            )
+
+
+          if (
+            !productParticleSize ||
+            productParticleSize.max < recommendedParticleSize.min ||
+            productParticleSize.min > recommendedParticleSize.max
+          ) {
+
+            return false
+
+          }
+
+        }
+
+
+        /* ============================= */
+        /* Inventory                     */
+        /* ============================= */
 
         if (
           !product.inventory ||
           product.inventory.quantity <= 0
         ) {
 
-         return false
+          return false
 
         }
 
@@ -276,9 +338,11 @@ function FarmerVendor({
       const search =
         searchText.toLowerCase().trim()
 
+
       if (!search) {
         return true
       }
+
 
       return (
         product.feed_name
@@ -286,7 +350,7 @@ function FarmerVendor({
           .includes(search)
       )
 
-  })
+    })
 
 
   /* ============================= */
@@ -308,6 +372,7 @@ function FarmerVendor({
 
         }
 
+
         if (
           sortOption === 'high-to-low'
         ) {
@@ -318,6 +383,7 @@ function FarmerVendor({
           )
 
         }
+
 
         return 0
 
@@ -364,12 +430,13 @@ function FarmerVendor({
     const newQuantity =
       Number(value)
 
+
     if (
       newQuantity >= 1 &&
       selectedProduct &&
       selectedProduct.inventory &&
       newQuantity <=
-        selectedProduct.inventory.quantity
+      selectedProduct.inventory.quantity
     ) {
 
       setQuantity(newQuantity)
@@ -581,17 +648,17 @@ function FarmerVendor({
             {selectedProduct.inventory &&
               selectedProduct.inventory.quantity > 0 && (
 
-                <p>
+              <p>
 
-                  <strong>
-                    Available Quantity:
-                  </strong>{' '}
+                <strong>
+                  Available Quantity:
+                </strong>{' '}
 
-                  {selectedProduct.inventory.quantity}
+                {selectedProduct.inventory.quantity}
 
-                </p>
+              </p>
 
-              )}
+            )}
 
 
             {/* ============================= */}
@@ -624,7 +691,7 @@ function FarmerVendor({
 
                 </div>
 
-              )}
+            )}
 
 
             {/* ============================= */}
@@ -646,7 +713,7 @@ function FarmerVendor({
 
                 </div>
 
-              )}
+            )}
 
 
             {/* ============================= */}
@@ -776,7 +843,7 @@ function FarmerVendor({
 
               </p>
 
-            )}
+          )}
 
 
           {/* Product Cards */}
@@ -863,7 +930,7 @@ function FarmerVendor({
 
               </div>
 
-            )}
+          )}
 
         </div>
 

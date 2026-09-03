@@ -73,6 +73,17 @@ function Farmer() {
   const [locationPopupOpen, setLocationPopupOpen] =
     useState(false)
 
+  const [vendorSearchText, setVendorSearchText] =
+    useState('')
+
+  const handleGoToVendor = (
+    feed: FeedRecommendation
+  ) => {
+    setSelectedFeed(feed)
+    setVendorSearchText(feed.feed_name || '')
+    setActiveSection('Vendors')
+  }
+  
   const [account, setAccount] =
     useState<Account | null>(null)
 
@@ -458,9 +469,11 @@ function Farmer() {
               ? 'active'
               : ''
           }`}
-          onClick={() =>
-            setActiveSection('Vendors')
-          }
+          onClick={() => {
+           setSelectedFeed(null)
+           setVendorSearchText('')
+           setActiveSection('Vendors')
+          }}
         >
 
           Vendors
@@ -792,7 +805,19 @@ function Farmer() {
 
             {activeSection === 'Pond' && (
 
-              <FarmerPond />
+              <FarmerPond
+                 onGoToVendor={(recommendation) =>
+                    handleGoToVendor({
+                      id: Number(recommendation.id),
+                      feed_name: recommendation.feed_name,
+                      feed_type: recommendation.feed_type,
+                      protein_min: Number(recommendation.protein_min),
+                      protein_max: Number(recommendation.protein_max),
+                      particle_size_min: Number(recommendation.particle_size_min),
+                      particle_size_max: Number(recommendation.particle_size_max),
+                    })
+                 }
+              />
 
             )}
 
@@ -805,6 +830,7 @@ function Farmer() {
 
               <FarmerVendor
                 selectedFeed={selectedFeed}
+                initialSearchText={vendorSearchText}
               />
 
             )}

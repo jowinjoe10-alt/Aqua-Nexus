@@ -41,22 +41,40 @@ type FeedRecommendation = {
 
 
 type PondRecommendation = {
-
+ 
   id: string
-
+ 
   feed_name: string
-
+ 
   fish_name: string
-
+ 
   stage_number: number
-
+ 
   required_min: string
-
+ 
   required_max: string
-
+ 
   organic: boolean
+ 
+  feed_type: string | null
+ 
+  protein_min: string
+ 
+  protein_max: string
+ 
+  particle_size_min: string
+ 
+  particle_size_max: string
 
 }
+
+
+interface FarmerPondProps {
+  onGoToVendor: (
+    recommendation: PondRecommendation
+  ) => void
+}
+
 
 
 type Fish = {
@@ -151,11 +169,13 @@ type Pond = {
 }
 
 
+
+function FarmerPond({
+  onGoToVendor
+}: FarmerPondProps) {
 /* =========================================================
    Component
    ========================================================= */
-
-function FarmerPond() {
 
 
   /* =======================================================
@@ -1039,7 +1059,22 @@ function FarmerPond() {
                       ),
 
                     organic:
-                      feed.organic
+                      feed.organic,
+
+                    feed_type:
+                      feed.feed_type,
+
+                    protein_min:
+                      feed.protein_min,
+
+                    protein_max:
+                      feed.protein_max,
+
+                    particle_size_min:
+                      feed.particle_size_min,
+
+                    particle_size_max:
+                      feed.particle_size_max,
 
                   }
 
@@ -1771,10 +1806,13 @@ function FarmerPond() {
                         (recommendation) => (
 
                           <div
-                            key={
-                              recommendation.id
-                            }
+                            key={recommendation.id}
                             className="farmer-pond-recommendation-card"
+                            onClick={() => 
+                              onGoToVendor(
+                                recommendation
+                              )
+                            }
                           >
 
 
