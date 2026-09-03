@@ -19,11 +19,77 @@ type Product = {
   } | null
 }
 
+type FeedRecommendation = {
+  id: number
+  fish_stage?: number | null
+  fish_name?: string | null
+  stage_number?: number | null
+  feed_name?: string | null
+  feed_type?: string | null
+  feed_form?: string | null
+  protein_min?: number | null
+  protein_max?: number | null
+  particle_size_min?: number | null
+  particle_size_max?: number | null
+  organic?: boolean | null
+}
 
-function FarmerVendor() {
+
+type FarmerVendorProps = {
+  selectedFeed?: FeedRecommendation | null
+}
+
+function getRangeValues(value: string | null) {
+
+  if (!value) {
+    return null
+  }
+
+  const numbers = value.match(/\d+(\.\d+)?/g)
+
+  if (!numbers || numbers.length === 0) {
+    return null
+  }
+
+  if (numbers.length === 1) {
+
+    const number = Number(numbers[0])
+
+    return {
+      min: number,
+      max: number
+    }
+
+  }
+
+  return {
+    min: Number(numbers[0]),
+    max: Number(numbers[1])
+  }
+
+}
+
+
+function FarmerVendor({
+    selectedFeed
+}: FarmerVendorProps) {
 
   const [searchText, setSearchText] =
-    useState('')
+  useState(
+    selectedFeed?.feed_name || ''
+  )
+
+  useEffect(() => {
+
+    if (selectedFeed?.feed_name) {
+
+      setSearchText(
+        selectedFeed.feed_name
+      )
+
+    }
+
+  }, [selectedFeed])
 
   const [sortOption, setSortOption] =
     useState('')
@@ -93,13 +159,119 @@ function FarmerVendor() {
 
   }, [])
 
-
+  
   /* ============================= */
   /* Search Products               */
   /* ============================= */
 
   const filteredProducts =
     products.filter((product) => {
+
+      if (selectedFeed) {
+
+  /* ============================= */
+  /* Feed Name                     */
+  /* ============================= */
+
+        if (
+          product.feed_name.toLowerCase() !==
+          selectedFeed.feed_name?.toLowerCase()
+        )  {
+
+         return false
+
+        }
+
+
+        if (
+          product.feed_type.toLowerCase() !==
+          selectedFeed.feed_type?.toLowerCase()
+        ) {
+
+         return false
+
+        }
+
+
+        const recommendedProtein = {
+
+          min: Number(
+            selectedFeed.protein_min
+          ),
+
+          max: Number(
+            selectedFeed.protein_max
+          )
+
+        }
+
+        const productProtein =
+          getRangeValues(
+            product.protein_range
+          )
+
+
+        if (
+          productProtein &&
+          (
+            productProtein.min <
+              recommendedProtein.min ||
+            productProtein.max >
+              recommendedProtein.max
+          )
+        ) {
+
+          return false
+
+        }
+
+
+        const recommendedParticleSize = {
+
+          min: Number(
+            selectedFeed.particle_size_min
+          ),
+
+          max: Number(
+            selectedFeed.particle_size_max
+          )
+
+        }
+
+        const productParticleSize =
+          getRangeValues(
+            product.pellet_size
+          )
+
+
+        if (
+          productParticleSize &&
+          (
+            productParticleSize.min <
+              recommendedParticleSize.min ||
+            productParticleSize.max >
+              recommendedParticleSize.max
+          )
+        ) {
+
+         return false
+
+        }
+
+        if (
+          !product.inventory ||
+          product.inventory.quantity <= 0
+        ) {
+
+         return false
+
+        }
+
+
+        return true
+
+      }
+
 
       const search =
         searchText.toLowerCase().trim()
@@ -114,7 +286,7 @@ function FarmerVendor() {
           .includes(search)
       )
 
-    })
+  })
 
 
   /* ============================= */

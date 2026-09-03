@@ -19,6 +19,20 @@ type Fish = {
   culture_period_days: number
 }
 
+type FeedRecommendation = {
+  id: number
+  fish_stage?: number | null
+  fish_name?: string | null
+  stage_number?: number | null
+  feed_name?: string | null
+  feed_type?: string | null
+  feed_form?: string | null
+  protein_min?: number | null
+  protein_max?: number | null
+  particle_size_min?: number | null
+  particle_size_max?: number | null
+  organic?: boolean | null
+}
 
 type Account = {
   id: number
@@ -52,6 +66,9 @@ function Farmer() {
 
   const [showFarmerFeed, setShowFarmerFeed] =
     useState(false)
+
+  const [selectedFeed, setSelectedFeed] =
+  useState<FeedRecommendation | null>(null)
 
   const [locationPopupOpen, setLocationPopupOpen] =
     useState(false)
@@ -720,6 +737,10 @@ function Farmer() {
                     onBack={() =>
                       setShowFarmerFeed(false)
                     }
+                    onFeedSelect={(feed) => {
+                      setSelectedFeed(feed)
+                      setActiveSection('Vendors')
+                    }}
                   />
 
                 )}
@@ -782,7 +803,9 @@ function Farmer() {
 
             {activeSection === 'Vendors' && (
 
-              <FarmerVendor />
+              <FarmerVendor
+                selectedFeed={selectedFeed}
+              />
 
             )}
 

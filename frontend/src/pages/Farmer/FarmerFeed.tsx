@@ -52,14 +52,14 @@ type FeedRecommendation = {
 type FarmerFeedProps = {
   fish: Fish
   onBack?: () => void
+  onFeedSelect?: (feed: FeedRecommendation) => void
 }
-
 
 function FarmerFeed({
   fish,
-  onBack
+  onBack,
+  onFeedSelect
 }: FarmerFeedProps) {
-
 
   const [stages, setStages] =
     useState<FishStage[]>([])
@@ -947,11 +947,16 @@ function FarmerFeed({
 
                       (feed) => (
 
-                        <div
+                        <button
                           key={feed.id}
+                          type="button"
                           className="farmer-recommendation-card"
+                          onClick={() => {
+                            if (onFeedSelect) {
+                              onFeedSelect(feed)
+                            }
+                          }}
                         >
-
 
                           {/* Top */}
 
@@ -1129,7 +1134,7 @@ function FarmerFeed({
 
                           </div>
 
-                        </div>
+                        </button>
 
                       )
 
