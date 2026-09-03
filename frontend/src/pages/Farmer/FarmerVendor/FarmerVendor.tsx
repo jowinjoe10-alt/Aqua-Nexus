@@ -1,18 +1,227 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './FarmerVendor.css'
+
+
+type Product = {
+  id: number
+  feed_type: string
+  feed_name: string
+  brand_name: string
+  price: string
+  protein_range: string
+  pellet_size: string
+  image: string | null
+  description: string | null
+  inventory: {
+    id: number
+    quantity: number
+    updated_at: string
+  } | null
+}
 
 
 function FarmerVendor() {
 
-  const [searchText, setSearchText] = useState('')
+  const [searchText, setSearchText] =
+    useState('')
 
   const [sortOption, setSortOption] =
     useState('')
+
+  const [products, setProducts] =
+    useState<Product[]>([])
+
+  const [loading, setLoading] =
+    useState(true)
+
+  const [error, setError] =
+    useState('')
+
+  const [selectedProduct, setSelectedProduct] =
+    useState<Product | null>(null)
+
+  const [quantity, setQuantity] =
+    useState(1)
+
+
+  /* ============================= */
+  /* Load Products                 */
+  /* ============================= */
+
+  useEffect(() => {
+
+    const loadProducts = async () => {
+
+      try {
+
+        const response = await fetch(
+          'http://127.0.0.1:8000/api/product/'
+        )
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Unable to load products'
+          )
+
+        }
+
+        const data = await response.json()
+
+        setProducts(data)
+
+      } catch (error) {
+
+        console.error(
+          'Product loading error:',
+          error
+        )
+
+        setError(
+          'Unable to load products.'
+        )
+
+      } finally {
+
+        setLoading(false)
+
+      }
+
+    }
+
+    loadProducts()
+
+  }, [])
+
+
+  /* ============================= */
+  /* Search Products               */
+  /* ============================= */
+
+  const filteredProducts =
+    products.filter((product) => {
+
+      const search =
+        searchText.toLowerCase().trim()
+
+      if (!search) {
+        return true
+      }
+
+      return (
+        product.feed_name
+          .toLowerCase()
+          .includes(search)
+      )
+
+    })
+
+
+  /* ============================= */
+  /* Sort Products                 */
+  /* ============================= */
+
+  const sortedProducts =
+    [...filteredProducts].sort(
+      (firstProduct, secondProduct) => {
+
+        if (
+          sortOption === 'low-to-high'
+        ) {
+
+          return (
+            Number(firstProduct.price) -
+            Number(secondProduct.price)
+          )
+
+        }
+
+        if (
+          sortOption === 'high-to-low'
+        ) {
+
+          return (
+            Number(secondProduct.price) -
+            Number(firstProduct.price)
+          )
+
+        }
+
+        return 0
+
+      }
+    )
+
+
+  /* ============================= */
+  /* Select Product                */
+  /* ============================= */
+
+  const openProductDetails = (
+    product: Product
+  ) => {
+
+    setSelectedProduct(product)
+
+    setQuantity(1)
+
+  }
+
+
+  /* ============================= */
+  /* Close Product Details         */
+  /* ============================= */
+
+  const closeProductDetails = () => {
+
+    setSelectedProduct(null)
+
+    setQuantity(1)
+
+  }
+
+
+  /* ============================= */
+  /* Quantity Change               */
+  /* ============================= */
+
+  const handleQuantityChange = (
+    value: string
+  ) => {
+
+    const newQuantity =
+      Number(value)
+
+    if (
+      newQuantity >= 1 &&
+      selectedProduct &&
+      selectedProduct.inventory &&
+      newQuantity <=
+        selectedProduct.inventory.quantity
+    ) {
+
+      setQuantity(newQuantity)
+
+    }
+
+  }
+
+
+  /* ============================= */
+  /* Total Price                   */
+  /* ============================= */
+
+  const totalPrice =
+    selectedProduct
+      ? Number(selectedProduct.price) *
+        quantity
+      : 0
 
 
   return (
 
     <section className="farmer-vendor">
+
 
       {/* ============================= */}
       {/* Vendor Header                 */}
@@ -44,7 +253,9 @@ function FarmerVendor() {
             placeholder="Search by feed name / vendor name"
             value={searchText}
             onChange={(event) =>
-              setSearchText(event.target.value)
+              setSearchText(
+                event.target.value
+              )
             }
           />
 
@@ -61,7 +272,9 @@ function FarmerVendor() {
             id="vendor-sort"
             value={sortOption}
             onChange={(event) =>
-              setSortOption(event.target.value)
+              setSortOption(
+                event.target.value
+              )
             }
           >
 
@@ -85,19 +298,404 @@ function FarmerVendor() {
 
 
       {/* ============================= */}
-      {/* Vendor Content                 */}
+      {/* Product Details               */}
       {/* ============================= */}
 
-      <div className="farmer-vendor-content">
+      {selectedProduct && (
 
-        <p className="farmer-vendor-empty-message">
+        <div className="farmer-vendor-details">
 
-          Search for a feed or vendor to see
-          available products.
 
-        </p>
+          <button
+            className="farmer-vendor-close"
+            onClick={closeProductDetails}
+          >
+            ×
+          </button>
 
-      </div>
+
+          {/* Product Image */}
+
+          <div className="farmer-vendor-details-image">
+
+            {selectedProduct.image ? (
+
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.feed_name}
+              />
+
+            ) : (
+
+              <div className="farmer-vendor-product-placeholder">
+                🐟
+              </div>
+
+            )}
+
+          </div>
+
+
+          {/* Product Details */}
+
+          <div className="farmer-vendor-details-info">
+
+            <h3>
+              {selectedProduct.feed_name}
+            </h3>
+
+            <p>
+              <strong>
+                Brand:
+              </strong>{' '}
+              {selectedProduct.brand_name}
+            </p>
+
+            <p>
+              <strong>
+                Feed Type:
+              </strong>{' '}
+              {selectedProduct.feed_type}
+            </p>
+
+            <p>
+              <strong>
+                Price:
+              </strong>{' '}
+              ₹{selectedProduct.price}
+            </p>
+
+            <p>
+              <strong>
+                Protein:
+              </strong>{' '}
+              {selectedProduct.protein_range}
+            </p>
+
+            <p>
+              <strong>
+                Particle Size:
+              </strong>{' '}
+              {selectedProduct.pellet_size}
+            </p>
+
+            <p>
+              <strong>
+                Description:
+              </strong>{' '}
+              {selectedProduct.description ||
+                'No description provided.'}
+            </p>
+
+
+            {/* Availability */}
+
+            <p>
+
+              <strong>
+                Availability:
+              </strong>{' '}
+
+              {selectedProduct.inventory &&
+                selectedProduct.inventory.quantity > 0
+                ? 'Available'
+                : 'Out of stock'}
+
+            </p>
+
+
+            {/* Available Quantity */}
+
+            {selectedProduct.inventory &&
+              selectedProduct.inventory.quantity > 0 && (
+
+                <p>
+
+                  <strong>
+                    Available Quantity:
+                  </strong>{' '}
+
+                  {selectedProduct.inventory.quantity}
+
+                </p>
+
+              )}
+
+
+            {/* ============================= */}
+            {/* Quantity                      */}
+            {/* ============================= */}
+
+            {selectedProduct.inventory &&
+              selectedProduct.inventory.quantity > 0 && (
+
+                <div className="farmer-vendor-quantity">
+
+                  <label htmlFor="product-quantity">
+                    Quantity
+                  </label>
+
+                  <input
+                    id="product-quantity"
+                    type="number"
+                    min="1"
+                    max={
+                      selectedProduct.inventory.quantity
+                    }
+                    value={quantity}
+                    onChange={(event) =>
+                      handleQuantityChange(
+                        event.target.value
+                      )
+                    }
+                  />
+
+                </div>
+
+              )}
+
+
+            {/* ============================= */}
+            {/* Total Price                   */}
+            {/* ============================= */}
+
+            {selectedProduct.inventory &&
+              selectedProduct.inventory.quantity > 0 && (
+
+                <div className="farmer-vendor-total">
+
+                  <span>
+                    Total Price
+                  </span>
+
+                  <strong>
+                    ₹{totalPrice.toFixed(2)}
+                  </strong>
+
+                </div>
+
+              )}
+
+
+            {/* ============================= */}
+            {/* Buy / Subscribe               */}
+            {/* ============================= */}
+
+            <div className="farmer-vendor-actions">
+
+              <button
+                className="farmer-vendor-buy"
+                disabled={
+                  !selectedProduct.inventory ||
+                  selectedProduct.inventory.quantity <= 0
+                }
+              >
+                Buy
+              </button>
+
+              <button
+                className="farmer-vendor-subscribe"
+                disabled={
+                  !selectedProduct.inventory ||
+                  selectedProduct.inventory.quantity <= 0
+                }
+              >
+                Subscribe
+              </button>
+
+            </div>
+
+
+            {/* ============================= */}
+            {/* Vendor Mobile                  */}
+            {/* ============================= */}
+
+            <div className="farmer-vendor-mobile">
+
+              <strong>
+                Vendor Mobile
+              </strong>
+
+              <div
+                className="farmer-vendor-mobile-number"
+                title="Mobile number will be displayed after the vendor accepts the order"
+              >
+                ●●●●●●●●●●
+
+              </div>
+
+              <span>
+                Mobile number will be displayed
+                after the vendor accepts the order.
+              </span>
+
+            </div>
+
+
+            {/* ============================= */}
+            {/* Chat                           */}
+            {/* ============================= */}
+
+            <div className="farmer-vendor-chat">
+
+              <h4>
+                Chat with Vendor
+              </h4>
+
+              <textarea
+                placeholder="Type your message..."
+              />
+
+              <button>
+                Send
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
+
+      {/* ============================= */}
+      {/* Vendor Content                */}
+      {/* ============================= */}
+
+      {!selectedProduct && (
+
+        <div className="farmer-vendor-content">
+
+
+          {/* Loading */}
+
+          {loading && (
+
+            <p className="farmer-vendor-empty-message">
+              Loading products...
+            </p>
+
+          )}
+
+
+          {/* Error */}
+
+          {!loading && error && (
+
+            <p className="farmer-vendor-empty-message">
+              {error}
+            </p>
+
+          )}
+
+
+          {/* No Products */}
+
+          {!loading &&
+            !error &&
+            sortedProducts.length === 0 && (
+
+              <p className="farmer-vendor-empty-message">
+
+                {searchText
+                  ? 'No matching products found.'
+                  : 'No products are currently available.'}
+
+              </p>
+
+            )}
+
+
+          {/* Product Cards */}
+
+          {!loading &&
+            !error &&
+            sortedProducts.length > 0 && (
+
+              <div className="farmer-vendor-products">
+
+                {sortedProducts.map(
+                  (product) => (
+
+                    <div
+                      className="farmer-vendor-product-card"
+                      key={product.id}
+                      onClick={() =>
+                        openProductDetails(product)
+                      }
+                    >
+
+
+                      {/* Product Image */}
+
+                      <div className="farmer-vendor-product-image">
+
+                        {product.image ? (
+
+                          <img
+                            src={product.image}
+                            alt={product.feed_name}
+                          />
+
+                        ) : (
+
+                          <div className="farmer-vendor-product-placeholder">
+                            🐟
+                          </div>
+
+                        )}
+
+                      </div>
+
+
+                      {/* Product Information */}
+
+                      <div className="farmer-vendor-product-info">
+
+                        <h3>
+                          {product.feed_name}
+                        </h3>
+
+                        <p>
+                          <strong>
+                            Brand:
+                          </strong>{' '}
+                          {product.brand_name}
+                        </p>
+
+
+                        {/* Inventory */}
+
+                        {product.inventory &&
+                          product.inventory.quantity > 0 ? (
+
+                          <p className="farmer-vendor-stock">
+                            Available
+                          </p>
+
+                        ) : (
+
+                          <p className="farmer-vendor-out-of-stock">
+                            Out of stock
+                          </p>
+
+                        )}
+
+                      </div>
+
+                    </div>
+
+                  )
+                )}
+
+              </div>
+
+            )}
+
+        </div>
+
+      )}
 
     </section>
 
