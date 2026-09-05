@@ -58,18 +58,7 @@ class Product(models.Model):
 
         return f'{self.brand_name} - {self.feed_name}'
 
-    def validate_price(
-       self,
-       value
-    ):
-
-       if value < 0:
-
-           raise serializers.ValidationError(
-              'Price cannot be negative.'
-           )
-
-       return value
+    
 
 class Inventory(models.Model):
 
@@ -90,3 +79,48 @@ class Inventory(models.Model):
     def __str__(self):
 
         return f'{self.product.feed_name} - {self.quantity}'
+
+class Chat(models.Model):
+
+    farmer = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='farmer_chats'
+    )
+
+    vendor = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='vendor_chats'
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='chats'
+    )
+
+    question = models.TextField()
+
+    reply = models.TextField(
+        blank=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    vendor_replied_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    farmer_read_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )

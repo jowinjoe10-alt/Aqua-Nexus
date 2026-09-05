@@ -1,9 +1,12 @@
 import { useNavigate } from 'react-router-dom'
+
 import './MenuItems.css'
 
 
 type MenuItemsProps = {
   role: 'farmer' | 'vendor' | 'admin'
+
+  onChatSelect?: () => void
 
   onAdminSectionChange?: (
     section: 'Farmer' | 'Vendor' | 'Admin'
@@ -13,8 +16,9 @@ type MenuItemsProps = {
 
 function MenuItems({
   role,
-  onAdminSectionChange
+  onChatSelect
 }: MenuItemsProps) {
+
 
   const navigate = useNavigate()
 
@@ -34,6 +38,7 @@ function MenuItems({
     )
 
     navigate('/login')
+
   }
 
 
@@ -46,22 +51,19 @@ function MenuItems({
     navigate(
       `/profile?role=${role}`
     )
+
   }
 
 
   /* ============================= */
-  /* Admin Section                 */
+  /* Chat                          */
   /* ============================= */
 
-  const handleAdminSection = (
-    section: 'Farmer' | 'Vendor' | 'Admin'
-  ) => {
+  const handleChat = () => {
 
-    if (onAdminSectionChange) {
+    if (onChatSelect) {
 
-      onAdminSectionChange(
-        section
-      )
+      onChatSelect()
 
     }
 
@@ -93,13 +95,7 @@ function MenuItems({
       <button
         type="button"
         className="side-menu-item"
-        onClick={() => {
-
-          console.log(
-            `Chat selected for ${role}`
-          )
-
-        }}
+        onClick={handleChat}
       >
         Chat
       </button>
@@ -180,6 +176,7 @@ function MenuItems({
     </nav>
 
   )
+
 }
 
 

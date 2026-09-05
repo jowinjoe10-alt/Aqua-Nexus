@@ -5,8 +5,14 @@ from .views import (
     FeedNameListView,
     ProductListCreateView,
     ProductDetailView,
+    ChatCreateView,
+    VendorChatListView,
+    VendorChatReplyView,
+    FarmerChatReadView,
+    FarmerChatListView,
+    VendorChatUnreadCountView,
+    FarmerChatUnreadView,
 )
-
 
 urlpatterns = [
 
@@ -40,6 +46,47 @@ urlpatterns = [
     path(
         '<int:pk>/',
         ProductDetailView.as_view()
+    ),
+
+    path(
+       'chat/',
+       ChatCreateView.as_view()
+    ),
+
+    path(
+      'chat/farmer/unread/',
+      FarmerChatUnreadView.as_view()
+    ),
+
+    path(
+       'chat/vendor/',
+       VendorChatListView.as_view()
+    ),
+
+    path(
+          'chat/vendor/unread/',
+          VendorChatUnreadCountView.as_view()
+        ),
+    
+
+    path(
+       'chat/<int:pk>/reply/',
+       VendorChatReplyView.as_view()
+    ),
+
+    path(
+      'chat/<int:pk>/read/',
+      FarmerChatReadView.as_view()
+    ),
+
+    path(
+      'chat/farmer/',
+      FarmerChatListView.as_view()
+    ),
+
+    path(
+      'chat/farmer/unread/',
+      FarmerChatUnreadView.as_view()
     ),
 
 ]

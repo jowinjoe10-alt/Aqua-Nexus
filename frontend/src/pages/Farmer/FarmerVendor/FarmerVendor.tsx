@@ -4,6 +4,7 @@ import './FarmerVendor.css'
 
 type Product = {
   id: number
+  vendor: number
   feed_type: string
   feed_name: string
   brand_name: string
@@ -19,6 +20,12 @@ type Product = {
   } | null
 }
 
+type FarmerAccount = {
+  id: number
+  name: string
+  email: string
+  role: string
+}
 
 type FeedRecommendation = {
   id: number
@@ -82,6 +89,14 @@ function FarmerVendor({
   selectedFeed = null
 }: FarmerVendorProps) {
 
+  const [message, setMessage] =
+    useState('')
+
+  const [sendingMessage, setSendingMessage] =
+    useState(false)
+
+  const [messageError, setMessageError] =
+    useState('')
 
   const [sortOption, setSortOption] =
     useState('')
@@ -113,8 +128,10 @@ function FarmerVendor({
   const [quantity, setQuantity] =
     useState(1)
 
+  const [account, setAccount] =
+    useState<FarmerAccount | null>(null)
 
-  useEffect(() => {
+    useEffect(() => {
 
     if (selectedFeed?.feed_name) {
 
@@ -136,6 +153,36 @@ function FarmerVendor({
   ])
 
 
+  useEffect(() => {
+
+    const savedAccount =
+      localStorage.getItem(
+        'aquaNexusAccount'
+      )
+
+    if (savedAccount) {
+
+      try {
+
+        const parsedAccount =
+          JSON.parse(savedAccount)
+
+        setAccount(
+          parsedAccount
+        )
+
+      } catch (error) {
+
+        console.error(
+          'Account loading error:',
+          error
+        )
+
+      }
+
+    }
+
+  }, [])
   /* ============================= */
   /* Load Products                 */
   /* ============================= */
@@ -456,6 +503,100 @@ function FarmerVendor({
         quantity
       : 0
 
+  const handleSendMessage = async () => {
+
+    console.log('SEND BUTTON CLICKED')
+
+    if (!selectedProduct) {
+      return
+    }
+
+    if (!account) {
+      setMessageError(
+        'Farmer account not found.'
+      )
+
+       return
+    }
+
+    if (!message.trim()) {
+      setMessageError(
+        'Please type a message.'
+      )
+
+      return
+    }
+
+    setSendingMessage(true)
+    setMessageError('')
+
+    try {
+
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/product/chat/',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json',
+          },
+
+          body: JSON.stringify({
+            farmer_id:
+              account.id,
+
+            vendor_id:
+              selectedProduct.vendor,
+
+            product_id:
+              selectedProduct.id,
+
+            question:
+              message.trim(),
+          }),
+        }
+      )
+
+      const data =
+        await response.json()
+
+      if (!response.ok) {
+
+        setMessageError(
+          data.error ||
+          data.detail ||
+          'Failed to send message.'
+        )
+
+        return
+      }
+
+      setMessage('')
+
+      console.log(
+        'Message sent successfully:',
+        data
+      )
+
+    } catch (error) {
+
+      console.error(
+        'Send message error:',
+        error
+      )
+
+      setMessageError(
+        'Unable to connect to the server.'
+      )
+
+    } finally {
+
+      setSendingMessage(false)
+
+    }
+
+  }
 
   return (
 
@@ -783,11 +924,38 @@ function FarmerVendor({
 
               <textarea
                 placeholder="Type your message..."
+                value={message}
+                onChange={(event) => {
+
+                 setMessage(
+                   event.target.value
+                 )
+
+                 if (messageError) {
+                    setMessageError('')
+                 }
+
+                }}
               />
 
-              <button>
-                Send
+              <button
+                 type="button"
+                onClick={handleSendMessage}
+                disabled={sendingMessage}
+              >
+                {sendingMessage
+                  ? 'Sending...'
+                  : 'Send'}
               </button>
+
+
+              {messageError && (
+
+                <p className="farmer-vendor-chat-error">
+                  {messageError}
+                </p>
+
+              )}
 
             </div>
 

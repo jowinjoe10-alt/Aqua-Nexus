@@ -157,3 +157,77 @@
   }
 
 }
+
+/* ================================= */
+/* Chat Screen Overlay                */
+/* ================================= */
+
+.chat-screen {
+  position: fixed;
+  inset: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  z-index: 2000;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: rgba(240, 250, 252, 0.98);
+}
+
+
+/* ================================= */
+/* Chat Close Button                  */
+/* ================================= */
+
+.chat-close-button {
+  position: fixed;
+
+  top: 24px;
+  left: 24px;
+
+  width: 40px;
+  height: 40px;
+
+  z-index: 2100;
+
+  border: none;
+  border-radius: 6px;
+
+  background: #666;
+  color: white;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+.chat-close-button:hover {
+  background: #444;
+}
+
+
+/* ================================= */
+/* Chat Container                     */
+/* ================================= */
+
+.chat-screen .chat-container {
+  min-height: 100vh;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 80px 24px 40px;
+}
+
+
+/* ================================= */
+/* Prevent Chat From Affecting Page  */
+/* ================================= */
+
+.chat-screen * {
+  box-sizing: border-box;
+}

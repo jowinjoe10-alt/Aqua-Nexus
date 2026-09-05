@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product, Inventory
+from .models import Product, Inventory, Chat
 from accounts.models import Account
 from fish.models import FeedRecommendation
 
@@ -30,6 +30,7 @@ class ProductSerializer(
         fields = [
             'id',
             'account_id',
+            'vendor',
             'feed_type',
             'feed_name',
             'brand_name',
@@ -287,3 +288,60 @@ class ProductSerializer(
 
 
         return instance
+
+class ChatSerializer(
+    serializers.ModelSerializer
+):
+
+    farmer_name = serializers.CharField(
+        source='farmer.name',
+        read_only=True
+    )
+
+    vendor_name = serializers.CharField(
+        source='vendor.name',
+        read_only=True
+    )
+
+    product_name = serializers.CharField(
+        source='product.feed_name',
+        read_only=True
+    )
+
+    brand_name = serializers.CharField(
+        source='product.brand_name',
+        read_only=True
+    )
+
+    class Meta:
+
+        model = Chat
+
+        fields = [
+            'id',
+            'farmer',
+            'farmer_name',
+            'vendor',
+            'vendor_name',
+            'product',
+            'product_name',
+            'brand_name',
+            'question',
+            'reply',
+            'created_at',
+            'vendor_replied_at',
+            'farmer_read_at',
+            'expires_at',
+        ]
+
+        read_only_fields = [
+            'id',
+            'farmer_name',
+            'vendor_name',
+            'product_name',
+            'brand_name',
+            'created_at',
+            'vendor_replied_at',
+            'farmer_read_at',
+            'expires_at',
+        ]
