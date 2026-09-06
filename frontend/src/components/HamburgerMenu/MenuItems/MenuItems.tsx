@@ -112,9 +112,19 @@ function MenuItems({
           className="side-menu-item"
           onClick={() => {
 
-            console.log(
-              `Orders selected for ${role}`
-            )
+            if (role === 'farmer') {
+
+              navigate('/farmer/orders')
+
+            }
+
+            if (role === 'vendor') {
+
+              console.log(
+                'Vendor Orders selected'
+              )
+
+            }
 
           }}
         >

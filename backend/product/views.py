@@ -2,15 +2,25 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils import timezone
+from django.db import transaction
 
 from fish.models import FeedRecommendation
 from accounts.models import Account
 from pond.models import Notification
 
-from .models import Product, Chat
+from .models import (
+    Product,
+    Chat,
+    Inventory,
+    Order,
+    Subscription,
+)
+
 from .serializers import (
     ProductSerializer,
-    ChatSerializer
+    ChatSerializer,
+    OrderSerializer,
+    SubscriptionSerializer,
 )
 
 
@@ -512,5 +522,425 @@ class FarmerChatUnreadView(APIView):
             }
         )
 
-    
-    
+class OrderCreateView(APIView):
+
+    def post(self, request):
+
+        farmer_id = request.data.get(
+            'farmer_id'
+        )
+
+        vendor_id = request.data.get(
+            'vendor_id'
+        )
+
+        product_id = request.data.get(
+            'product_id'
+        )
+
+        quantity = request.data.get(
+            'quantity'
+        )
+
+        if not farmer_id or not vendor_id or not product_id:
+
+            return Response(
+                {
+                    'error':
+                        'Farmer, vendor and product are required.'
+                },
+                status=400
+            )
+
+        if not quantity:
+
+            return Response(
+                {
+                    'error':
+                        'Quantity is required.'
+                },
+                status=400
+            )
+
+        try:
+
+            quantity = int(quantity)
+
+        except (TypeError, ValueError):
+
+            return Response(
+                {
+                    'error':
+                        'Quantity must be a valid number.'
+                },
+                status=400
+            )
+
+        if quantity <= 0:
+
+            return Response(
+                {
+                    'error':
+                        'Quantity must be greater than zero.'
+                },
+                status=400
+            )
+
+        try:
+
+            farmer = Account.objects.get(
+                id=farmer_id,
+                role='farmer'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Farmer not found.'
+                },
+                status=404
+            )
+
+        try:
+
+            vendor = Account.objects.get(
+                id=vendor_id,
+                role='vendor'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor not found.'
+                },
+                status=404
+            )
+
+        try:
+
+            product = Product.objects.get(
+                id=product_id,
+                vendor=vendor
+            )
+
+        except Product.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Product not found for this vendor.'
+                },
+                status=404
+            )
+
+        try:
+
+            inventory = product.inventory
+
+        except Inventory.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Inventory not found for this product.'
+                },
+                status=404
+            )
+
+        if inventory.quantity < quantity:
+
+            return Response(
+                {
+                    'error':
+                        'Requested quantity is not available.'
+                },
+                status=400
+            )
+
+        unit_price = product.price
+
+        total_price = (
+            unit_price * quantity
+        )
+
+        order = Order.objects.create(
+
+            farmer=farmer,
+
+            vendor=vendor,
+
+            product=product,
+
+            quantity=quantity,
+
+            unit_price=unit_price,
+
+            total_price=total_price,
+
+            status='pending'
+
+        )
+
+        return Response(
+            {
+                'message':
+                    'Order created successfully.',
+
+                'order':
+                    OrderSerializer(order).data
+            },
+            status=201
+        )
+
+class FarmerOrderListView(APIView):
+
+    def get(self, request):
+
+        farmer_id = request.query_params.get(
+            'farmer_id'
+        )
+
+        if not farmer_id:
+
+            return Response(
+                {
+                    'error':
+                        'Farmer ID is required.'
+                },
+                status=400
+            )
+
+        orders = Order.objects.filter(
+            farmer_id=farmer_id
+        ).select_related(
+            'farmer',
+            'vendor',
+            'product'
+        ).order_by(
+            '-created_at'
+        )
+
+        serializer = OrderSerializer(
+            orders,
+            many=True
+        )
+
+        return Response(
+            serializer.data
+        )
+
+class VendorOrderListView(APIView):
+
+    def get(self, request):
+
+        vendor_id = request.query_params.get(
+            'vendor_id'
+        )
+
+        if not vendor_id:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor ID is required.'
+                },
+                status=400
+            )
+
+        orders = Order.objects.filter(
+            vendor_id=vendor_id
+        ).select_related(
+            'farmer',
+            'vendor',
+            'product'
+        ).order_by(
+            '-created_at'
+        )
+
+        serializer = OrderSerializer(
+            orders,
+            many=True
+        )
+
+        return Response(
+            serializer.data
+        )
+
+
+class OrderAcceptView(APIView):
+
+    @transaction.atomic
+    def post(self, request, pk):
+
+        vendor_id = request.data.get(
+            'vendor_id'
+        )
+
+        if not vendor_id:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor ID is required.'
+                },
+                status=400
+            )
+
+        try:
+
+            order = Order.objects.select_related(
+                'product',
+                'vendor',
+                'farmer'
+            ).get(
+                id=pk
+            )
+
+        except Order.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Order not found.'
+                },
+                status=404
+            )
+
+        if order.vendor_id != int(vendor_id):
+
+            return Response(
+                {
+                    'error':
+                        'This order does not belong to this vendor.'
+                },
+                status=403
+            )
+
+        if order.status != 'pending':
+
+            return Response(
+                {
+                    'error':
+                        'This order cannot be accepted.'
+                },
+                status=400
+            )
+
+        try:
+
+            inventory = Inventory.objects.select_for_update().get(
+                product=order.product
+            )
+
+        except Inventory.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Inventory not found.'
+                },
+                status=404
+            )
+
+        if inventory.quantity < order.quantity:
+
+            return Response(
+                {
+                    'error':
+                        'Insufficient inventory.'
+                },
+                status=400
+            )
+
+        inventory.quantity = (
+            inventory.quantity -
+            order.quantity
+        )
+
+        inventory.save()
+
+        order.status = 'accepted'
+
+        order.save()
+
+        return Response(
+            {
+                'message':
+                    'Order accepted successfully.',
+
+                'order':
+                    OrderSerializer(order).data
+            }
+        )
+
+class OrderRejectView(APIView):
+
+    def post(self, request, pk):
+
+        vendor_id = request.data.get(
+            'vendor_id'
+        )
+
+        if not vendor_id:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor ID is required.'
+                },
+                status=400
+            )
+
+        try:
+
+            order = Order.objects.get(
+                id=pk
+            )
+
+        except Order.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Order not found.'
+                },
+                status=404
+            )
+
+        if order.vendor_id != int(vendor_id):
+
+            return Response(
+                {
+                    'error':
+                        'This order does not belong to this vendor.'
+                },
+                status=403
+            )
+
+        if order.status != 'pending':
+
+            return Response(
+                {
+                    'error':
+                        'This order cannot be rejected.'
+                },
+                status=400
+            )
+
+        order.status = 'rejected'
+
+        order.save()
+
+        return Response(
+            {
+                'message':
+                    'Order rejected successfully.',
+
+                'order':
+                    OrderSerializer(order).data
+            }
+        )

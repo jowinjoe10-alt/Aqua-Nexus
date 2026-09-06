@@ -124,3 +124,111 @@ class Chat(models.Model):
         null=True,
         blank=True
     )
+
+class Order(models.Model):
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('rejected', 'Rejected'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    farmer = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='farmer_orders'
+    )
+
+    vendor = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='vendor_orders'
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='orders'
+    )
+
+    quantity = models.PositiveIntegerField()
+
+    unit_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    total_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+
+        return (
+            f'Order {self.id} - '
+            f'{self.product.feed_name}'
+        )
+
+class Subscription(models.Model):
+
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    farmer = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='farmer_subscriptions'
+    )
+
+    vendor = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='vendor_subscriptions'
+    )
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='subscriptions'
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='active'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+
+        return (
+            f'Subscription {self.id} - '
+            f'{self.product.feed_name}'
+        )

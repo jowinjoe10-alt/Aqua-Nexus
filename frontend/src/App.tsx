@@ -8,6 +8,7 @@ import Farmer from './pages/Farmer/Farmer'
 import Vendor from './pages/Vendor/Vendor'
 import Admin from './pages/Admin/Admin'
 import Profile from './pages/Profile/Profile'
+import FarmerOrders from './pages/FarmerOrders/FarmerOrders'
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute'
 
@@ -35,6 +36,15 @@ function App() {
         element={
           <ProtectedRoute role="farmer">
             <Farmer />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/farmer/orders"
+        element={
+          <ProtectedRoute role="farmer">
+            <FarmerOrders />
           </ProtectedRoute>
         }
       />

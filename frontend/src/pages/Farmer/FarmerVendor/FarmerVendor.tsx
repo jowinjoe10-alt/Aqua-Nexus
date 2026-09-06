@@ -492,6 +492,140 @@ function FarmerVendor({
 
   }
 
+  /* ============================= */
+  /* Buy Product                   */
+  /* ============================= */
+
+  const handleBuy = async () => {
+
+    console.log('BUY CLICKED')
+
+    if (!selectedProduct) {
+
+      console.log('STOPPED: No selected product')
+
+      return
+
+    }
+
+    if (!account) {
+
+      console.log('STOPPED: Farmer account not found')
+
+      setMessageError('Farmer account not found.')
+
+      return
+
+    }
+
+    if (!selectedProduct.inventory) {
+
+      console.log('STOPPED: No inventory')
+
+      setMessageError('Product inventory not available.')
+
+      return
+
+    }
+
+    if (quantity <= 0) {
+
+      console.log('STOPPED: Invalid quantity')
+
+      setMessageError('Please select a valid quantity.')
+
+      return
+
+    }
+
+    if (quantity > selectedProduct.inventory.quantity) {
+
+      console.log('STOPPED: Quantity greater than inventory')
+
+      setMessageError('Not enough inventory available.')
+
+      return
+
+    }
+
+    setSendingMessage(true)
+    setMessageError('')
+
+    try {
+
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/product/orders/',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json',
+          },
+
+          body: JSON.stringify({
+
+            farmer_id:
+              account.id,
+
+            vendor_id:
+              selectedProduct.vendor,
+
+            product_id:
+              selectedProduct.id,
+
+            quantity:
+              quantity,
+
+          }),
+        }
+      )
+
+      const data = await response.json()
+
+      console.log('Order response:', data)
+
+      if (!response.ok) {
+
+        setMessageError(
+          data.error ||
+          data.detail ||
+          data.message ||
+          'Failed to place order.'
+        )
+
+        return
+
+      }
+
+      console.log(
+        'Order created successfully:',
+        data
+      )
+
+      alert('Order placed successfully.')
+
+      setSelectedProduct(null)
+      setQuantity(1)
+
+    } catch (error) {
+
+      console.error(
+        'Order error:',
+        error
+      )
+
+      setMessageError(
+        'Unable to connect to the server.'
+      )
+
+    } finally {
+
+      setSendingMessage(false)
+
+    }
+
+  }
 
   /* ============================= */
   /* Total Price                   */
@@ -865,6 +999,7 @@ function FarmerVendor({
 
               <button
                 className="farmer-vendor-buy"
+                onClick={handleBuy}
                 disabled={
                   !selectedProduct.inventory ||
                   selectedProduct.inventory.quantity <= 0

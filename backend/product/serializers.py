@@ -1,6 +1,12 @@
 from rest_framework import serializers
 
-from .models import Product, Inventory, Chat
+from .models import (
+    Product,
+    Inventory,
+    Chat,
+    Order,
+    Subscription,
+)
 from accounts.models import Account
 from fish.models import FeedRecommendation
 
@@ -344,4 +350,114 @@ class ChatSerializer(
             'vendor_replied_at',
             'farmer_read_at',
             'expires_at',
+        ]
+
+class OrderSerializer(
+    serializers.ModelSerializer
+):
+
+    farmer_name = serializers.CharField(
+        source='farmer.name',
+        read_only=True
+    )
+
+    vendor_name = serializers.CharField(
+        source='vendor.name',
+        read_only=True
+    )
+
+    product_name = serializers.CharField(
+        source='product.feed_name',
+        read_only=True
+    )
+
+    brand_name = serializers.CharField(
+        source='product.brand_name',
+        read_only=True
+    )
+
+    class Meta:
+
+        model = Order
+
+        fields = [
+            'id',
+            'farmer',
+            'farmer_name',
+            'vendor',
+            'vendor_name',
+            'product',
+            'product_name',
+            'brand_name',
+            'quantity',
+            'unit_price',
+            'total_price',
+            'status',
+            'created_at',
+            'updated_at',
+        ]
+
+        read_only_fields = [
+            'id',
+            'farmer_name',
+            'vendor_name',
+            'product_name',
+            'brand_name',
+            'unit_price',
+            'total_price',
+            'created_at',
+            'updated_at',
+        ]
+
+
+class SubscriptionSerializer(
+    serializers.ModelSerializer
+):
+
+    farmer_name = serializers.CharField(
+        source='farmer.name',
+        read_only=True
+    )
+
+    vendor_name = serializers.CharField(
+        source='vendor.name',
+        read_only=True
+    )
+
+    product_name = serializers.CharField(
+        source='product.feed_name',
+        read_only=True
+    )
+
+    brand_name = serializers.CharField(
+        source='product.brand_name',
+        read_only=True
+    )
+
+    class Meta:
+
+        model = Subscription
+
+        fields = [
+            'id',
+            'farmer',
+            'farmer_name',
+            'vendor',
+            'vendor_name',
+            'product',
+            'product_name',
+            'brand_name',
+            'status',
+            'created_at',
+            'updated_at',
+        ]
+
+        read_only_fields = [
+            'id',
+            'farmer_name',
+            'vendor_name',
+            'product_name',
+            'brand_name',
+            'created_at',
+            'updated_at',
         ]

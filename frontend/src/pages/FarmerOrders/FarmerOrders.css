@@ -1,0 +1,444 @@
+/* ================================= */
+/* Farmer Orders Page                */
+/* ================================= */
+
+.farmer-orders-page {
+
+  min-height: 100vh;
+
+  width: 100%;
+
+  background: #eefbfe;
+
+  padding: 70px 30px;
+
+  box-sizing: border-box;
+
+}
+
+
+/* ================================= */
+/* Main Container                    */
+/* ================================= */
+
+.farmer-orders-container {
+
+  width: 100%;
+
+  max-width: 940px;
+
+  margin: 0 auto;
+
+}
+
+
+/* ================================= */
+/* Header                            */
+/* ================================= */
+
+.farmer-orders-header {
+
+  margin-bottom: 35px;
+
+}
+
+
+.farmer-orders-header span {
+
+  display: block;
+
+  margin-bottom: 18px;
+
+  color: #587786;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  letter-spacing: 4px;
+
+}
+
+
+.farmer-orders-header h1 {
+
+  margin: 0 0 10px 0;
+
+  color: #183c4d;
+
+  font-size: 42px;
+
+  font-weight: 600;
+
+  line-height: 1.15;
+
+}
+
+
+.farmer-orders-header p {
+
+  margin: 0;
+
+  color: #6b8490;
+
+  font-size: 17px;
+
+  line-height: 1.6;
+
+}
+
+
+/* ================================= */
+/* Loading / Error / Empty           */
+/* ================================= */
+
+.farmer-orders-message {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 30px;
+
+  background: rgba(255, 255, 255, 0.9);
+
+  border: 1px solid #d6e8ee;
+
+  border-radius: 20px;
+
+  color: #587786;
+
+  font-size: 16px;
+
+  text-align: center;
+
+}
+
+
+/* ================================= */
+/* Orders List                       */
+/* ================================= */
+
+.farmer-orders-list {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 22px;
+
+}
+
+
+/* ================================= */
+/* Order Card                        */
+/* ================================= */
+
+.farmer-order-card {
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 28px;
+
+  background: rgba(255, 255, 255, 0.95);
+
+  border: 1px solid #d6e8ee;
+
+  border-radius: 20px;
+
+  box-shadow: 0 8px 25px rgba(49, 92, 107, 0.07);
+
+}
+
+
+/* ================================= */
+/* Order Top                         */
+/* ================================= */
+
+.farmer-order-top {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding-bottom: 20px;
+
+  border-bottom: 1px solid #e0edf1;
+
+}
+
+
+.farmer-order-label {
+
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #6a8793;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 1.5px;
+
+}
+
+
+.farmer-order-top h2 {
+
+  margin: 0 0 7px 0;
+
+  color: #1c4355;
+
+  font-size: 24px;
+
+  font-weight: 600;
+
+  line-height: 1.3;
+
+}
+
+
+.farmer-order-top p {
+
+  margin: 0;
+
+  color: #708994;
+
+  font-size: 15px;
+
+}
+
+
+/* ================================= */
+/* Status                            */
+/* ================================= */
+
+.farmer-order-status {
+
+  flex-shrink: 0;
+
+  padding: 8px 15px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+
+}
+
+
+/* Pending */
+
+.farmer-order-status.pending {
+
+  background: #fff3d8;
+
+  color: #9a6b16;
+
+}
+
+
+/* Accepted */
+
+.farmer-order-status.accepted {
+
+  background: #def4ee;
+
+  color: #267362;
+
+}
+
+
+/* Rejected */
+
+.farmer-order-status.rejected {
+
+  background: #fde5e5;
+
+  color: #a64b4b;
+
+}
+
+
+/* Completed */
+
+.farmer-order-status.completed {
+
+  background: #e1eff8;
+
+  color: #39708d;
+
+}
+
+
+/* ================================= */
+/* Order Details                     */
+/* ================================= */
+
+.farmer-order-details {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 18px;
+
+  padding: 22px 0;
+
+}
+
+
+.farmer-order-details div {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+
+}
+
+
+.farmer-order-details span {
+
+  color: #78919b;
+
+  font-size: 13px;
+
+}
+
+
+.farmer-order-details strong {
+
+  color: #244b5c;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+}
+
+
+/* ================================= */
+/* Order Date                        */
+/* ================================= */
+
+.farmer-order-date {
+
+  padding-top: 18px;
+
+  border-top: 1px solid #e0edf1;
+
+  color: #8198a1;
+
+  font-size: 13px;
+
+}
+
+
+/* ================================= */
+/* Responsive                        */
+/* ================================= */
+
+@media (max-width: 800px) {
+
+  .farmer-orders-page {
+
+    padding: 50px 20px;
+
+  }
+
+
+  .farmer-orders-header h1 {
+
+    font-size: 36px;
+
+  }
+
+
+  .farmer-order-details {
+
+    grid-template-columns:
+      repeat(2, 1fr);
+
+  }
+
+}
+
+
+@media (max-width: 550px) {
+
+  .farmer-orders-page {
+
+    padding: 35px 15px;
+
+  }
+
+
+  .farmer-orders-header h1 {
+
+    font-size: 32px;
+
+  }
+
+
+  .farmer-orders-header p {
+
+    font-size: 15px;
+
+  }
+
+
+  .farmer-order-card {
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+  }
+
+
+  .farmer-order-top {
+
+    flex-direction: column;
+
+  }
+
+
+  .farmer-order-status {
+
+    align-self: flex-start;
+
+  }
+
+
+  .farmer-order-top h2 {
+
+    font-size: 20px;
+
+  }
+
+
+  .farmer-order-details {
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px 12px;
+
+  }
+
+}
