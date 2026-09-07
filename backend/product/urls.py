@@ -13,6 +13,9 @@ from .views import (
     FarmerChatListView,
     VendorChatUnreadCountView,
     FarmerChatUnreadView,
+    SubscriptionCreateView,
+    FarmerSubscriptionListView,
+    VendorSubscriptionListView,
 
     OrderCreateView,
     FarmerOrderListView,
@@ -68,6 +71,25 @@ urlpatterns = [
     path(
         'orders/<int:pk>/reject/',
         OrderRejectView.as_view()
+    ),
+
+    # =============================
+# Subscriptions
+# =============================
+
+    path(
+      'subscriptions/',
+      SubscriptionCreateView.as_view()
+    ),
+
+    path(
+      'subscriptions/farmer/',
+      FarmerSubscriptionListView.as_view()
+    ),
+
+    path(
+      'subscriptions/vendor/',
+      VendorSubscriptionListView.as_view()
     ),
 
     # =============================

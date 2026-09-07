@@ -98,6 +98,9 @@ function FarmerVendor({
   const [messageError, setMessageError] =
     useState('')
 
+  const [subscribing, setSubscribing] =
+    useState(false)
+
   const [sortOption, setSortOption] =
     useState('')
 
@@ -628,6 +631,116 @@ function FarmerVendor({
   }
 
   /* ============================= */
+/* Subscribe Product             */
+/* ============================= */
+
+const handleSubscribe = async () => {
+
+  console.log('SUBSCRIBE CLICKED')
+
+  if (!selectedProduct) {
+
+    console.log(
+      'STOPPED: No selected product'
+    )
+
+    return
+
+  }
+
+  if (!account) {
+
+    console.log(
+      'STOPPED: Farmer account not found'
+    )
+
+    setMessageError(
+      'Farmer account not found.'
+    )
+
+    return
+
+  }
+
+  setSubscribing(true)
+  setMessageError('')
+
+  try {
+
+    const response = await fetch(
+      'http://127.0.0.1:8000/api/product/subscriptions/',
+      {
+        method: 'POST',
+
+        headers: {
+          'Content-Type':
+            'application/json',
+        },
+
+        body: JSON.stringify({
+
+          farmer_id:
+            account.id,
+
+          vendor_id:
+            selectedProduct.vendor,
+
+          product_id:
+            selectedProduct.id,
+
+        }),
+      }
+    )
+
+    const data =
+      await response.json()
+
+    console.log(
+      'Subscription response:',
+      data
+    )
+
+    if (!response.ok) {
+
+      setMessageError(
+        data.error ||
+        data.detail ||
+        data.message ||
+        'Failed to place subscription.'
+      )
+
+      return
+
+    }
+
+    console.log(
+      'Subscription created successfully:',
+      data
+    )
+
+    alert(
+      'Subscription placed successfully.'
+    )
+
+  } catch (error) {
+
+    console.error(
+      'Subscription error:',
+      error
+    )
+
+    setMessageError(
+      'Unable to connect to the server.'
+    )
+
+  } finally {
+
+    setSubscribing(false)
+
+  }
+
+}
+  /* ============================= */
   /* Total Price                   */
   /* ============================= */
 
@@ -1010,12 +1123,16 @@ function FarmerVendor({
 
               <button
                 className="farmer-vendor-subscribe"
+                onClick={handleSubscribe}
                 disabled={
                   !selectedProduct.inventory ||
-                  selectedProduct.inventory.quantity <= 0
+                  selectedProduct.inventory.quantity <= 0 ||
+                  subscribing
                 }
               >
-                Subscribe
+                {subscribing
+                  ? 'Subscribing...'
+                  : 'Subscribe'}
               </button>
 
             </div>

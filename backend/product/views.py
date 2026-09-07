@@ -944,3 +944,185 @@ class OrderRejectView(APIView):
                     OrderSerializer(order).data
             }
         )
+
+class SubscriptionCreateView(APIView):
+
+    def post(self, request):
+
+        farmer_id = request.data.get(
+            'farmer_id'
+        )
+
+        vendor_id = request.data.get(
+            'vendor_id'
+        )
+
+        product_id = request.data.get(
+            'product_id'
+        )
+
+        if not farmer_id or not vendor_id or not product_id:
+
+            return Response(
+                {
+                    'error':
+                        'Farmer, vendor and product are required.'
+                },
+                status=400
+            )
+
+        try:
+
+            farmer = Account.objects.get(
+                id=farmer_id,
+                role='farmer'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Farmer not found.'
+                },
+                status=404
+            )
+
+        try:
+
+            vendor = Account.objects.get(
+                id=vendor_id,
+                role='vendor'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor not found.'
+                },
+                status=404
+            )
+
+        try:
+
+            product = Product.objects.get(
+                id=product_id,
+                vendor=vendor
+            )
+
+        except Product.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Product not found for this vendor.'
+                },
+                status=404
+            )
+
+        existing_subscription = Subscription.objects.filter(
+            farmer=farmer,
+            vendor=vendor,
+            product=product,
+            status='active'
+        ).first()
+
+        if existing_subscription:
+
+            return Response(
+                {
+                    'error':
+                        'You already have an active subscription for this product.'
+                },
+                status=400
+            )
+
+        subscription = Subscription.objects.create(
+            farmer=farmer,
+            vendor=vendor,
+            product=product,
+            status='active'
+        )
+
+        return Response(
+            {
+                'message':
+                    'Subscription created successfully.',
+
+                'subscription':
+                    SubscriptionSerializer(
+                        subscription
+                    ).data
+            },
+            status=201
+        )
+
+
+class FarmerSubscriptionListView(APIView):
+
+    def get(self, request):
+
+        farmer_id = request.query_params.get(
+            'farmer_id'
+        )
+
+        if not farmer_id:
+
+            return Response(
+                {
+                    'error':
+                        'Farmer ID is required.'
+                },
+                status=400
+            )
+
+        subscriptions = Subscription.objects.filter(
+            farmer_id=farmer_id
+        ).order_by(
+            '-created_at'
+        )
+
+        serializer = SubscriptionSerializer(
+            subscriptions,
+            many=True
+        )
+
+        return Response(
+            serializer.data
+        )
+
+
+class VendorSubscriptionListView(APIView):
+
+    def get(self, request):
+
+        vendor_id = request.query_params.get(
+            'vendor_id'
+        )
+
+        if not vendor_id:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor ID is required.'
+                },
+                status=400
+            )
+
+        subscriptions = Subscription.objects.filter(
+            vendor_id=vendor_id
+        ).order_by(
+            '-created_at'
+        )
+
+        serializer = SubscriptionSerializer(
+            subscriptions,
+            many=True
+        )
+
+        return Response(
+            serializer.data
+        )

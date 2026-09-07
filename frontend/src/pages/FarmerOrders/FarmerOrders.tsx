@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import './FarmerOrders.css'
+import { useNavigate } from 'react-router-dom'
 
 
 type Order = {
@@ -28,6 +29,8 @@ function FarmerOrders() {
 
   const [loading, setLoading] =
     useState(true)
+
+  const navigate = useNavigate()
 
   const [error, setError] =
     useState('')
@@ -127,6 +130,14 @@ function FarmerOrders() {
           <p>
             View your feed orders and their current status.
           </p>
+          
+          <button
+             type="button"
+             onClick={() => navigate(-1)}
+             className="back-button"
+          >
+            ← Back
+          </button>
 
         </div>
 

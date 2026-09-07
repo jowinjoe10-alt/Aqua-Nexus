@@ -145,9 +145,19 @@ function MenuItems({
           className="side-menu-item"
           onClick={() => {
 
-            console.log(
-              `Subscriptions selected for ${role}`
-            )
+            if (role === 'farmer') {
+
+              navigate('/farmer/subscriptions')
+
+            }
+
+            if (role === 'vendor') {
+
+              console.log(
+                'Vendor Subscriptions selected'
+              )
+
+            }
 
           }}
         >
@@ -155,7 +165,6 @@ function MenuItems({
         </button>
 
       )}
-
 
       {/* ============================= */}
       {/* Admin Navigation              */}
