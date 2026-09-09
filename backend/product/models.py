@@ -58,7 +58,29 @@ class Product(models.Model):
 
         return f'{self.brand_name} - {self.feed_name}'
 
-    
+class VendorAvailability(models.Model):
+
+    vendor = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='vendor_availability'
+    )
+
+    orders_enabled = models.BooleanField(
+        default=True
+    )
+
+    subscriptions_enabled = models.BooleanField(
+        default=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+
+        return f'{self.vendor.name} - Vendor Availability'  
 
 class Inventory(models.Model):
 

@@ -13,6 +13,24 @@ type Account = {
   state: string
 }
 
+type Order = {
+  id: number
+  farmer: number
+  farmer_name: string
+  vendor: number
+  vendor_name: string
+  product: number
+  product_name: string
+  brand_name: string
+  quantity: number
+  unit_price: string
+  total_price: string
+  status: string
+  created_at: string
+  updated_at: string
+}
+
+
 function Vendor() {
 
   const [receivingOrders, setReceivingOrders] =
@@ -29,6 +47,15 @@ function Vendor() {
 
   const [account, setAccount] =
     useState<Account | null>(null)
+
+  const [orders, setOrders] =
+  useState<Order[]>([])
+
+const [ordersLoading, setOrdersLoading] =
+  useState(false)
+
+const [ordersError, setOrdersError] =
+  useState('')
 
   const [city, setCity] = useState('')
   const [state, setState] = useState('')
@@ -82,6 +109,182 @@ function Vendor() {
     }
 
   }, [])
+
+    /* ============================= */
+  /* Load Vendor Availability       */
+  /* ============================= */
+
+  useEffect(() => {
+
+    if (!account) {
+      return
+    }
+
+    const loadAvailability = async () => {
+
+      try {
+
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/product/vendor-availability/?vendor_id=${account.id}`
+        )
+
+        const data = await response.json()
+
+        if (!response.ok) {
+
+          console.error(
+            'Unable to load vendor availability:',
+            data
+          )
+
+          return
+        }
+
+        setReceivingOrders(
+          data.orders_enabled
+        )
+
+        setReceivingSubscriptions(
+          data.subscriptions_enabled
+        )
+
+      } catch (error) {
+
+        console.error(
+          'Availability error:',
+          error
+        )
+
+      }
+
+    }
+
+    loadAvailability()
+
+  }, [account])
+
+  /* ============================= */
+/* Load Vendor Orders             */
+/* ============================= */
+
+useEffect(() => {
+
+  if (
+    !account ||
+    activeSection !== 'Orders'
+  ) {
+    return
+  }
+
+  const loadOrders = async () => {
+
+    setOrdersLoading(true)
+    setOrdersError('')
+
+    try {
+
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/product/orders/vendor/?vendor_id=${account.id}`
+      )
+
+      const data =
+        await response.json()
+
+      if (!response.ok) {
+
+        setOrdersError(
+          'Failed to load orders.'
+        )
+
+        return
+      }
+
+      setOrders(data)
+
+    } catch (error) {
+
+      console.error(
+        'Vendor orders error:',
+        error
+      )
+
+      setOrdersError(
+        'Unable to connect to the server.'
+      )
+
+    } finally {
+
+      setOrdersLoading(false)
+
+    }
+
+  }
+
+  loadOrders()
+
+}, [account, activeSection])
+    /* ============================= */
+  /* Update Vendor Availability     */
+  /* ============================= */
+
+  const updateAvailability = async (
+    ordersEnabled: boolean,
+    subscriptionsEnabled: boolean
+  ) => {
+
+    if (!account) {
+      return
+    }
+
+    try {
+
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/product/vendor-availability/',
+        {
+          method: 'PUT',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+            vendor_id: account.id,
+            orders_enabled: ordersEnabled,
+            subscriptions_enabled:
+              subscriptionsEnabled,
+          }),
+        }
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+
+        console.error(
+          'Unable to update vendor availability:',
+          data
+        )
+
+        return
+      }
+
+      setReceivingOrders(
+        data.orders_enabled
+      )
+
+      setReceivingSubscriptions(
+        data.subscriptions_enabled
+      )
+
+    } catch (error) {
+
+      console.error(
+        'Availability update error:',
+        error
+      )
+
+    }
+  }
 
 
   /* ============================= */
@@ -388,7 +591,7 @@ function Vendor() {
 
               <div
                 className="availability-switch-wrapper"
-                title="This will affect receiving orders and subscriptions."
+                title="This will affect receiving orders."
               >
 
                 <span className="availability-label">
@@ -408,11 +611,12 @@ function Vendor() {
                       : 'off'
                   }`}
                   onClick={() =>
-                    setReceivingOrders(
-                      !receivingOrders
+                    updateAvailability(
+                      !receivingOrders,
+                      receivingSubscriptions
                     )
                   }
-                  aria-label="Toggle receiving orders and subscriptions"
+                  aria-label="Toggle receiving orders"
                 >
 
                   <span className="availability-switch-knob" />
@@ -430,16 +634,180 @@ function Vendor() {
                 Orders
               </h2>
 
-              <p>
-                Your customer orders will appear here.
-              </p>
+
+              {ordersLoading && (
+
+                <p>
+                  Loading orders...
+                </p>
+
+              )}
+
+
+              {!ordersLoading && ordersError && (
+
+                <p>
+                 {ordersError}
+                </p>
+
+              )}
+
+
+              {!ordersLoading &&
+                !ordersError &&
+                orders.length === 0 && (
+
+                <p>
+                  No customer orders yet.
+                </p>
+
+              )}
+
+ 
+              {!ordersLoading &&
+                !ordersError &&
+                orders.length > 0 && (
+
+                <div className="vendor-orders-list">
+
+                  {orders.map((order) => (
+
+                    <div
+                      key={order.id}
+                      className="vendor-order-card"
+                    >
+
+                      <div className="vendor-order-top">
+
+                        <div>
+
+                          <span className="vendor-order-label">
+                            ORDER #{order.id}
+                          </span>
+
+                          <h3>
+                            {order.product_name}
+                          </h3>
+
+                          <p>
+                            {order.brand_name}
+                          </p>
+
+                        </div>
+
+
+                        <span
+                          className={`vendor-order-status ${order.status}`}
+                        >
+                          {order.status}
+                        </span>
+
+                      </div>
+
+
+                      <div className="vendor-order-details">
+
+                        <div>
+
+                          <span>
+                            Farmer
+                          </span>
+
+                          <strong>
+                           {order.farmer_name}
+                          </strong>
+
+                        </div>
+
+
+                        <div>
+
+                          <span>
+                            Quantity
+                          </span>
+
+                          <strong>
+                            {order.quantity}
+                          </strong>
+
+                        </div>
+
+
+                        <div>
+
+                          <span>
+                            Unit Price
+                          </span>
+
+                          <strong>
+                            ₹{order.unit_price}
+                          </strong>
+
+                        </div>
+
+
+                        <div>
+
+                          <span>
+                            Total
+                          </span>
+
+                          <strong>
+                            ₹{order.total_price}
+                          </strong>
+
+                        </div>
+
+                      </div>
+
+
+                      <div className="vendor-order-date">
+
+                        Ordered on:{' '}
+
+                        {new Date(
+                          order.created_at
+                        ).toLocaleString()}
+
+                      </div>
+
+
+                      {order.status === 'pending' && (
+
+                        <div className="vendor-order-actions">
+
+                          <button
+                            type="button"
+                            className="vendor-order-accept"
+                          >
+                            Accept
+                          </button>
+
+
+                          <button
+                            type="button"
+                            className="vendor-order-decline"
+                          >
+                            Decline
+                          </button>
+
+                        </div>
+
+                      )}
+
+                    </div>
+
+                  ))}
+
+                </div>
+
+              )}
 
             </div>
 
           </section>
 
         )}
-
 
         {/* ============================= */}
         {/* Subscriptions Section         */}
@@ -473,7 +841,8 @@ function Vendor() {
                       : 'off'
                   }`}
                   onClick={() =>
-                    setReceivingSubscriptions(
+                    updateAvailability(
+                      receivingOrders,
                       !receivingSubscriptions
                     )
                   }

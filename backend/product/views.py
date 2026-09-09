@@ -14,6 +14,7 @@ from .models import (
     Inventory,
     Order,
     Subscription,
+    VendorAvailability,
 )
 
 from .serializers import (
@@ -135,6 +136,125 @@ class ProductDetailView(
 
 
         return queryset
+
+class VendorAvailabilityView(APIView):
+
+    def get(self, request):
+
+        vendor_id = request.query_params.get(
+            'vendor_id'
+        )
+
+        if not vendor_id:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor ID is required.'
+                },
+                status=400
+            )
+
+        try:
+
+            vendor = Account.objects.get(
+                id=vendor_id,
+                role='vendor'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor not found.'
+                },
+                status=404
+            )
+
+        availability, created = (
+            VendorAvailability.objects.get_or_create(
+                vendor=vendor
+            )
+        )
+
+        return Response(
+            {
+                'vendor': vendor.id,
+                'orders_enabled':
+                    availability.orders_enabled,
+                'subscriptions_enabled':
+                    availability.subscriptions_enabled,
+            }
+        )
+
+
+    def put(self, request):
+
+        vendor_id = request.data.get(
+            'vendor_id'
+        )
+
+        if not vendor_id:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor ID is required.'
+                },
+                status=400
+            )
+
+        try:
+
+            vendor = Account.objects.get(
+                id=vendor_id,
+                role='vendor'
+            )
+
+        except Account.DoesNotExist:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor not found.'
+                },
+                status=404
+            )
+
+        availability, created = (
+            VendorAvailability.objects.get_or_create(
+                vendor=vendor
+            )
+        )
+
+        if 'orders_enabled' in request.data:
+
+            availability.orders_enabled = (
+                request.data.get(
+                    'orders_enabled'
+                )
+            )
+
+        if 'subscriptions_enabled' in request.data:
+
+            availability.subscriptions_enabled = (
+                request.data.get(
+                    'subscriptions_enabled'
+                )
+            )
+
+        availability.save()
+
+        return Response(
+            {
+                'vendor': vendor.id,
+                'orders_enabled':
+                    availability.orders_enabled,
+                'subscriptions_enabled':
+                    availability.subscriptions_enabled,
+            }
+        )
 
 class ChatCreateView(APIView):
 
@@ -622,6 +742,28 @@ class OrderCreateView(APIView):
 
         try:
 
+            availability = VendorAvailability.objects.get(
+                vendor=vendor
+            )
+
+        except VendorAvailability.DoesNotExist:
+
+            availability = VendorAvailability.objects.create(
+                vendor=vendor
+            )
+
+        if not availability.orders_enabled:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor is not accepting orders.'
+                },
+                status=400
+            )
+
+        try:
+
             product = Product.objects.get(
                 id=product_id,
                 vendor=vendor
@@ -995,6 +1137,8 @@ class SubscriptionCreateView(APIView):
                 role='vendor'
             )
 
+            
+
         except Account.DoesNotExist:
 
             return Response(
@@ -1005,6 +1149,28 @@ class SubscriptionCreateView(APIView):
                 status=404
             )
 
+        try:
+
+            availability = VendorAvailability.objects.get(
+                vendor=vendor
+            )
+
+        except VendorAvailability.DoesNotExist:
+
+            availability = VendorAvailability.objects.create(
+                vendor=vendor
+            )
+
+        if not availability.subscriptions_enabled:
+
+            return Response(
+                {
+                    'error':
+                        'Vendor is not accepting subscriptions.'
+                },
+                status=400
+            )
+        
         try:
 
             product = Product.objects.get(

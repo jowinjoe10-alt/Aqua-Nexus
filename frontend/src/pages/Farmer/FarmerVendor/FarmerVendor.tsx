@@ -27,6 +27,12 @@ type FarmerAccount = {
   role: string
 }
 
+type VendorAvailability = {
+  vendor: number
+  orders_enabled: boolean
+  subscriptions_enabled: boolean
+}
+
 type FeedRecommendation = {
   id: number
   fish_stage?: number | null
@@ -155,6 +161,12 @@ function FarmerVendor({
     initialSearchText
   ])
 
+  const [vendorAvailability, setVendorAvailability] =
+    useState<VendorAvailability | null>(null)
+
+  const [availabilityLoading, setAvailabilityLoading] =
+    useState(false)
+
 
   useEffect(() => {
 
@@ -186,6 +198,65 @@ function FarmerVendor({
     }
 
   }, [])
+
+
+    /* ============================= */
+  /* Load Vendor Availability      */
+  /* ============================= */
+
+  useEffect(() => {
+
+    if (!selectedProduct) {
+
+      setVendorAvailability(null)
+
+      return
+
+    }
+
+    const loadVendorAvailability = async () => {
+
+      setAvailabilityLoading(true)
+
+      try {
+
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/product/vendor-availability/?vendor_id=${selectedProduct.vendor}`
+        )
+
+        const data =
+          await response.json()
+
+        if (!response.ok) {
+
+          throw new Error(
+            'Unable to load vendor availability.'
+          )
+
+        }
+
+        setVendorAvailability(data)
+
+      } catch (error) {
+
+        console.error(
+          'Vendor availability error:',
+          error
+        )
+
+        setVendorAvailability(null)
+
+      } finally {
+
+        setAvailabilityLoading(false)
+
+      }
+
+    }
+
+    loadVendorAvailability()
+
+  }, [selectedProduct])
   /* ============================= */
   /* Load Products                 */
   /* ============================= */
@@ -662,6 +733,19 @@ const handleSubscribe = async () => {
 
   }
 
+  if (
+    vendorAvailability &&
+    !vendorAvailability.subscriptions_enabled
+  ) {
+
+    setMessageError(
+        'Vendor is not accepting subscriptions.'
+    )
+
+    return
+
+  }
+
   setSubscribing(true)
   setMessageError('')
 
@@ -1108,35 +1192,38 @@ const handleSubscribe = async () => {
             {/* Buy / Subscribe               */}
             {/* ============================= */}
 
-            <div className="farmer-vendor-actions">
-
+            <div
+              className="vendor-action-tooltip"
+              title={
+                vendorAvailability &&
+                !vendorAvailability.orders_enabled
+                  ? 'Vendor is not accepting orders.'
+                  : ''
+              }
+            >
               <button
-                className="farmer-vendor-buy"
+                className={
+                  `farmer-vendor-buy ${
+                    vendorAvailability &&
+                    !vendorAvailability.orders_enabled
+                      ? 'vendor-disabled'
+                      : ''
+                  }`
+                }
                 onClick={handleBuy}
                 disabled={
                   !selectedProduct.inventory ||
-                  selectedProduct.inventory.quantity <= 0
+                  selectedProduct.inventory.quantity <= 0 ||
+                  availabilityLoading ||
+                  (
+                    vendorAvailability !== null &&
+                    !vendorAvailability.orders_enabled
+                  )
                 }
               >
                 Buy
               </button>
-
-              <button
-                className="farmer-vendor-subscribe"
-                onClick={handleSubscribe}
-                disabled={
-                  !selectedProduct.inventory ||
-                  selectedProduct.inventory.quantity <= 0 ||
-                  subscribing
-                }
-              >
-                {subscribing
-                  ? 'Subscribing...'
-                  : 'Subscribe'}
-              </button>
-
             </div>
-
 
             {/* ============================= */}
             {/* Vendor Mobile                  */}
