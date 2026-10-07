@@ -20,6 +20,7 @@ type Product = {
   } | null
 }
 
+
 type FarmerAccount = {
   id: number
   name: string
@@ -27,11 +28,13 @@ type FarmerAccount = {
   role: string
 }
 
+
 type VendorAvailability = {
   vendor: number
   orders_enabled: boolean
   subscriptions_enabled: boolean
 }
+
 
 type FeedRecommendation = {
   id: number
@@ -137,10 +140,20 @@ function FarmerVendor({
   const [quantity, setQuantity] =
     useState(1)
 
+
   const [account, setAccount] =
     useState<FarmerAccount | null>(null)
 
-    useEffect(() => {
+
+  const [vendorAvailability, setVendorAvailability] =
+    useState<VendorAvailability | null>(null)
+
+
+  const [availabilityLoading, setAvailabilityLoading] =
+    useState(false)
+
+
+  useEffect(() => {
 
     if (selectedFeed?.feed_name) {
 
@@ -161,12 +174,10 @@ function FarmerVendor({
     initialSearchText
   ])
 
-  const [vendorAvailability, setVendorAvailability] =
-    useState<VendorAvailability | null>(null)
 
-  const [availabilityLoading, setAvailabilityLoading] =
-    useState(false)
-
+  /* ============================= */
+  /* Load Account                   */
+  /* ============================= */
 
   useEffect(() => {
 
@@ -200,8 +211,8 @@ function FarmerVendor({
   }, [])
 
 
-    /* ============================= */
-  /* Load Vendor Availability      */
+  /* ============================= */
+  /* Load Vendor Availability       */
   /* ============================= */
 
   useEffect(() => {
@@ -211,8 +222,8 @@ function FarmerVendor({
       setVendorAvailability(null)
 
       return
-
     }
+
 
     const loadVendorAvailability = async () => {
 
@@ -224,8 +235,10 @@ function FarmerVendor({
           `http://127.0.0.1:8000/api/product/vendor-availability/?vendor_id=${selectedProduct.vendor}`
         )
 
+
         const data =
           await response.json()
+
 
         if (!response.ok) {
 
@@ -234,6 +247,7 @@ function FarmerVendor({
           )
 
         }
+
 
         setVendorAvailability(data)
 
@@ -254,9 +268,12 @@ function FarmerVendor({
 
     }
 
+
     loadVendorAvailability()
 
   }, [selectedProduct])
+
+
   /* ============================= */
   /* Load Products                 */
   /* ============================= */
@@ -266,6 +283,10 @@ function FarmerVendor({
     const loadProducts = async () => {
 
       try {
+
+        setLoading(true)
+        setError('')
+
 
         const response = await fetch(
           'http://127.0.0.1:8000/api/product/'
@@ -281,10 +302,71 @@ function FarmerVendor({
         }
 
 
-        const data = await response.json()
+        const data =
+          await response.json()
 
 
-        setProducts(data)
+        console.log(
+          'PRODUCT API RESPONSE:',
+          data
+        )
+
+
+        console.log(
+          'IS ARRAY:',
+          Array.isArray(data)
+        )
+
+
+        /*
+         * Django may return the products
+         * directly as an array.
+         *
+         * It may also return them inside
+         * an object such as:
+         *
+         * {
+         *   products: [...]
+         * }
+         *
+         * or:
+         *
+         * {
+         *   results: [...]
+         * }
+         */
+
+        let productList: Product[] = []
+
+
+        if (Array.isArray(data)) {
+
+          productList = data
+
+        } else if (
+          data &&
+          Array.isArray(data.products)
+        ) {
+
+          productList = data.products
+
+        } else if (
+          data &&
+          Array.isArray(data.results)
+        ) {
+
+          productList = data.results
+
+        }
+
+
+        console.log(
+          'PRODUCT LIST:',
+          productList
+        )
+
+
+        setProducts(productList)
 
       } catch (error) {
 
@@ -383,8 +465,10 @@ function FarmerVendor({
 
           if (
             !productProtein ||
-            productProtein.max < recommendedProtein.min ||
-            productProtein.min > recommendedProtein.max
+            productProtein.max <
+              recommendedProtein.min ||
+            productProtein.min >
+              recommendedProtein.max
           ) {
 
             return false
@@ -426,8 +510,10 @@ function FarmerVendor({
 
           if (
             !productParticleSize ||
-            productParticleSize.max < recommendedParticleSize.min ||
-            productParticleSize.min > recommendedParticleSize.max
+            productParticleSize.max <
+              recommendedParticleSize.min ||
+            productParticleSize.min >
+              recommendedParticleSize.max
           ) {
 
             return false
@@ -524,6 +610,8 @@ function FarmerVendor({
 
     setQuantity(1)
 
+    setMessageError('')
+
   }
 
 
@@ -537,6 +625,10 @@ function FarmerVendor({
 
     setQuantity(1)
 
+    setMessage('')
+
+    setMessageError('')
+
   }
 
 
@@ -544,27 +636,55 @@ function FarmerVendor({
   /* Quantity Change               */
   /* ============================= */
 
-  const handleQuantityChange = (
-    value: string
-  ) => {
+  /* ============================= */
+/* Quantity Change               */
+/* ============================= */
 
-    const newQuantity =
-      Number(value)
+/* ============================= */
+/* Quantity Change               */
+/* ============================= */
 
+const handleQuantityChange = (
+  value: string
+) => {
 
-    if (
-      newQuantity >= 1 &&
-      selectedProduct &&
-      selectedProduct.inventory &&
-      newQuantity <=
-      selectedProduct.inventory.quantity
-    ) {
-
-      setQuantity(newQuantity)
-
-    }
-
+  if (
+    !selectedProduct ||
+    !selectedProduct.inventory
+  ) {
+    return
   }
+
+  const availableQuantity =
+    selectedProduct.inventory.quantity
+
+  // Allow the input to be temporarily empty
+  if (value === '') {
+
+    setQuantity('')
+
+    return
+  }
+
+  const newQuantity =
+    Number(value)
+
+  // Do not allow invalid numbers
+  if (Number.isNaN(newQuantity)) {
+    return
+  }
+
+  // Do not allow more than available quantity
+  if (newQuantity > availableQuantity) {
+
+    setQuantity(availableQuantity)
+
+    return
+  }
+
+  setQuantity(newQuantity)
+}
+
 
   /* ============================= */
   /* Buy Product                   */
@@ -574,56 +694,139 @@ function FarmerVendor({
 
     console.log('BUY CLICKED')
 
+
     if (!selectedProduct) {
 
-      console.log('STOPPED: No selected product')
+      console.log(
+        'STOPPED: No selected product'
+      )
 
       return
 
     }
+
 
     if (!account) {
 
-      console.log('STOPPED: Farmer account not found')
+      console.log(
+        'STOPPED: Farmer account not found'
+      )
 
-      setMessageError('Farmer account not found.')
+      setMessageError(
+        'Farmer account not found.'
+      )
 
       return
 
     }
+
 
     if (!selectedProduct.inventory) {
 
-      console.log('STOPPED: No inventory')
+      console.log(
+        'STOPPED: No inventory'
+      )
 
-      setMessageError('Product inventory not available.')
+      setMessageError(
+        'Product inventory not available.'
+      )
 
       return
 
     }
+
 
     if (quantity <= 0) {
 
-      console.log('STOPPED: Invalid quantity')
+      console.log(
+        'STOPPED: Invalid quantity'
+      )
 
-      setMessageError('Please select a valid quantity.')
+      setMessageError(
+        'Please select a valid quantity.'
+      )
+
+      return
+
+    }
+
+
+    if (
+      quantity >
+      selectedProduct.inventory.quantity
+    ) {
+
+      console.log(
+        'STOPPED: Quantity greater than inventory'
+      )
+
+      setMessageError(
+        'Not enough inventory available.'
+      )
 
       return
 
     }
 
-    if (quantity > selectedProduct.inventory.quantity) {
 
-      console.log('STOPPED: Quantity greater than inventory')
+    /*
+     * Check availability one more time
+     * before creating the order.
+     */
 
-      setMessageError('Not enough inventory available.')
+    try {
 
-      return
+      const availabilityResponse =
+        await fetch(
+          `http://127.0.0.1:8000/api/product/vendor-availability/?vendor_id=${selectedProduct.vendor}`
+        )
+
+
+      const availabilityData =
+        await availabilityResponse.json()
+
+
+      if (
+        availabilityResponse.ok &&
+        availabilityData &&
+        availabilityData.orders_enabled === false
+      ) {
+
+        setVendorAvailability(
+          availabilityData
+        )
+
+        setMessageError(
+          'Vendor is not accepting orders.'
+        )
+
+        return
+
+      }
+
+
+      if (availabilityResponse.ok) {
+
+        setVendorAvailability(
+          availabilityData
+        )
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Availability check error:',
+        error
+      )
 
     }
+
 
     setSendingMessage(true)
+
     setMessageError('')
+
 
     try {
 
@@ -655,9 +858,16 @@ function FarmerVendor({
         }
       )
 
-      const data = await response.json()
 
-      console.log('Order response:', data)
+      const data =
+        await response.json()
+
+
+      console.log(
+        'Order response:',
+        data
+      )
+
 
       if (!response.ok) {
 
@@ -672,14 +882,20 @@ function FarmerVendor({
 
       }
 
+
       console.log(
         'Order created successfully:',
         data
       )
 
-      alert('Order placed successfully.')
+
+      alert(
+        'Order placed successfully.'
+      )
+
 
       setSelectedProduct(null)
+
       setQuantity(1)
 
     } catch (error) {
@@ -688,6 +904,7 @@ function FarmerVendor({
         'Order error:',
         error
       )
+
 
       setMessageError(
         'Unable to connect to the server.'
@@ -701,129 +918,186 @@ function FarmerVendor({
 
   }
 
+
   /* ============================= */
-/* Subscribe Product             */
-/* ============================= */
+  /* Subscribe Product             */
+  /* ============================= */
 
-const handleSubscribe = async () => {
-
-  console.log('SUBSCRIBE CLICKED')
-
-  if (!selectedProduct) {
+  const handleSubscribe = async () => {
 
     console.log(
-      'STOPPED: No selected product'
+      'SUBSCRIBE CLICKED'
     )
 
-    return
 
-  }
+    if (!selectedProduct) {
 
-  if (!account) {
-
-    console.log(
-      'STOPPED: Farmer account not found'
-    )
-
-    setMessageError(
-      'Farmer account not found.'
-    )
-
-    return
-
-  }
-
-  if (
-    vendorAvailability &&
-    !vendorAvailability.subscriptions_enabled
-  ) {
-
-    setMessageError(
-        'Vendor is not accepting subscriptions.'
-    )
-
-    return
-
-  }
-
-  setSubscribing(true)
-  setMessageError('')
-
-  try {
-
-    const response = await fetch(
-      'http://127.0.0.1:8000/api/product/subscriptions/',
-      {
-        method: 'POST',
-
-        headers: {
-          'Content-Type':
-            'application/json',
-        },
-
-        body: JSON.stringify({
-
-          farmer_id:
-            account.id,
-
-          vendor_id:
-            selectedProduct.vendor,
-
-          product_id:
-            selectedProduct.id,
-
-        }),
-      }
-    )
-
-    const data =
-      await response.json()
-
-    console.log(
-      'Subscription response:',
-      data
-    )
-
-    if (!response.ok) {
-
-      setMessageError(
-        data.error ||
-        data.detail ||
-        data.message ||
-        'Failed to place subscription.'
+      console.log(
+        'STOPPED: No selected product'
       )
 
       return
 
     }
 
-    console.log(
-      'Subscription created successfully:',
-      data
-    )
 
-    alert(
-      'Subscription placed successfully.'
-    )
+    if (!account) {
 
-  } catch (error) {
+      console.log(
+        'STOPPED: Farmer account not found'
+      )
 
-    console.error(
-      'Subscription error:',
-      error
-    )
+      setMessageError(
+        'Farmer account not found.'
+      )
 
-    setMessageError(
-      'Unable to connect to the server.'
-    )
+      return
 
-  } finally {
+    }
 
-    setSubscribing(false)
+
+    /*
+     * Check vendor availability again
+     * before creating the subscription.
+     */
+
+    try {
+
+      const availabilityResponse =
+        await fetch(
+          `http://127.0.0.1:8000/api/product/vendor-availability/?vendor_id=${selectedProduct.vendor}`
+        )
+
+
+      const availabilityData =
+        await availabilityResponse.json()
+
+
+      if (
+        availabilityResponse.ok &&
+        availabilityData &&
+        availabilityData.subscriptions_enabled === false
+      ) {
+
+        setVendorAvailability(
+          availabilityData
+        )
+
+        setMessageError(
+          'Vendor is not accepting subscriptions.'
+        )
+
+        return
+
+      }
+
+
+      if (availabilityResponse.ok) {
+
+        setVendorAvailability(
+          availabilityData
+        )
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        'Availability check error:',
+        error
+      )
+
+    }
+
+
+    setSubscribing(true)
+
+    setMessageError('')
+
+
+    try {
+
+      const response = await fetch(
+        'http://127.0.0.1:8000/api/product/subscriptions/',
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type':
+              'application/json',
+          },
+
+          body: JSON.stringify({
+
+            farmer_id:
+              account.id,
+
+            vendor_id:
+              selectedProduct.vendor,
+
+            product_id:
+              selectedProduct.id,
+
+          }),
+        }
+      )
+
+
+      const data =
+        await response.json()
+
+
+      console.log(
+        'Subscription response:',
+        data
+      )
+
+
+      if (!response.ok) {
+
+        setMessageError(
+          data.error ||
+          data.detail ||
+          data.message ||
+          'Failed to place subscription.'
+        )
+
+        return
+
+      }
+
+
+      console.log(
+        'Subscription created successfully:',
+        data
+      )
+
+
+      alert(
+        'Subscription placed successfully.'
+      )
+
+    } catch (error) {
+
+      console.error(
+        'Subscription error:',
+        error
+      )
+
+
+      setMessageError(
+        'Unable to connect to the server.'
+      )
+
+    } finally {
+
+      setSubscribing(false)
+
+    }
 
   }
 
-}
+
   /* ============================= */
   /* Total Price                   */
   /* ============================= */
@@ -831,35 +1105,51 @@ const handleSubscribe = async () => {
   const totalPrice =
     selectedProduct
       ? Number(selectedProduct.price) *
-        quantity
+        Number(quantity || 0)
       : 0
+
+  /* ============================= */
+  /* Send Message                  */
+  /* ============================= */
 
   const handleSendMessage = async () => {
 
-    console.log('SEND BUTTON CLICKED')
+    console.log(
+      'SEND BUTTON CLICKED'
+    )
+
 
     if (!selectedProduct) {
       return
     }
 
+
     if (!account) {
+
       setMessageError(
         'Farmer account not found.'
       )
 
-       return
+      return
+
     }
 
+
     if (!message.trim()) {
+
       setMessageError(
         'Please type a message.'
       )
 
       return
+
     }
 
+
     setSendingMessage(true)
+
     setMessageError('')
+
 
     try {
 
@@ -874,6 +1164,7 @@ const handleSubscribe = async () => {
           },
 
           body: JSON.stringify({
+
             farmer_id:
               account.id,
 
@@ -885,12 +1176,15 @@ const handleSubscribe = async () => {
 
             question:
               message.trim(),
+
           }),
         }
       )
 
+
       const data =
         await response.json()
+
 
       if (!response.ok) {
 
@@ -901,9 +1195,12 @@ const handleSubscribe = async () => {
         )
 
         return
+
       }
 
+
       setMessage('')
+
 
       console.log(
         'Message sent successfully:',
@@ -917,6 +1214,7 @@ const handleSubscribe = async () => {
         error
       )
 
+
       setMessageError(
         'Unable to connect to the server.'
       )
@@ -928,6 +1226,7 @@ const handleSubscribe = async () => {
     }
 
   }
+
 
   return (
 
@@ -1055,12 +1354,14 @@ const handleSubscribe = async () => {
               {selectedProduct.feed_name}
             </h3>
 
+
             <p>
               <strong>
                 Brand:
               </strong>{' '}
               {selectedProduct.brand_name}
             </p>
+
 
             <p>
               <strong>
@@ -1069,12 +1370,14 @@ const handleSubscribe = async () => {
               {selectedProduct.feed_type}
             </p>
 
+
             <p>
               <strong>
                 Price:
               </strong>{' '}
               ₹{selectedProduct.price}
             </p>
+
 
             <p>
               <strong>
@@ -1083,12 +1386,14 @@ const handleSubscribe = async () => {
               {selectedProduct.protein_range}
             </p>
 
+
             <p>
               <strong>
                 Particle Size:
               </strong>{' '}
               {selectedProduct.pellet_size}
             </p>
+
 
             <p>
               <strong>
@@ -1108,7 +1413,7 @@ const handleSubscribe = async () => {
               </strong>{' '}
 
               {selectedProduct.inventory &&
-                selectedProduct.inventory.quantity > 0
+              selectedProduct.inventory.quantity > 0
                 ? 'Available'
                 : 'Out of stock'}
 
@@ -1118,7 +1423,7 @@ const handleSubscribe = async () => {
             {/* Available Quantity */}
 
             {selectedProduct.inventory &&
-              selectedProduct.inventory.quantity > 0 && (
+            selectedProduct.inventory.quantity > 0 && (
 
               <p>
 
@@ -1138,30 +1443,30 @@ const handleSubscribe = async () => {
             {/* ============================= */}
 
             {selectedProduct.inventory &&
-              selectedProduct.inventory.quantity > 0 && (
+            selectedProduct.inventory.quantity > 0 && (
 
-                <div className="farmer-vendor-quantity">
+              <div className="farmer-vendor-quantity">
 
-                  <label htmlFor="product-quantity">
-                    Quantity
-                  </label>
+                <label htmlFor="product-quantity">
+                  Quantity
+                </label>
 
-                  <input
-                    id="product-quantity"
-                    type="number"
-                    min="1"
-                    max={
-                      selectedProduct.inventory.quantity
-                    }
-                    value={quantity}
-                    onChange={(event) =>
-                      handleQuantityChange(
-                        event.target.value
-                      )
-                    }
-                  />
+                <input
+                  id="product-quantity"
+                  type="number"
+                  min="1"
+                  max={
+                    selectedProduct.inventory.quantity
+                  }
+                  value={quantity}
+                  onChange={(event) =>
+                    handleQuantityChange(
+                      event.target.value
+                    )
+                  }
+                />
 
-                </div>
+              </div>
 
             )}
 
@@ -1171,25 +1476,25 @@ const handleSubscribe = async () => {
             {/* ============================= */}
 
             {selectedProduct.inventory &&
-              selectedProduct.inventory.quantity > 0 && (
+            selectedProduct.inventory.quantity > 0 && (
 
-                <div className="farmer-vendor-total">
+              <div className="farmer-vendor-total">
 
-                  <span>
-                    Total Price
-                  </span>
+                <span>
+                  Total Price
+                </span>
 
-                  <strong>
-                    ₹{totalPrice.toFixed(2)}
-                  </strong>
+                <strong>
+                  ₹{totalPrice.toFixed(2)}
+                </strong>
 
-                </div>
+              </div>
 
             )}
 
 
             {/* ============================= */}
-            {/* Buy / Subscribe               */}
+            {/* Buy                           */}
             {/* ============================= */}
 
             <div
@@ -1201,6 +1506,7 @@ const handleSubscribe = async () => {
                   : ''
               }
             >
+
               <button
                 className={
                   `farmer-vendor-buy ${
@@ -1210,7 +1516,9 @@ const handleSubscribe = async () => {
                       : ''
                   }`
                 }
+
                 onClick={handleBuy}
+
                 disabled={
                   !selectedProduct.inventory ||
                   selectedProduct.inventory.quantity <= 0 ||
@@ -1218,15 +1526,63 @@ const handleSubscribe = async () => {
                   (
                     vendorAvailability !== null &&
                     !vendorAvailability.orders_enabled
+                  ) ||
+                  sendingMessage
+                }
+              >
+                {sendingMessage
+                  ? 'Processing...'
+                  : 'Buy'}
+              </button>
+
+            </div>
+
+
+            {/* ============================= */}
+            {/* Subscribe                     */}
+            {/* ============================= */}
+
+            <div
+              className="vendor-action-tooltip"
+              title={
+                vendorAvailability &&
+                !vendorAvailability.subscriptions_enabled
+                  ? 'Vendor is not accepting subscriptions.'
+                  : ''
+              }
+            >
+
+              <button
+                className={
+                  `farmer-vendor-buy ${
+                    vendorAvailability &&
+                    !vendorAvailability.subscriptions_enabled
+                      ? 'vendor-disabled'
+                      : ''
+                  }`
+                }
+
+                onClick={handleSubscribe}
+
+                disabled={
+                  availabilityLoading ||
+                  subscribing ||
+                  (
+                    vendorAvailability !== null &&
+                    !vendorAvailability.subscriptions_enabled
                   )
                 }
               >
-                Buy
+                {subscribing
+                  ? 'Processing...'
+                  : 'Subscribe'}
               </button>
+
             </div>
 
+
             {/* ============================= */}
-            {/* Vendor Mobile                  */}
+            {/* Vendor Mobile                */}
             {/* ============================= */}
 
             <div className="farmer-vendor-mobile">
@@ -1235,13 +1591,14 @@ const handleSubscribe = async () => {
                 Vendor Mobile
               </strong>
 
+
               <div
                 className="farmer-vendor-mobile-number"
                 title="Mobile number will be displayed after the vendor accepts the order"
               >
                 ●●●●●●●●●●
-
               </div>
+
 
               <span>
                 Mobile number will be displayed
@@ -1252,7 +1609,7 @@ const handleSubscribe = async () => {
 
 
             {/* ============================= */}
-            {/* Chat                           */}
+            {/* Chat                         */}
             {/* ============================= */}
 
             <div className="farmer-vendor-chat">
@@ -1261,30 +1618,37 @@ const handleSubscribe = async () => {
                 Chat with Vendor
               </h4>
 
+
               <textarea
                 placeholder="Type your message..."
                 value={message}
                 onChange={(event) => {
 
-                 setMessage(
-                   event.target.value
-                 )
+                  setMessage(
+                    event.target.value
+                  )
 
-                 if (messageError) {
+
+                  if (messageError) {
+
                     setMessageError('')
-                 }
+
+                  }
 
                 }}
               />
 
+
               <button
-                 type="button"
+                type="button"
                 onClick={handleSendMessage}
                 disabled={sendingMessage}
               >
+
                 {sendingMessage
                   ? 'Sending...'
                   : 'Send'}
+
               </button>
 
 
@@ -1339,16 +1703,16 @@ const handleSubscribe = async () => {
           {/* No Products */}
 
           {!loading &&
-            !error &&
-            sortedProducts.length === 0 && (
+          !error &&
+          sortedProducts.length === 0 && (
 
-              <p className="farmer-vendor-empty-message">
+            <p className="farmer-vendor-empty-message">
 
-                {searchText
-                  ? 'No matching products found.'
-                  : 'No products are currently available.'}
+              {searchText
+                ? 'No matching products found.'
+                : 'No products are currently available.'}
 
-              </p>
+            </p>
 
           )}
 
@@ -1356,86 +1720,112 @@ const handleSubscribe = async () => {
           {/* Product Cards */}
 
           {!loading &&
-            !error &&
-            sortedProducts.length > 0 && (
+          !error &&
+          sortedProducts.length > 0 && (
 
-              <div className="farmer-vendor-products">
+            <div className="farmer-vendor-products">
 
-                {sortedProducts.map(
-                  (product) => (
+              {sortedProducts.map(
+                (product) => (
 
-                    <div
-                      className="farmer-vendor-product-card"
-                      key={product.id}
-                      onClick={() =>
-                        openProductDetails(product)
-                      }
-                    >
-
-
-                      {/* Product Image */}
-
-                      <div className="farmer-vendor-product-image">
-
-                        {product.image ? (
-
-                          <img
-                            src={product.image}
-                            alt={product.feed_name}
-                          />
-
-                        ) : (
-
-                          <div className="farmer-vendor-product-placeholder">
-                            🐟
-                          </div>
-
-                        )}
-
-                      </div>
+                  <div
+                    className="farmer-vendor-product-card"
+                    key={product.id}
+                    onClick={() =>
+                      openProductDetails(product)
+                    }
+                  >
 
 
-                      {/* Product Information */}
+                    {/* Product Image */}
 
-                      <div className="farmer-vendor-product-info">
+                    <div className="farmer-vendor-product-image">
 
-                        <h3>
-                          {product.feed_name}
-                        </h3>
+                      {product.image ? (
 
-                        <p>
-                          <strong>
-                            Brand:
-                          </strong>{' '}
-                          {product.brand_name}
-                        </p>
+                        <img
+                          src={product.image}
+                          alt={product.feed_name}
+                        />
 
+                      ) : (
 
-                        {/* Inventory */}
+                        <div className="farmer-vendor-product-placeholder">
+                          🐟
+                        </div>
 
-                        {product.inventory &&
-                          product.inventory.quantity > 0 ? (
-
-                          <p className="farmer-vendor-stock">
-                            Available
-                          </p>
-
-                        ) : (
-
-                          <p className="farmer-vendor-out-of-stock">
-                            Out of stock
-                          </p>
-
-                        )}
-
-                      </div>
+                      )}
 
                     </div>
 
-                  )
-                )}
 
-              </div>
+                    {/* Product Information */}
+
+                    <div className="farmer-vendor-product-info">
+
+                      <h3>
+                        {product.feed_name}
+                      </h3>
+
+
+                      <p>
+
+                        <strong>
+                          Brand:
+                        </strong>{' '}
+
+                        {product.brand_name}
+
+                      </p>
+
+
+                      <p>
+
+                        <strong>
+                          Price:
+                        </strong>{' '}
+
+                        ₹{product.price}
+
+                      </p>
+
+
+                      <p>
+
+                        <strong>
+                          Feed Type:
+                        </strong>{' '}
+
+                        {product.feed_type}
+
+                      </p>
+
+
+                      {/* Inventory */}
+
+                      {product.inventory &&
+                      product.inventory.quantity > 0 ? (
+
+                        <p className="farmer-vendor-stock">
+                          Available
+                        </p>
+
+                      ) : (
+
+                        <p className="farmer-vendor-out-of-stock">
+                          Out of stock
+                        </p>
+
+                      )}
+
+                    </div>
+
+                  </div>
+
+                )
+              )}
+
+            </div>
 
           )}
 

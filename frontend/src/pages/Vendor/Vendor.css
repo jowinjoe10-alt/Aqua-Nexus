@@ -740,3 +740,19 @@
   }
 
 }
+
+/* ============================= */
+/* Vendor Order Actions          */
+/* ============================= */
+
+.vendor-order-actions {
+  position: relative;
+  z-index: 20;
+}
+
+.vendor-order-actions button {
+  position: relative;
+  z-index: 21;
+  pointer-events: auto;
+  cursor: pointer;
+}

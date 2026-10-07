@@ -755,15 +755,28 @@
 
 
 .farmer-vendor-buy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  border: none;
+  min-width: 140px;
+  height: 48px;
 
-  background: #159eae;
+  padding: 0 24px;
 
-  color: #ffffff;
+  border: 1px solid #159db1;
+  border-radius: 8px;
 
+  background: #159db1;
+  color: white;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  margin-right: 12px;
 }
-
 
 .farmer-vendor-buy:hover {
 

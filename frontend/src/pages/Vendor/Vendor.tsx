@@ -30,7 +30,6 @@ type Order = {
   updated_at: string
 }
 
-
 function Vendor() {
 
   const [receivingOrders, setReceivingOrders] =
@@ -49,16 +48,22 @@ function Vendor() {
     useState<Account | null>(null)
 
   const [orders, setOrders] =
-  useState<Order[]>([])
+    useState<Order[]>([])
 
-const [ordersLoading, setOrdersLoading] =
-  useState(false)
+  const [ordersLoading, setOrdersLoading] =
+    useState(false)
 
-const [ordersError, setOrdersError] =
-  useState('')
+  const [ordersError, setOrdersError] =
+    useState('')
 
-  const [city, setCity] = useState('')
-  const [state, setState] = useState('')
+  const [orderActionLoading, setOrderActionLoading] =
+    useState<number | null>(null)
+
+  const [city, setCity] =
+    useState('')
+
+  const [state, setState] =
+    useState('')
 
   const [locationError, setLocationError] =
     useState('')
@@ -110,7 +115,8 @@ const [ordersError, setOrdersError] =
 
   }, [])
 
-    /* ============================= */
+
+  /* ============================= */
   /* Load Vendor Availability       */
   /* ============================= */
 
@@ -128,7 +134,8 @@ const [ordersError, setOrdersError] =
           `http://127.0.0.1:8000/api/product/vendor-availability/?vendor_id=${account.id}`
         )
 
-        const data = await response.json()
+        const data =
+          await response.json()
 
         if (!response.ok) {
 
@@ -163,28 +170,100 @@ const [ordersError, setOrdersError] =
 
   }, [account])
 
+
   /* ============================= */
-/* Load Vendor Orders             */
-/* ============================= */
+  /* Load Vendor Orders             */
+  /* ============================= */
 
-useEffect(() => {
+  useEffect(() => {
 
-  if (
-    !account ||
-    activeSection !== 'Orders'
-  ) {
-    return
-  }
+    if (
+      !account ||
+      activeSection !== 'Orders'
+    ) {
+      return
+    }
 
-  const loadOrders = async () => {
+    const loadOrders = async () => {
 
-    setOrdersLoading(true)
+      setOrdersLoading(true)
+      setOrdersError('')
+
+      try {
+
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/product/orders/vendor/?vendor_id=${account.id}`
+        )
+
+        const data =
+          await response.json()
+
+        if (!response.ok) {
+
+          setOrdersError(
+            'Failed to load orders.'
+          )
+
+          return
+        }
+
+        setOrders(data)
+
+      } catch (error) {
+
+        console.error(
+          'Vendor orders error:',
+          error
+        )
+
+        setOrdersError(
+          'Unable to connect to the server.'
+        )
+
+      } finally {
+
+        setOrdersLoading(false)
+
+      }
+
+    }
+
+    loadOrders()
+
+  }, [account, activeSection])
+
+
+  /* ============================= */
+  /* Accept / Decline Order         */
+  /* ============================= */
+
+  const handleOrderAction = async (
+    orderId: number,
+    action: 'accept' | 'reject'
+  ) => {
+
+    if (!account) {
+      return
+    }
+
+    setOrderActionLoading(orderId)
     setOrdersError('')
 
     try {
 
       const response = await fetch(
-        `http://127.0.0.1:8000/api/product/orders/vendor/?vendor_id=${account.id}`
+        `http://127.0.0.1:8000/api/product/orders/${orderId}/${action}/`,
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+            vendor_id: account.id,
+          }),
+        }
       )
 
       const data =
@@ -193,18 +272,30 @@ useEffect(() => {
       if (!response.ok) {
 
         setOrdersError(
-          'Failed to load orders.'
+          data.error ||
+          data.message ||
+          'Unable to update order.'
         )
 
         return
       }
 
-      setOrders(data)
+      if (data.order) {
+
+        setOrders((currentOrders) =>
+          currentOrders.map((order) =>
+            order.id === orderId
+              ? data.order
+              : order
+          )
+        )
+
+      }
 
     } catch (error) {
 
       console.error(
-        'Vendor orders error:',
+        'Order action error:',
         error
       )
 
@@ -214,16 +305,14 @@ useEffect(() => {
 
     } finally {
 
-      setOrdersLoading(false)
+      setOrderActionLoading(null)
 
     }
 
   }
 
-  loadOrders()
 
-}, [account, activeSection])
-    /* ============================= */
+  /* ============================= */
   /* Update Vendor Availability     */
   /* ============================= */
 
@@ -256,7 +345,8 @@ useEffect(() => {
         }
       )
 
-      const data = await response.json()
+      const data =
+        await response.json()
 
       if (!response.ok) {
 
@@ -284,6 +374,7 @@ useEffect(() => {
       )
 
     }
+
   }
 
 
@@ -342,7 +433,8 @@ useEffect(() => {
         }
       )
 
-      const data = await response.json()
+      const data =
+        await response.json()
 
       if (!response.ok) {
 
@@ -647,7 +739,7 @@ useEffect(() => {
               {!ordersLoading && ordersError && (
 
                 <p>
-                 {ordersError}
+                  {ordersError}
                 </p>
 
               )}
@@ -663,7 +755,7 @@ useEffect(() => {
 
               )}
 
- 
+
               {!ordersLoading &&
                 !ordersError &&
                 orders.length > 0 && (
@@ -676,6 +768,7 @@ useEffect(() => {
                       key={order.id}
                       className="vendor-order-card"
                     >
+
 
                       <div className="vendor-order-top">
 
@@ -714,7 +807,7 @@ useEffect(() => {
                           </span>
 
                           <strong>
-                           {order.farmer_name}
+                            {order.farmer_name}
                           </strong>
 
                         </div>
@@ -779,16 +872,42 @@ useEffect(() => {
                           <button
                             type="button"
                             className="vendor-order-accept"
+                            onClick={() =>
+                              handleOrderAction(
+                                order.id,
+                                'accept'
+                              )
+                            }
+                            disabled={
+                              orderActionLoading ===
+                              order.id
+                            }
                           >
-                            Accept
+                            {orderActionLoading ===
+                            order.id
+                              ? 'Processing...'
+                              : 'Accept'}
                           </button>
 
 
                           <button
                             type="button"
                             className="vendor-order-decline"
+                            onClick={() =>
+                              handleOrderAction(
+                                order.id,
+                                'reject'
+                              )
+                            }
+                            disabled={
+                              orderActionLoading ===
+                              order.id
+                            }
                           >
-                            Decline
+                            {orderActionLoading ===
+                            order.id
+                              ? 'Processing...'
+                              : 'Decline'}
                           </button>
 
                         </div>
@@ -808,6 +927,7 @@ useEffect(() => {
           </section>
 
         )}
+
 
         {/* ============================= */}
         {/* Subscriptions Section         */}

@@ -150,12 +150,13 @@ class Chat(models.Model):
 class Order(models.Model):
 
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('accepted', 'Accepted'),
-        ('processing', 'Processing'),
-        ('completed', 'Completed'),
-        ('rejected', 'Rejected'),
-        ('cancelled', 'Cancelled'),
+      ('pending', 'Pending'),
+      ('accepted', 'Accepted'),
+      ('packed', 'Packed'),
+      ('reached', 'Reached'),
+      ('delivered', 'Delivered'),
+      ('rejected', 'Rejected'),
+      ('cancelled', 'Cancelled'),
     ]
 
     farmer = models.ForeignKey(
