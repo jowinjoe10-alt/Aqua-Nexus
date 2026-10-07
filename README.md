@@ -241,6 +241,12 @@ Aqua Nexus is currently under development and may undergo changes to its archite
 
 ---
 
+## 🎥 Project Demo
+
+Watch the complete Aqua Nexus project demonstration:
+
+[▶️ Watch Aqua Nexus Demo](https://youtu.be/IyiQqRRmiTU)
+
 ## Repository
 
 GitHub:
